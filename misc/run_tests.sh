@@ -2,7 +2,7 @@
 
 CODE_DIR=${CODE_DIR:-/code}
 
-# ./manage.py wait_for_resources --db
+./manage.py wait_for_resources --db
 
 if [ "$CI" == "true" ]; then
     pip3 install pytest-cov

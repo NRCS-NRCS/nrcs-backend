@@ -114,7 +114,7 @@ jobs:
         env:
           DOCKER_IMAGE: ${{ steps.prep.outputs.tagged_image }}
         run: |
-          docker compose run --rm web ./manage.py --all || {
+          docker compose run --rm web ./manage.py wait_for_resources --all  || {
             echo 'Failed to wait for the resources';
             exit 1;
           }

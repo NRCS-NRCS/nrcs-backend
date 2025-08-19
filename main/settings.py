@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     # Internal
+    "apps.common",
 ]
 
 MIDDLEWARE = [
