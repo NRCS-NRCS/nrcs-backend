@@ -12,8 +12,8 @@ class TestStrategicDirectivesQuery(TestCase):
                 id
                 title
                 description
-                newsType
-                status
+                contactPersonName
+                contactPersonEmail
               }
               pageInfo {
                 limit
@@ -26,7 +26,7 @@ class TestStrategicDirectivesQuery(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(email="strategicuser@gmail.com")
+        cls.user = UserFactory.create(username="nrcs-test")
 
     def test_strategic_directives_query(self):
         def _query():
@@ -48,8 +48,8 @@ class TestStrategicDirectivesQuery(TestCase):
             StrategicDirectivesFactory.create(
                 title="Strategic Directive Two",
                 description="Something2",
-                contact_person_name="",
-                contact_person_email="",
+                contact_person_name="Test 2",
+                contact_person_email="test@xyz.com",
             ),
         ]
 

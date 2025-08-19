@@ -6,16 +6,11 @@ from factory.django import DjangoModelFactory
 from .models import StrategicDirectives
 
 
-class StrategicDirectivesFactory(DjangoModelFactory):
-    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        model = StrategicDirectives
-
-
 # TODO: Move this to user apps
 class UserFactory(DjangoModelFactory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
-    email = factory.Sequence(lambda n: f"{n}@xyz.com")
+    username = factory.Sequence(lambda n: f"nrcs-{n}")
 
     class Meta:  # type: ignore[reportIncompatibleVariab]
         model = User
@@ -28,3 +23,11 @@ class UserFactory(DjangoModelFactory):
         obj.set_password(password_text)  # type: ignore[reportAttributeAccessIssue]
         obj.password_text = password_text
         obj.save()  # type: ignore[reportAttributeAccessIssue]
+
+
+class StrategicDirectivesFactory(DjangoModelFactory):
+    created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = StrategicDirectives
