@@ -1,0 +1,17 @@
+type AppEnumCollection {
+  DummyEnum: [AppEnumCollectionDummyEnum!]!
+}
+
+type AppEnumCollectionDummyEnum {
+  key: DummyEnum!
+  label: String!
+}
+
+enum DummyEnum {
+  VALUE_1
+  VALUE_2
+}
+
+type Query {
+  enums: AppEnumCollection!
+}
