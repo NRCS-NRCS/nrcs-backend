@@ -18,7 +18,7 @@ dependencies = [
     "django-storages[s3]",
     "djangoql", # Admin panel query search
     "djangorestframework",
-    "factory-boy~=3.2.1",
+    "factory-boy~=3.3.3",
     "gunicorn~=20.1.0",
     "psycopg2-binary",
     "sentry-sdk",
