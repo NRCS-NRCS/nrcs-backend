@@ -1,0 +1,92 @@
+[project]
+name = "tccms-backend"
+version = "0.1.0"
+description = "Backend for TC CMS"
+authors = [
+  {name = "Togglecorp CMS", email = "info@togglecorp.com"},
+]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+requires-python = "~=3.13.2"
+
+dependencies = [
+    "Django~=5.1.6",
+    "django-cors-headers",
+    "django-cte",
+    "django-environ",
+    "django-premailer",
+    "django-storages[s3]",
+    "djangoql", # Admin panel query search
+    "djangorestframework",
+    "factory-boy~=3.2.1",
+    "gunicorn~=20.1.0",
+    "psycopg2-binary",
+    "sentry-sdk",
+    "strawberry-graphql-django~=0.57.0",
+    "django-choices-field", # Required by strawberry-graphql-django
+    "django-health-check",
+    "pillow", # Required by django ImageField
+    "pydantic==2.10.6",
+    "redis>=6.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "django-debug-toolbar",
+    "django-stubs",
+    "ipython",
+    "colorlog",
+]
+test = [
+    "pytest-django",
+    "pytest-icdiff",
+    "pytest-ordering",
+    "pytest-profiling",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "main.settings"
+log_cli = true
+
+[tool.ruff]
+line-length = 125
+extend-exclude = [
+    ".git",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "**/migrations/*",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+flake8-builtins.builtins-strict-checking = false
+ignore = [
+    "C901",
+    "E701",
+    "E203",
+    "DJ001",
+    "G201", # FIXME: Check if we can enable this and keep sending logs to sentry
+]
+extend-select = ["I", "E", "F", "B", "A", "W", "DJ", "AIR", "COM", "INT", "ISC", "ICN", "LOG", "G", "T20", "TID", "PT", "Q", "RET", "SIM", "TC", "PTH", "UP"]
+# TODO: Use this instead `select = ["ALL"]` and add rules to ignore
+#   ruff check --statistics ./
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"/**/tests/*_mock_data.py" = ["E501"]
+"**/snap_test_*.py" = ["E501"]
+
+[tool.pyright]
+exclude = [
+    "**/__pycache__",
+    "**/snap_test_*.py",
+    ".venv/",
+    "**/migrations/*.py",
+]
+reportMissingImports = true
+reportMissingTypeStubs = false
+venvPath = "."
+venv = ".venv"
