@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     # Internal
     "apps.common",
+    "apps.strategic",
 ]
 
 MIDDLEWARE = [

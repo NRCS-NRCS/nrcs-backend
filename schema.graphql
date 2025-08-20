@@ -7,11 +7,163 @@ type AppEnumCollectionDummyEnum {
   label: String!
 }
 
+input DjangoModelFilterInput {
+  id: ID!
+}
+
 enum DummyEnum {
   VALUE_1
   VALUE_2
 }
 
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesFilter {
+  id: ID!
+  slug: StrFilterLookup
+  directive: DjangoModelFilterInput
+  AND: MajorResponsibilitiesFilter
+  OR: MajorResponsibilitiesFilter
+  NOT: MajorResponsibilitiesFilter
+  DISTINCT: Boolean
+}
+
+input MajorResponsibilitiesOrder {
+  id: Ordering
+  directive: Ordering
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+type MajorResponsibilitiesType {
+  id: ID!
+  title: String!
+  description: String!
+  directive: StrategicDirectivesType!
+  slug: String!
+}
+
+type MajorResponsibilitiesTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [MajorResponsibilitiesType!]!
+}
+
+type OffsetPaginationInfo {
+  offset: Int!
+  limit: Int
+}
+
+input OffsetPaginationInput {
+  offset: Int! = 0
+  limit: Int
+}
+
+enum Ordering {
+  ASC
+  ASC_NULLS_FIRST
+  ASC_NULLS_LAST
+  DESC
+  DESC_NULLS_FIRST
+  DESC_NULLS_LAST
+}
+
 type Query {
+  strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
+  strategicDirective(id: ID!): StrategicDirectivesType!
+  majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
+  majorResponsibility(id: ID!): MajorResponsibilitiesType!
   enums: AppEnumCollection!
+}
+
+input StrFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: String
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [String!]
+
+  """Case-insensitive exact match. Filter will be skipped on `null` value"""
+  iExact: String
+
+  """
+  Case-sensitive containment test. Filter will be skipped on `null` value
+  """
+  contains: String
+
+  """
+  Case-insensitive containment test. Filter will be skipped on `null` value
+  """
+  iContains: String
+
+  """Case-sensitive starts-with. Filter will be skipped on `null` value"""
+  startsWith: String
+
+  """Case-insensitive starts-with. Filter will be skipped on `null` value"""
+  iStartsWith: String
+
+  """Case-sensitive ends-with. Filter will be skipped on `null` value"""
+  endsWith: String
+
+  """Case-insensitive ends-with. Filter will be skipped on `null` value"""
+  iEndsWith: String
+
+  """
+  Case-sensitive regular expression match. Filter will be skipped on `null` value
+  """
+  regex: String
+
+  """
+  Case-insensitive regular expression match. Filter will be skipped on `null` value
+  """
+  iRegex: String
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, contact_person_name, contact_person_email, slug)
+"""
+input StrategicDirectivesFilter {
+  id: ID!
+  slug: StrFilterLookup
+  AND: StrategicDirectivesFilter
+  OR: StrategicDirectivesFilter
+  NOT: StrategicDirectivesFilter
+  DISTINCT: Boolean
+}
+
+input StrategicDirectivesOrder {
+  id: Ordering
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, contact_person_name, contact_person_email, slug)
+"""
+type StrategicDirectivesType {
+  id: ID!
+  title: String!
+  description: String!
+  contactPersonName: String
+  contactPersonEmail: String
+  slug: String!
+}
+
+type StrategicDirectivesTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [StrategicDirectivesType!]!
 }
