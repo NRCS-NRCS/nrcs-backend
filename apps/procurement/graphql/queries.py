@@ -1,6 +1,5 @@
 import strawberry
 import strawberry_django
-from strawberry_django.pagination import OffsetPaginated
 
 from .filters import ProcurementFilter
 from .orders import ProcurementOrder
@@ -9,8 +8,8 @@ from .types import ProcurementType
 
 @strawberry.type
 class Query:
-    procurement: OffsetPaginated[ProcurementType] = strawberry_django.offset_paginated(
+    procurements: list[ProcurementType] = strawberry_django.field(
         order=ProcurementOrder,
         filters=ProcurementFilter,
-        extensions=[],
     )
+    procurement: ProcurementType = strawberry_django.field()

@@ -9,6 +9,6 @@ class ProcurementType:
     id: strawberry.ID
     title: strawberry.auto
     description: strawberry.auto
-    # file: strawberry.auto
+    file: strawberry.auto
     published_date: strawberry.auto
     expiry_date: strawberry.auto
