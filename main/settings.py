@@ -125,6 +125,7 @@ INSTALLED_APPS = [
     # Internal
     "apps.common",
     "apps.strategic",
+    "apps.department",
 ]
 
 MIDDLEWARE = [
