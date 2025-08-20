@@ -1,16 +1,27 @@
 import strawberry
 import strawberry_django
-from strawberry_django.pagination import OffsetPaginated
+
+from apps.department.graphql.orders import DepartmentOrder
 
 from .filters import DepartmentFilter
-from .orders import DepartmentOrder
 from .types import DepartmentType
 
 
 @strawberry.type
 class Query:
-    departments: OffsetPaginated[DepartmentType] = strawberry_django.offset_paginated(
+    # all departments (no pagination)
+    departments: list[DepartmentType] = strawberry_django.field(
         order=DepartmentOrder,
         filters=DepartmentFilter,
     )
+
+    # single department (by pk by default)
     department: DepartmentType = strawberry_django.field()
+
+    @staticmethod
+    def departments_get_queryset(queryset, info):
+        return queryset.prefetch_related("strategic_directive")
+
+    @staticmethod
+    def department_get_queryset(queryset, info):
+        return queryset.select_related("strategic_directive")

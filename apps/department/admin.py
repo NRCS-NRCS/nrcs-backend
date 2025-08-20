@@ -9,4 +9,4 @@ class DepartmentAdmin(admin.ModelAdmin):
     list_display = ("title", "description", "contact_person_name", "contact_person_email")
     search_fields = ("title", "description", "contact_person_name", "contact_person_email")
     list_filter = ["strategic_directive"]
-    prepopulated_fields = {"slug": ("title",)}
+    list_select_related = True
