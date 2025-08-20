@@ -80,6 +80,13 @@ type DepartmentType {
   strategicDirective: StrategicDirectivesType!
 }
 
+type DjangoFileType {
+  name: String!
+  path: String!
+  size: Int!
+  url: String!
+}
+
 input DjangoModelFilterInput {
   id: ID!
 }
@@ -87,6 +94,39 @@ input DjangoModelFilterInput {
 enum DummyEnum {
   VALUE_1
   VALUE_2
+}
+
+input IntComparisonFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: Int
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [Int!]
+
+  """Greater than. Filter will be skipped on `null` value"""
+  gt: Int
+
+  """Greater than or equal to. Filter will be skipped on `null` value"""
+  gte: Int
+
+  """Less than. Filter will be skipped on `null` value"""
+  lt: Int
+
+  """Less than or equal to. Filter will be skipped on `null` value"""
+  lte: Int
+
+  """Inclusive range test (between)"""
+  range: IntRangeLookup
+}
+
+input IntRangeLookup {
+  start: Int = null
+  end: Int = null
 }
 
 """
@@ -183,6 +223,8 @@ type Query {
   majorResponsibility(id: ID!): MajorResponsibilitiesType!
   departments(filters: DepartmentFilter, order: DepartmentOrder): [DepartmentType!]!
   department(id: ID!): DepartmentType!
+  procurements(filters: ProcurementFilter, order: ProcurementOrder): [ProcurementType!]!
+  procurement(id: ID!): ProcurementType!
   enums: AppEnumCollection!
 }
 
