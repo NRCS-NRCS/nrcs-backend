@@ -7,6 +7,35 @@ type AppEnumCollectionDummyEnum {
   label: String!
 }
 
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentFilter {
+  id: ID!
+  slug: StrFilterLookup
+  AND: DepartmentFilter
+  OR: DepartmentFilter
+  NOT: DepartmentFilter
+  DISTINCT: Boolean
+}
+
+input DepartmentOrder {
+  id: Ordering
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+type DepartmentType {
+  id: ID!
+  title: String!
+  description: String!
+  contactPersonName: String
+  contactPersonEmail: String
+  slug: String!
+  strategicDirective: StrategicDirectivesType!
+}
+
 input DjangoModelFilterInput {
   id: ID!
 }
@@ -79,6 +108,8 @@ type Query {
   strategicDirective(id: ID!): StrategicDirectivesType!
   majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
   majorResponsibility(id: ID!): MajorResponsibilitiesType!
+  departments(filters: DepartmentFilter, order: DepartmentOrder): [DepartmentType!]!
+  department(id: ID!): DepartmentType!
   enums: AppEnumCollection!
 }
 
