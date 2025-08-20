@@ -23,7 +23,7 @@ class JobVacancy(UserResource):
     def __str__(self):
         return f"{self.position} - {self.id}"
 
-    class Meta(UserResource.Meta):
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Job Vacancy")
         verbose_name_plural = _("Job Vacancies")
         ordering = ("-created_at",)
