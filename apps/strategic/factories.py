@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from factory import fuzzy
 from factory.django import DjangoModelFactory
 
-from .models import StrategicDirectives
+from .models import MajorResponsibilities, StrategicDirectives
 
 
 # TODO: Move this to user apps
@@ -31,3 +31,11 @@ class StrategicDirectivesFactory(DjangoModelFactory):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         model = StrategicDirectives
+
+
+class MajorResponsibilitiesFactory(DjangoModelFactory):
+    created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = MajorResponsibilities

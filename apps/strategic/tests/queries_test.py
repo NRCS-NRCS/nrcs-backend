@@ -1,4 +1,4 @@
-from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
+from apps.strategic.factories import MajorResponsibilitiesFactory, StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
 
 
@@ -12,6 +12,12 @@ class TestStrategicDirectivesQuery(TestCase):
                 description
                 contactPersonName
                 contactPersonEmail
+                majorResponsibilities {
+      description
+      id
+      slug
+      title
+    }
 
               }
           }
@@ -45,6 +51,16 @@ class TestStrategicDirectivesQuery(TestCase):
                 contact_person_email="test@xyz.com",
             ),
         ]
+        MajorResponsibilitiesFactory.create(
+            title="Major Responsibility One",
+            description="Something",
+            directive=strategic_directives_items[0],
+        )
+        MajorResponsibilitiesFactory.create(
+            title="Major Responsibility Two",
+            description="Something2",
+            directive=strategic_directives_items[1],
+        )
 
         content = _query()
         assert content["data"] == {
@@ -55,6 +71,15 @@ class TestStrategicDirectivesQuery(TestCase):
                     description=strategic.description,
                     contactPersonName=strategic.contact_person_name,
                     contactPersonEmail=strategic.contact_person_email,
+                    majorResponsibilities=[
+                        dict(
+                            id=self.gID(major.id),
+                            title=major.title,
+                            description=major.description,
+                            slug=major.slug,
+                        )
+                        for major in strategic.major_responsibilities.all()
+                    ],
                 )
                 for strategic in strategic_directives_items
             ],
