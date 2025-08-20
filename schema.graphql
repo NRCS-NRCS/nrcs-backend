@@ -7,6 +7,50 @@ type AppEnumCollectionDummyEnum {
   label: String!
 }
 
+"""Date (isoformat)"""
+scalar Date
+
+input DateDateFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: Date
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [Date!]
+
+  """Greater than. Filter will be skipped on `null` value"""
+  gt: Date
+
+  """Greater than or equal to. Filter will be skipped on `null` value"""
+  gte: Date
+
+  """Less than. Filter will be skipped on `null` value"""
+  lt: Date
+
+  """Less than or equal to. Filter will be skipped on `null` value"""
+  lte: Date
+
+  """Inclusive range test (between)"""
+  range: DateRangeLookup
+  year: IntComparisonFilterLookup
+  month: IntComparisonFilterLookup
+  day: IntComparisonFilterLookup
+  weekDay: IntComparisonFilterLookup
+  isoWeekDay: IntComparisonFilterLookup
+  week: IntComparisonFilterLookup
+  isoYear: IntComparisonFilterLookup
+  quarter: IntComparisonFilterLookup
+}
+
+input DateRangeLookup {
+  start: Date = null
+  end: Date = null
+}
+
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
@@ -101,6 +145,44 @@ enum Ordering {
   DESC
   DESC_NULLS_FIRST
   DESC_NULLS_LAST
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementFilter {
+  id: IDBaseFilterLookup
+  expiryDate: DateDateFilterLookup
+  publishedDate: DateDateFilterLookup
+  AND: ProcurementFilter
+  OR: ProcurementFilter
+  NOT: ProcurementFilter
+  DISTINCT: Boolean
+}
+
+input ProcurementOrder {
+  id: Ordering
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+type ProcurementType {
+  id: ID!
+  title: String!
+  description: String!
+  publishedDate: Date!
+  expiryDate: Date!
+}
+
+type ProcurementTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ProcurementType!]!
 }
 
 type Query {
