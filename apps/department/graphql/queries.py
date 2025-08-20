@@ -9,8 +9,8 @@ from .types import DepartmentType
 
 @strawberry.type
 class Query:
-    department: OffsetPaginated[DepartmentType] = strawberry_django.offset_paginated(
+    departments: OffsetPaginated[DepartmentType] = strawberry_django.offset_paginated(
         order=DepartmentOrder,
         filters=DepartmentFilter,
-        extensions=[],
     )
+    department: DepartmentType = strawberry_django.field()

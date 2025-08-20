@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestStrategicDirectivesQuery(TestCase):
     class Query:
         DEPARTMENT = """
-          query department($pagination: OffsetPaginationInput, $order: DepartmentOrder) {
-            department(pagination: $pagination, order: $order) {
+          query departments($pagination: OffsetPaginationInput, $order: DepartmentOrder) {
+            departments(pagination: $pagination, order: $order) {
               totalCount
               results {
                 id
@@ -76,7 +76,7 @@ class TestStrategicDirectivesQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"]["department"] == {
+        assert content["data"]["departments"] == {
             **self.g_pagination(
                 offset=0,
                 limit=10,
