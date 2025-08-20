@@ -17,11 +17,3 @@ class Query:
 
     # single department (by pk by default)
     department: DepartmentType = strawberry_django.field()
-
-    @staticmethod
-    def departments_get_queryset(queryset, info):
-        return queryset.prefetch_related("strategic_directive")
-
-    @staticmethod
-    def department_get_queryset(queryset, info):
-        return queryset.select_related("strategic_directive")
