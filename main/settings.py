@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     "apps.strategic",
     "apps.department",
     "apps.procurement",
+    "apps.vacancy",
 ]
 
 MIDDLEWARE = [

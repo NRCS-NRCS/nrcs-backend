@@ -130,6 +130,36 @@ input IntRangeLookup {
 }
 
 """
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived)
+"""
+input JobVacancyFilter {
+  expiryDate: DateDateFilterLookup
+  isArchived: Boolean
+  AND: JobVacancyFilter
+  OR: JobVacancyFilter
+  NOT: JobVacancyFilter
+  DISTINCT: Boolean
+}
+
+input JobVacancyOrder {
+  id: Ordering
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived)
+"""
+type JobVacancyType {
+  id: ID!
+  title: String!
+  file: DjangoFileType!
+  description: String!
+  position: String!
+  numberOfVacancies: Int!
+  expiryDate: Date!
+  isArchived: Boolean!
+}
+
+"""
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
 input MajorResponsibilitiesFilter {
@@ -205,6 +235,8 @@ type Query {
   department(id: ID!): DepartmentType!
   procurements(filters: ProcurementFilter, order: ProcurementOrder): [ProcurementType!]!
   procurement(id: ID!): ProcurementType!
+  jobVacancies(filters: JobVacancyFilter, order: JobVacancyOrder): [JobVacancyType!]!
+  jobVacancy(id: ID!): JobVacancyType!
   enums: AppEnumCollection!
 }
 
