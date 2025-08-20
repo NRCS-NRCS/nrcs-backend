@@ -29,3 +29,7 @@ class Department(UserResource):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.title))
         super().save(*args, **kwargs)
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        verbose_name = _("Department")
+        verbose_name_plural = _("Departments")

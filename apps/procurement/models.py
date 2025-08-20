@@ -14,3 +14,7 @@ class Procurement(UserResource):
 
     def __str__(self):
         return self.title
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        verbose_name = _("Procurement")
+        verbose_name_plural = _("Procurements")

@@ -21,11 +21,20 @@ class StrategicDirectives(UserResource):
             self.slug = unique_slugify(self, slugify(self.title))
         super().save(*args, **kwargs)
 
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        verbose_name = _("Strategic Directive")
+        verbose_name_plural = _("Strategic Directives")
+
 
 class MajorResponsibilities(UserResource):
     title = models.CharField(max_length=255, verbose_name=_("Major Responsibility Title"))
     description = models.TextField(verbose_name=_("Major Responsibility Description"))
-    directive = models.ForeignKey(StrategicDirectives, on_delete=models.CASCADE, verbose_name=_("Strategic Directive"))
+    directive = models.ForeignKey(
+        StrategicDirectives,
+        on_delete=models.CASCADE,
+        verbose_name=_("Strategic Directive"),
+        related_name="major_responsibilities",
+    )
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
 
     def __str__(self):
@@ -35,3 +44,7 @@ class MajorResponsibilities(UserResource):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.title))
         super().save(*args, **kwargs)
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        verbose_name = _("Major Responsibility")
+        verbose_name_plural = _("Major Responsibilities")
