@@ -6,7 +6,6 @@ from apps.common.models import UserResource
 from utils.common import unique_slugify
 
 
-# Create your models he
 class StrategicDirectives(UserResource):
     title = models.CharField(max_length=255, verbose_name=_("Strategic Directive Title"))
     description = models.TextField(verbose_name=_("Strategic Directive Description"))

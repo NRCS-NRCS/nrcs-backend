@@ -11,33 +11,16 @@ input DjangoModelFilterInput {
   id: ID!
 }
 
-type DjangoModelType {
-  pk: ID!
-}
-
 enum DummyEnum {
   VALUE_1
   VALUE_2
-}
-
-input IDBaseFilterLookup {
-  """Exact match. Filter will be skipped on `null` value"""
-  exact: ID
-
-  """Assignment test. Filter will be skipped on `null` value"""
-  isNull: Boolean
-
-  """
-  Exact match of items in a given list. Filter will be skipped on `null` value
-  """
-  inList: [ID!]
 }
 
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
 input MajorResponsibilitiesFilter {
-  id: IDBaseFilterLookup
+  id: ID!
   slug: StrFilterLookup
   directive: DjangoModelFilterInput
   AND: MajorResponsibilitiesFilter
@@ -58,7 +41,7 @@ type MajorResponsibilitiesType {
   id: ID!
   title: String!
   description: String!
-  directive: DjangoModelType!
+  directive: StrategicDirectivesType!
   slug: String!
 }
 
@@ -93,7 +76,9 @@ enum Ordering {
 
 type Query {
   strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
+  strategicDirective(id: ID!): StrategicDirectivesType!
   majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
+  majorResponsibility(id: ID!): MajorResponsibilitiesType!
   enums: AppEnumCollection!
 }
 
@@ -149,7 +134,7 @@ input StrFilterLookup {
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, contact_person_name, contact_person_email, slug)
 """
 input StrategicDirectivesFilter {
-  id: IDBaseFilterLookup
+  id: ID!
   slug: StrFilterLookup
   AND: StrategicDirectivesFilter
   OR: StrategicDirectivesFilter

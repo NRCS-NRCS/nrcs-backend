@@ -19,5 +19,5 @@ class MajorResponsibilitiesType:
     id: strawberry.ID
     title: strawberry.auto
     description: strawberry.auto
-    directive: strawberry.auto
+    directive: StrategicDirectivesType
     slug: strawberry.auto

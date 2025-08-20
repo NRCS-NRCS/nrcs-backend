@@ -10,7 +10,7 @@ class StrategicDirectivesAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "contact_person_name", "contact_person_email")
     list_filter = ("title", "description", "contact_person_name", "contact_person_email")
     ordering = ("title",)
-    prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ("slug",)
 
 
 @admin.register(MajorResponsibilities)
@@ -19,4 +19,5 @@ class MajorResponsibilitiesAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "directive__title")
     list_filter = ("title", "description", "directive")
     ordering = ("title",)
-    prepopulated_fields = {"slug": ("title",)}
+    list_select_related = True
+    readonly_fields = ("slug",)
