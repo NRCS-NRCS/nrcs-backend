@@ -5,21 +5,15 @@ from main.tests.base_test import TestCase
 class TestStrategicDirectivesQuery(TestCase):
     class Query:
         STRATEGIC_DIRECTIVES = """
-          query strategicDirectives($pagination: OffsetPaginationInput, $order: StrategicDirectivesOrder) {
-            strategicDirectives(pagination: $pagination, order: $order) {
-              totalCount
-              results {
+          query strategicDirectives($order: StrategicDirectivesOrder) {
+            strategicDirectives(order: $order) {
                 id
                 title
                 description
                 contactPersonName
                 contactPersonEmail
+
               }
-              pageInfo {
-                limit
-                offset
-              }
-            }
           }
         """
 
@@ -33,7 +27,6 @@ class TestStrategicDirectivesQuery(TestCase):
             return self.query_check(
                 self.Query.STRATEGIC_DIRECTIVES,
                 variables={
-                    "pagination": {"limit": 10, "offset": 0},
                     "order": {"id": "ASC"},
                 },
             )
@@ -54,20 +47,15 @@ class TestStrategicDirectivesQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"]["strategicDirectives"] == {
-            **self.g_pagination(
-                offset=0,
-                limit=10,
-                total_count=2,
-                results=[
-                    dict(
-                        id=self.gID(strategic.id),
-                        title=strategic.title,
-                        description=strategic.description,
-                        contactPersonName=strategic.contact_person_name,
-                        contactPersonEmail=strategic.contact_person_email,
-                    )
-                    for strategic in strategic_directives_items
-                ],
-            ),
+        assert content["data"] == {
+            "strategicDirectives": [
+                dict(
+                    id=self.gID(strategic.id),
+                    title=strategic.title,
+                    description=strategic.description,
+                    contactPersonName=strategic.contact_person_name,
+                    contactPersonEmail=strategic.contact_person_email,
+                )
+                for strategic in strategic_directives_items
+            ],
         }, content
