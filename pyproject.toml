@@ -28,6 +28,7 @@ dependencies = [
     "pillow", # Required by django ImageField
     "pydantic==2.10.6",
     "redis>=6.0.0",
+    "django-mdeditor>=0.1.20",
 ]
 
 [dependency-groups]

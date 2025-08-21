@@ -13,10 +13,10 @@ base_graphql_kwargs = dict(
     multipart_uploads_enabled=True,
 )
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health-check/", include("health_check.urls")),
+    path(r"mdeditor/", include("mdeditor.urls")),
     path(
         "graphql/",
         csrf_exempt(
