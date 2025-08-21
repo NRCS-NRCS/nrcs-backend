@@ -12,11 +12,13 @@ base_graphql_kwargs = dict(
     schema=graphql_schema,
     multipart_uploads_enabled=True,
 )
-
+# from markdownx import urls as markdownx_urls
+# from markdownx.views import MarkdownifyView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health-check/", include("health_check.urls")),
+    path(r"mdeditor/", include("mdeditor.urls")),
     path(
         "graphql/",
         csrf_exempt(

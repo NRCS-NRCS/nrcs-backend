@@ -281,7 +281,35 @@ type Query {
   works(filters: WorkFilter, order: WorkOrder): [WorkType!]!
   faqs(filters: FaqFilter, order: FaqOrder): [FaqType!]!
   faq(id: ID!): FaqType!
+  resources(filters: ResourceFilter, order: ResourceOrder): [ResourceType!]!
+  resource(id: ID!): ResourceType!
   enums: AppEnumCollection!
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date)
+"""
+input ResourceFilter {
+  name: String
+  AND: ResourceFilter
+  OR: ResourceFilter
+  NOT: ResourceFilter
+  DISTINCT: Boolean
+}
+
+input ResourceOrder {
+  id: Ordering
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date)
+"""
+type ResourceType {
+  id: ID!
+  title: String!
+  file: DjangoFileType
+  content: String!
+  publishedDate: Date!
 }
 
 input StrFilterLookup {
