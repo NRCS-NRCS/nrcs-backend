@@ -5,6 +5,7 @@ from strawberry.file_uploads import Upload
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.department.graphql import queries as department_queries
+from apps.faq.graphql import queries as faq_queries
 from apps.procurement.graphql import queries as procurement_queries
 from apps.strategic.graphql import queries as strategic_queries
 from apps.vacancy.graphql import queries as vacancy_queries
@@ -31,6 +32,7 @@ class Query(
     procurement_queries.Query,
     vacancy_queries.Query,
     work_queries.Query,
+    faq_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
