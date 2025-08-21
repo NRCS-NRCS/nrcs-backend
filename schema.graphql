@@ -100,6 +100,10 @@ input DjangoModelFilterInput {
   id: ID!
 }
 
+type DjangoModelType {
+  pk: ID!
+}
+
 enum DummyEnum {
   VALUE_1
   VALUE_2
@@ -220,7 +224,7 @@ type MajorResponsibilitiesType {
   id: ID!
   title: String!
   description: String!
-  directive: StrategicDirectivesType!
+  directive: DjangoModelType!
   slug: String!
 }
 
@@ -329,7 +333,7 @@ input StrFilterLookup {
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
 """
 input StrategicDirectivesFilter {
   id: ID!
@@ -345,7 +349,7 @@ input StrategicDirectivesOrder {
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
 """
 type StrategicDirectivesType {
   id: ID!
@@ -353,6 +357,7 @@ type StrategicDirectivesType {
   description: String!
   contactPersonName: String
   contactPersonEmail: String
+  coverImage: DjangoImageType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
 }

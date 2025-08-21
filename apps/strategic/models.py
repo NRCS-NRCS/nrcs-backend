@@ -9,6 +9,12 @@ from utils.common import unique_slugify
 class StrategicDirectives(UserResource):
     title = models.CharField(max_length=255, verbose_name=_("Strategic Directive Title"))
     description = models.TextField(verbose_name=_("Strategic Directive Description"))
+    cover_image = models.ImageField(
+        upload_to="strategic_directives/cover_images",
+        verbose_name=_("Cover Image"),
+        null=True,
+        blank=True,
+    )
     contact_person_name = models.CharField(max_length=255, verbose_name=_("Contact Person Name"), null=True, blank=True)
     contact_person_email = models.EmailField(max_length=255, verbose_name=_("Contact Person Email"), null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))

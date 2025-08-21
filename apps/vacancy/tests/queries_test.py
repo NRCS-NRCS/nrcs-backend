@@ -3,7 +3,7 @@ from apps.vacancy.factories import JobVacancyFactory
 from main.tests.base_test import TestCase
 
 
-class TestStrategicDirectivesQuery(TestCase):
+class TestJobVacancyQuery(TestCase):
     class Query:
         JOB_VACANCIES = """
           query jobVacancies($order: JobVacancyOrder) {

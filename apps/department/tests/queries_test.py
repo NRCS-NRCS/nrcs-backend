@@ -3,7 +3,7 @@ from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
 
 
-class TestStrategicDirectivesQuery(TestCase):
+class TestDepartmentQuery(TestCase):
     class Query:
         DEPARTMENT = """
           query departments($order: DepartmentOrder) {

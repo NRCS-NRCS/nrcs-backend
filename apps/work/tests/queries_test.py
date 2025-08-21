@@ -9,24 +9,25 @@ class TestWorkQuery(TestCase):
         WORK = """
           query works($order: WorkOrder) {
             works(order: $order) {
-    description
-    endDate
-    id
-    startDate
-    strategicDirective {
-      id
-      title
-    }
-    title
-    coverImage {
-      url
-    }
-    department {
-      id
-      title
-    }
-  }
-
+              id
+              title
+              description
+              endDate
+              id
+              startDate
+              strategicDirective {
+                id
+                title
+              }
+              title
+              coverImage {
+                url
+              }
+              department {
+                id
+                title
+              }
+            }
           }
         """
 
