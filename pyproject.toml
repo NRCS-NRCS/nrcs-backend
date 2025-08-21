@@ -26,7 +26,7 @@ dependencies = [
     "django-choices-field", # Required by strawberry-graphql-django
     "django-health-check",
     "pillow", # Required by django ImageField
-    "pydantic==2.10.6",
+    "pydantic==2.11.7",
     "redis>=6.0.0",
     "django-mdeditor>=0.1.20",
 ]
