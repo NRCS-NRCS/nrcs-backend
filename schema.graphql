@@ -105,6 +105,32 @@ enum DummyEnum {
   VALUE_2
 }
 
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqFilter {
+  id: ID!
+  orderIndex: IntComparisonFilterLookup
+  AND: FaqFilter
+  OR: FaqFilter
+  NOT: FaqFilter
+  DISTINCT: Boolean
+}
+
+input FaqOrder {
+  id: Ordering
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+type FaqType {
+  id: ID!
+  question: String!
+  answer: String!
+  orderIndex: Int!
+}
+
 input IntComparisonFilterLookup {
   """Exact match. Filter will be skipped on `null` value"""
   exact: Int
@@ -248,6 +274,8 @@ type Query {
   jobVacancy(id: ID!): JobVacancyType!
   work(id: ID!): WorkType!
   works(filters: WorkFilter, order: WorkOrder): [WorkType!]!
+  faqs(filters: FaqFilter, order: FaqOrder): [FaqType!]!
+  faq(id: ID!): FaqType!
   enums: AppEnumCollection!
 }
 
