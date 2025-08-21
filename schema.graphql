@@ -119,6 +119,7 @@ input FaqFilter {
 
 input FaqOrder {
   id: Ordering
+  orderIndex: Ordering
 }
 
 """
