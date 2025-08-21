@@ -8,6 +8,7 @@ from apps.department.graphql import queries as department_queries
 from apps.procurement.graphql import queries as procurement_queries
 from apps.strategic.graphql import queries as strategic_queries
 from apps.vacancy.graphql import queries as vacancy_queries
+from apps.work.graphql import queries as work_queries
 
 from .context import GraphQLContext
 from .dataloaders import GlobalDataLoader
@@ -29,6 +30,7 @@ class Query(
     department_queries.Query,
     procurement_queries.Query,
     vacancy_queries.Query,
+    work_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),

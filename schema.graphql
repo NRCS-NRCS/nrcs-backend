@@ -87,6 +87,15 @@ type DjangoFileType {
   url: String!
 }
 
+type DjangoImageType {
+  name: String!
+  path: String!
+  size: Int!
+  url: String!
+  width: Int!
+  height: Int!
+}
+
 input DjangoModelFilterInput {
   id: ID!
 }
@@ -237,6 +246,8 @@ type Query {
   procurement(id: ID!): ProcurementType!
   jobVacancies(filters: JobVacancyFilter, order: JobVacancyOrder): [JobVacancyType!]!
   jobVacancy(id: ID!): JobVacancyType!
+  work(id: ID!): WorkType!
+  works(filters: WorkFilter, order: WorkOrder): [WorkType!]!
   enums: AppEnumCollection!
 }
 
@@ -315,4 +326,35 @@ type StrategicDirectivesType {
   contactPersonEmail: String
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
+}
+
+"""
+Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
+"""
+input WorkFilter {
+  id: ID!
+  department: ID!
+  strategicDirective: ID!
+  AND: WorkFilter
+  OR: WorkFilter
+  NOT: WorkFilter
+  DISTINCT: Boolean
+}
+
+input WorkOrder {
+  id: Ordering
+}
+
+"""
+Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
+"""
+type WorkType {
+  id: ID!
+  title: String!
+  description: String!
+  coverImage: DjangoImageType
+  department: DepartmentType!
+  strategicDirective: StrategicDirectivesType!
+  startDate: Date
+  endDate: Date
 }
