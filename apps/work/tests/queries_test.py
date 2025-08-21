@@ -81,7 +81,7 @@ class TestWorkQuery(TestCase):
                     id=self.gID(work.id),
                     title=work.title,
                     coverImage={
-                        "url": work.cover_image.url,
+                        "url": self.get_media_url(work.cover_image.name),
                     },
                     description=work.description,
                     department={

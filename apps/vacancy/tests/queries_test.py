@@ -65,7 +65,7 @@ class TestJobVacancyQuery(TestCase):
                     id=self.gID(job.id),
                     title=job.title,
                     file=dict(
-                        url=job.file.url,
+                        url=self.get_media_url(job.file.name),
                     ),
                     description=job.description,
                     position=job.position,

@@ -57,7 +57,7 @@ class TestResourcesQuery(TestCase):
                     title=resource.title,
                     content=resource.content,
                     file=dict(
-                        url=resource.file.url,
+                        url=self.get_media_url(resource.file.name),
                     ),
                     publishedDate=resource.published_date,
                 )

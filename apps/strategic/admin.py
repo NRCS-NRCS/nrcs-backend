@@ -1,11 +1,13 @@
 from django.contrib import admin
 
+from apps.common.admin import UserResourceAdmin
+
 # Register your models here.
 from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 
 
 @admin.register(StrategicDirectives)
-class StrategicDirectivesAdmin(admin.ModelAdmin):
+class StrategicDirectivesAdmin(UserResourceAdmin):
     list_display = ("title", "description", "contact_person_name", "contact_person_email")
     search_fields = ("title", "description", "contact_person_name", "contact_person_email")
     list_filter = ("title", "description", "contact_person_name", "contact_person_email")
@@ -14,7 +16,7 @@ class StrategicDirectivesAdmin(admin.ModelAdmin):
 
 
 @admin.register(MajorResponsibilities)
-class MajorResponsibilitiesAdmin(admin.ModelAdmin):
+class MajorResponsibilitiesAdmin(UserResourceAdmin):
     list_display = ("title", "description", "directive")
     search_fields = ("title", "description", "directive__title")
     list_filter = ("title", "description", "directive")

@@ -62,7 +62,7 @@ class TestProcurementQuery(TestCase):
                     title=procurement.title,
                     description=procurement.description,
                     file={
-                        "url": procurement.file.url,
+                        "url": self.get_media_url(procurement.file.name),
                     },
                     publishedDate=procurement.published_date,
                     expiryDate=procurement.expiry_date,

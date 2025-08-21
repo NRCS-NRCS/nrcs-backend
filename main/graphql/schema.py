@@ -6,6 +6,7 @@ from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.department.graphql import queries as department_queries
 from apps.faq.graphql import queries as faq_queries
+from apps.partner.graphql import queries as partner_queries
 from apps.procurement.graphql import queries as procurement_queries
 from apps.resources.graphql import queries as resources_queries
 from apps.strategic.graphql import queries as strategic_queries
@@ -35,6 +36,7 @@ class Query(
     work_queries.Query,
     faq_queries.Query,
     resources_queries.Query,
+    partner_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
