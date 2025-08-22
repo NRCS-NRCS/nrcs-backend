@@ -133,6 +133,7 @@ INSTALLED_APPS = [
     "apps.faq",
     "apps.resources",
     "apps.partner",
+    "apps.blog",
 ]
 
 MIDDLEWARE = [
