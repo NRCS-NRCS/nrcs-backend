@@ -358,7 +358,7 @@ type Query {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, slug)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug)
 """
 input ResourceFilter {
   name: String
@@ -373,7 +373,7 @@ input ResourceOrder {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, slug)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug)
 """
 type ResourceType {
   id: ID!
@@ -381,6 +381,7 @@ type ResourceType {
   file: DjangoFileType!
   content: String!
   publishedDate: Date!
+  directive: DjangoModelType
 }
 
 input StrFilterLookup {

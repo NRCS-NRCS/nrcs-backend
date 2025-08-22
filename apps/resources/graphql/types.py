@@ -12,3 +12,4 @@ class ResourceType:
     file: DjangoFileType
     content: str
     published_date: strawberry.auto
+    directive: strawberry.auto

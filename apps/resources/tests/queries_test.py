@@ -1,5 +1,5 @@
 from apps.resources.factories import ResourceFactory
-from apps.strategic.factories import UserFactory
+from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
 
 
@@ -8,14 +8,17 @@ class TestResourcesQuery(TestCase):
         RESOURCES = """
           query resources($order: ResourceOrder) {
             resources(order: $order) {
-              content
-              file{
-                url
-              }
-              id
-              publishedDate
-              title
-              }
+                content
+                file{
+                    url
+                }
+                id
+                publishedDate
+                title
+                directive {
+                    pk
+                }
+            }
 
           }
         """
@@ -40,6 +43,9 @@ class TestResourcesQuery(TestCase):
                 published_date="2023-12-31",
                 title="Resource One",
                 file="resource1.pdf",
+                directive=StrategicDirectivesFactory.create(
+                    title="Directive One",
+                ),
             ),
             ResourceFactory.create(
                 content="Something2",
@@ -60,6 +66,7 @@ class TestResourcesQuery(TestCase):
                         url=self.get_media_url(resource.file.name),
                     ),
                     publishedDate=resource.published_date,
+                    directive=(dict(pk=self.gID(resource.directive.id)) if resource.directive else None),
                 )
                 for resource in resources_items
             ],
