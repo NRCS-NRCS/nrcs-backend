@@ -4,6 +4,7 @@ from strawberry.django.views import AsyncGraphQLView
 from strawberry.file_uploads import Upload
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
+from apps.blog.graphql import queries as blog_queries
 from apps.department.graphql import queries as department_queries
 from apps.faq.graphql import queries as faq_queries
 from apps.partner.graphql import queries as partner_queries
@@ -37,6 +38,7 @@ class Query(
     faq_queries.Query,
     resources_queries.Query,
     partner_queries.Query,
+    blog_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),

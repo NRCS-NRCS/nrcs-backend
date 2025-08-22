@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class StatusEnum(models.IntegerChoices):
+    DRAFT = 50, "Draft"
+    PUBLISHED = 60, "Published"
+    ARCHIVED = 70, "Archived"
+
+
 # -- Abstracts
 class UserResource(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

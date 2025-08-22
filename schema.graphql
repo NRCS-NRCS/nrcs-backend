@@ -7,6 +7,57 @@ type AppEnumCollectionDummyEnum {
   label: String!
 }
 
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive, work)
+"""
+input BlogFilter {
+  id: ID!
+  slug: StrFilterLookup
+  status: StatusEnum!
+  author: StrFilterLookup
+  featured: BoolBaseFilterLookup
+  AND: BlogFilter
+  OR: BlogFilter
+  NOT: BlogFilter
+  DISTINCT: Boolean
+}
+
+input BlogOrder {
+  id: Ordering
+  featured: Ordering
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive, work)
+"""
+type BlogType {
+  id: ID!
+  title: String!
+  publishedDate: Date!
+  author: String!
+  content: String!
+  coverImage: DjangoFileType
+  featured: Boolean!
+  status: StatusEnum!
+  slug: String!
+  department: DjangoModelType
+  directive: DjangoModelType
+  work: DjangoModelType
+}
+
+input BoolBaseFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: Boolean
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [Boolean!]
+}
+
 """Date (isoformat)"""
 scalar Date
 
@@ -354,6 +405,8 @@ type Query {
   resource(id: ID!): ResourceType!
   partners(filters: PartnerFilter, order: PartnerOrder): [PartnerType!]!
   partner(id: ID!): PartnerType!
+  blogs(filters: BlogFilter, order: BlogOrder): [BlogType!]!
+  blog(id: ID!): BlogType!
   enums: AppEnumCollection!
 }
 
@@ -382,6 +435,12 @@ type ResourceType {
   content: String!
   publishedDate: Date!
   directive: DjangoModelType
+}
+
+enum StatusEnum {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
 input StrFilterLookup {
