@@ -75,7 +75,7 @@ class TestStrategicDirectivesQuery(TestCase):
                     description=strategic.description,
                     contactPersonName=strategic.contact_person_name,
                     contactPersonEmail=strategic.contact_person_email,
-                    coverImage=dict(url=strategic.cover_image.url),
+                    coverImage=dict(url=self.get_media_url(strategic.cover_image.name)),
                     majorResponsibilities=[
                         dict(
                             id=self.gID(major.id),

@@ -82,18 +82,8 @@ type DepartmentType {
 
 type DjangoFileType {
   name: String!
-  path: String!
   size: Int!
   url: String!
-}
-
-type DjangoImageType {
-  name: String!
-  path: String!
-  size: Int!
-  url: String!
-  width: Int!
-  height: Int!
 }
 
 input DjangoModelFilterInput {
@@ -238,6 +228,85 @@ enum Ordering {
 }
 
 """
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerFilter {
+  scope: PartnerScopeEnumFilterLookup
+  AND: PartnerFilter
+  OR: PartnerFilter
+  NOT: PartnerFilter
+  DISTINCT: Boolean
+}
+
+input PartnerOrder {
+  id: Ordering
+  scope: Ordering
+}
+
+enum PartnerScopeEnum {
+  LOCAL
+  GLOBAL
+}
+
+input PartnerScopeEnumFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: PartnerScopeEnum
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [PartnerScopeEnum!]
+
+  """Case-insensitive exact match. Filter will be skipped on `null` value"""
+  iExact: PartnerScopeEnum
+
+  """
+  Case-sensitive containment test. Filter will be skipped on `null` value
+  """
+  contains: PartnerScopeEnum
+
+  """
+  Case-insensitive containment test. Filter will be skipped on `null` value
+  """
+  iContains: PartnerScopeEnum
+
+  """Case-sensitive starts-with. Filter will be skipped on `null` value"""
+  startsWith: PartnerScopeEnum
+
+  """Case-insensitive starts-with. Filter will be skipped on `null` value"""
+  iStartsWith: PartnerScopeEnum
+
+  """Case-sensitive ends-with. Filter will be skipped on `null` value"""
+  endsWith: PartnerScopeEnum
+
+  """Case-insensitive ends-with. Filter will be skipped on `null` value"""
+  iEndsWith: PartnerScopeEnum
+
+  """
+  Case-sensitive regular expression match. Filter will be skipped on `null` value
+  """
+  regex: PartnerScopeEnum
+
+  """
+  Case-insensitive regular expression match. Filter will be skipped on `null` value
+  """
+  iRegex: PartnerScopeEnum
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+type PartnerType {
+  id: ID!
+  title: String!
+  scope: PartnerScopeEnum!
+  image: DjangoFileType!
+}
+
+"""
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
 input ProcurementFilter {
@@ -261,7 +330,7 @@ type ProcurementType {
   id: ID!
   title: String!
   description: String!
-  file: DjangoFileType
+  file: DjangoFileType!
   publishedDate: Date!
   expiryDate: Date!
 }
@@ -283,11 +352,13 @@ type Query {
   faq(id: ID!): FaqType!
   resources(filters: ResourceFilter, order: ResourceOrder): [ResourceType!]!
   resource(id: ID!): ResourceType!
+  partners(filters: PartnerFilter, order: PartnerOrder): [PartnerType!]!
+  partner(id: ID!): PartnerType!
   enums: AppEnumCollection!
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, slug)
 """
 input ResourceFilter {
   name: String
@@ -302,12 +373,12 @@ input ResourceOrder {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, slug)
 """
 type ResourceType {
   id: ID!
   title: String!
-  file: DjangoFileType
+  file: DjangoFileType!
   content: String!
   publishedDate: Date!
 }
@@ -385,7 +456,7 @@ type StrategicDirectivesType {
   description: String!
   contactPersonName: String
   contactPersonEmail: String
-  coverImage: DjangoImageType
+  coverImage: DjangoFileType!
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
 }
@@ -414,9 +485,9 @@ type WorkType {
   id: ID!
   title: String!
   description: String!
-  coverImage: DjangoImageType
+  coverImage: DjangoFileType!
   department: DepartmentType!
-  strategicDirective: StrategicDirectivesType!
+  strategicDirective: StrategicDirectivesType
   startDate: Date
   endDate: Date
 }

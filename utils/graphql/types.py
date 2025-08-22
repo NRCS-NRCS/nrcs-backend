@@ -4,10 +4,9 @@ import strawberry
 import strawberry_django
 from django.core.files.storage import FileSystemStorage, default_storage
 from django.db.models.fields import files
+from django.db.models.fields.files import FileField, ImageField
 from strawberry.types import Info
 from strawberry_django.fields.types import field_type_map
-
-from utils.fields import SecureFileField, SecureImageField
 
 ResultTypeVar = typing.TypeVar("ResultTypeVar")
 
@@ -46,7 +45,7 @@ class DjangoFileType:
 
 field_type_map.update(
     {
-        SecureFileField: DjangoFileType,
-        SecureImageField: DjangoFileType,
+        FileField: DjangoFileType,
+        ImageField: DjangoFileType,
     },
 )

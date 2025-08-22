@@ -2,6 +2,7 @@ import strawberry
 import strawberry_django
 
 from apps.strategic.models import MajorResponsibilities, StrategicDirectives
+from utils.graphql.types import DjangoFileType
 
 
 @strawberry_django.type(StrategicDirectives)
@@ -11,7 +12,7 @@ class StrategicDirectivesType:
     description: strawberry.auto
     contact_person_name: strawberry.auto
     contact_person_email: strawberry.auto
-    cover_image: strawberry.auto
+    cover_image: DjangoFileType
     slug: strawberry.auto
     major_responsibilities: list["MajorResponsibilitiesType"] = strawberry_django.field()
 
