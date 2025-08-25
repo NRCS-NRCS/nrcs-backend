@@ -30,6 +30,8 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       push_docker_image: true
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     name: Publish Helm
