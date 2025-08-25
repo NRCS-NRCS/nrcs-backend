@@ -2,16 +2,23 @@ name: Helm
 
 on:
   workflow_dispatch:
-  # Build and push Docker image and Helm charts on every push to develop branch
-  # and on every tag push
+  workflow_call:
+    outputs:
+      helm_repo_url:
+        description: "Helm repo URL"
+        value: ${{ jobs.build.outputs.helm_repo_url }}
+      helm_chart:
+        description: "Helm Chart"
+        value: ${{ jobs.build.outputs.helm_chart }}
+      helm_target_revision:
+        description: "Helm target revision"
+        value: ${{ jobs.build.outputs.helm_target_revision }}
+      docker_image:
+        description: "Docker image"
+        value: ${{ jobs.ci.outputs.docker_image }}
   push:
     branches:
       - develop
-      - master
-      - project/*
-      - chore/*
-    tags:
-      - "**"
 
 permissions:
   packages: write
@@ -22,8 +29,6 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       push_docker_image: true
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     name: Publish Helm
