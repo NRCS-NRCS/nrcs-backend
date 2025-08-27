@@ -15,3 +15,4 @@ class JobVacancyType:
     number_of_vacancies: strawberry.auto
     expiry_date: strawberry.auto
     is_archived: strawberry.auto
+    published_at: strawberry.auto
