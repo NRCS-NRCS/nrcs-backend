@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+
+# from markdownx.models import MarkdownxField
 from mdeditor.fields import MDTextField
 
 from apps.common.models import UserResource
