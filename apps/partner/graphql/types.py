@@ -10,4 +10,4 @@ class PartnerType:
     id: strawberry.ID
     title: strawberry.auto
     scope: strawberry.auto
-    image: DjangoFileType
+    image: DjangoFileType | None

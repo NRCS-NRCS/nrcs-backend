@@ -13,3 +13,5 @@ class ResourceType:
     content: str
     published_date: strawberry.auto
     directive: strawberry.auto
+    slug: strawberry.auto
+    cover_image: DjangoFileType | None

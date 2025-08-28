@@ -10,6 +10,6 @@ class ProcurementType:
     id: strawberry.ID
     title: strawberry.auto
     description: strawberry.auto
-    file: DjangoFileType
+    file: DjangoFileType | None
     published_date: strawberry.auto
     expiry_date: strawberry.auto

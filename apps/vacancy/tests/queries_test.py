@@ -18,6 +18,7 @@ class TestJobVacancyQuery(TestCase):
                 expiryDate
                 isArchived
                 position
+                publishedAt
               }
 
           }
@@ -46,6 +47,7 @@ class TestJobVacancyQuery(TestCase):
                 number_of_vacancies=1,
                 expiry_date="2023-12-31",
                 is_archived=False,
+                published_at="2023-12-31",
             ),
             JobVacancyFactory.create(
                 title="Job Vacancy Two",
@@ -55,6 +57,7 @@ class TestJobVacancyQuery(TestCase):
                 number_of_vacancies=1,
                 expiry_date="2023-12-31",
                 is_archived=True,
+                published_at="2023-12-31",
             ),
         ]
 
@@ -72,6 +75,7 @@ class TestJobVacancyQuery(TestCase):
                     numberOfVacancies=job.number_of_vacancies,
                     expiryDate=job.expiry_date,
                     isArchived=job.is_archived,
+                    publishedAt=job.published_at,
                 )
                 for job in job_vacancies_items
             ],

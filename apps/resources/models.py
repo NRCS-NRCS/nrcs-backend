@@ -23,6 +23,7 @@ class Resource(UserResource):
         blank=True,
     )
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
+    cover_image = models.ImageField(upload_to="resources/", null=True, blank=True)
 
     def __str__(self):
         return self.title

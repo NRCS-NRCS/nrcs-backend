@@ -19,6 +19,7 @@ class JobVacancy(UserResource):
         verbose_name=_("Department"),
     )
     is_archived = models.BooleanField(default=False)
+    published_at = models.DateField()
 
     def __str__(self):
         return f"{self.position} - {self.id}"

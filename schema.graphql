@@ -132,8 +132,8 @@ type DepartmentType {
 }
 
 type DjangoFileType {
-  name: String!
-  size: Int!
+  name: String
+  size: Int
   url: String!
 }
 
@@ -211,7 +211,7 @@ input IntRangeLookup {
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
 input JobVacancyFilter {
   expiryDate: DateDateFilterLookup
@@ -227,7 +227,7 @@ input JobVacancyOrder {
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
 type JobVacancyType {
   id: ID!
@@ -238,6 +238,7 @@ type JobVacancyType {
   numberOfVacancies: Int!
   expiryDate: Date!
   isArchived: Boolean!
+  publishedAt: Date!
 }
 
 """
@@ -354,7 +355,7 @@ type PartnerType {
   id: ID!
   title: String!
   scope: PartnerScopeEnum!
-  image: DjangoFileType!
+  image: DjangoFileType
 }
 
 """
@@ -381,7 +382,7 @@ type ProcurementType {
   id: ID!
   title: String!
   description: String!
-  file: DjangoFileType!
+  file: DjangoFileType
   publishedDate: Date!
   expiryDate: Date!
 }
@@ -411,10 +412,12 @@ type Query {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
 """
 input ResourceFilter {
   name: String
+  slug: String
+  id: ID
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -426,7 +429,7 @@ input ResourceOrder {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
 """
 type ResourceType {
   id: ID!
@@ -435,6 +438,8 @@ type ResourceType {
   content: String!
   publishedDate: Date!
   directive: DjangoModelType
+  slug: String!
+  coverImage: DjangoFileType
 }
 
 enum StatusEnum {
@@ -516,7 +521,7 @@ type StrategicDirectivesType {
   description: String!
   contactPersonName: String
   contactPersonEmail: String
-  coverImage: DjangoFileType!
+  coverImage: DjangoFileType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
 }
