@@ -277,8 +277,8 @@ input NewsFilter {
   name: String
   slug: String
   id: ID
-  directive: Int
-  status: Int
+  directive: DjangoModelFilterInput
+  status: StatusEnum
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
