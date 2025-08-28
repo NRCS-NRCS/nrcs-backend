@@ -1,27 +1,30 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django_choices_field import IntegerChoicesField
 from mdeditor.fields import MDTextField
 
-from apps.common.models import UserResource
+from apps.common.models import StatusEnum, UserResource
 from apps.strategic.models import StrategicDirectives
 from utils.common import unique_slugify
 
 
-class Resource(UserResource):
+# Create your models here.
+class News(UserResource):
     title = models.CharField(max_length=255)
     content = MDTextField(blank=True, null=True)
-    file = models.FileField(upload_to="resources/", null=True, blank=True)
+    file = models.FileField(upload_to="news/", null=True, blank=True)
     published_date = models.DateField()
     directive = models.ForeignKey(
         StrategicDirectives,
         on_delete=models.CASCADE,
-        related_name="resources",
+        related_name="news",
         null=True,
         blank=True,
     )
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
-    cover_image = models.ImageField(upload_to="resources/", null=True, blank=True)
+    cover_image = models.ImageField(upload_to="news/", null=True, blank=True)
+    status = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)
 
     def __str__(self):
         return self.title

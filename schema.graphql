@@ -270,6 +270,42 @@ type MajorResponsibilitiesType {
   slug: String!
 }
 
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsFilter {
+  name: String
+  slug: String
+  id: ID
+  directive: Int
+  status: Int
+  AND: NewsFilter
+  OR: NewsFilter
+  NOT: NewsFilter
+  DISTINCT: Boolean
+}
+
+input NewsOrder {
+  id: Ordering
+  title: Ordering
+  status: Ordering
+  publishedDate: Ordering
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+type NewsType {
+  id: ID!
+  title: String!
+  file: DjangoFileType
+  content: String!
+  publishedDate: Date!
+  directive: DjangoModelType
+  slug: String!
+  coverImage: DjangoFileType
+}
+
 enum Ordering {
   ASC
   ASC_NULLS_FIRST
@@ -408,6 +444,8 @@ type Query {
   partner(id: ID!): PartnerType!
   blogs(filters: BlogFilter, order: BlogOrder): [BlogType!]!
   blog(id: ID!): BlogType!
+  news(filters: NewsFilter, order: NewsOrder): [NewsType!]!
+  newsItem(id: ID!): NewsType!
   enums: AppEnumCollection!
 }
 
