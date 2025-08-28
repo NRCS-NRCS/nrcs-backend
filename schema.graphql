@@ -1,3 +1,9 @@
+"""ActionLink(id, url, label, highlight)"""
+type ActionLinkType {
+  label: String!
+  url: String!
+}
+
 type AppEnumCollection {
   DummyEnum: [AppEnumCollectionDummyEnum!]!
 }
@@ -175,6 +181,35 @@ type FaqType {
   question: String!
   answer: String!
   orderIndex: Int!
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, expiry_date)
+"""
+input HighlightFilter {
+  expiryDate: DateDateFilterLookup
+  heading: StrFilterLookup
+  AND: HighlightFilter
+  OR: HighlightFilter
+  NOT: HighlightFilter
+  DISTINCT: Boolean
+}
+
+input HighlightOrder {
+  id: Ordering
+  heading: Ordering
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, expiry_date)
+"""
+type HighlightType {
+  id: ID!
+  heading: String!
+  description: String!
+  image: DjangoFileType
+  actionLinks: [ActionLinkType!]!
+  expiryDate: Date!
 }
 
 input IntComparisonFilterLookup {
@@ -446,6 +481,8 @@ type Query {
   blog(id: ID!): BlogType!
   news(filters: NewsFilter, order: NewsOrder): [NewsType!]!
   newsItem(id: ID!): NewsType!
+  highlights(filters: HighlightFilter, order: HighlightOrder): [HighlightType!]!
+  highlight(id: ID!): HighlightType!
   enums: AppEnumCollection!
 }
 

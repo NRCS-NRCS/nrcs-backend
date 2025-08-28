@@ -135,6 +135,7 @@ INSTALLED_APPS = [
     "apps.partner",
     "apps.blog",
     "apps.news",
+    "apps.home",
 ]
 
 MIDDLEWARE = [
