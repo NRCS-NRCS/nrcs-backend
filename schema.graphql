@@ -483,7 +483,37 @@ type Query {
   newsItem(id: ID!): NewsType!
   highlights(filters: HighlightFilter, order: HighlightOrder): [HighlightType!]!
   highlight(id: ID!): HighlightType!
+  radioProgram(filters: RadioProgramFilter, order: RadioProgramOrder): [RadioProgramType!]!
   enums: AppEnumCollection!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date)
+"""
+input RadioProgramFilter {
+  id: ID!
+  title: String!
+  publishedDate: DateDateFilterLookup
+  AND: RadioProgramFilter
+  OR: RadioProgramFilter
+  NOT: RadioProgramFilter
+  DISTINCT: Boolean
+}
+
+input RadioProgramOrder {
+  id: Ordering
+  title: Ordering
+  publishedDate: Ordering
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date)
+"""
+type RadioProgramType {
+  id: ID!
+  title: String!
+  audioFile: DjangoFileType!
+  publishedDate: Date!
 }
 
 """

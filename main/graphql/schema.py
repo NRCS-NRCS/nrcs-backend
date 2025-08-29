@@ -11,6 +11,7 @@ from apps.home.graphql import queries as home_queries
 from apps.news.graphql import queries as news_queries
 from apps.partner.graphql import queries as partner_queries
 from apps.procurement.graphql import queries as procurement_queries
+from apps.radio_program.graphql import queries as radio_program_queries
 from apps.resources.graphql import queries as resources_queries
 from apps.strategic.graphql import queries as strategic_queries
 from apps.vacancy.graphql import queries as vacancy_queries
@@ -43,6 +44,7 @@ class Query(
     blog_queries.Query,
     news_queries.Query,
     home_queries.Query,
+    radio_program_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
