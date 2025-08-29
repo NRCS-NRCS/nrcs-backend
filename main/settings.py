@@ -136,6 +136,7 @@ INSTALLED_APPS = [
     "apps.blog",
     "apps.news",
     "apps.home",
+    "apps.radio_program",
 ]
 
 MIDDLEWARE = [
