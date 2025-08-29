@@ -29,8 +29,8 @@ class MutationResponseType(typing.Generic[ResultTypeVar]):
 # Replaces strawberry_django.fields.types.DjangoFileType
 @strawberry.type
 class DjangoFileType:
-    name: str | None
-    size: int | None
+    name: str
+    size: int
 
     @strawberry_django.field
     def url(

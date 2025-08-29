@@ -138,8 +138,8 @@ type DepartmentType {
 }
 
 type DjangoFileType {
-  name: String
-  size: Int
+  name: String!
+  size: Int!
   url: String!
 }
 
