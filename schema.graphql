@@ -491,8 +491,9 @@ type Query {
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date)
 """
 input RadioProgramFilter {
-  title: String
-  publishedDate: String
+  id: ID!
+  title: String!
+  publishedDate: DateDateFilterLookup
   AND: RadioProgramFilter
   OR: RadioProgramFilter
   NOT: RadioProgramFilter
