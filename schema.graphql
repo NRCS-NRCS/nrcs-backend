@@ -635,8 +635,6 @@ type StrategicDirectivesType {
 Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
 """
 input WorkFilter {
-  id: ID!
-  department: ID!
   strategicDirective: ID!
   AND: WorkFilter
   OR: WorkFilter
