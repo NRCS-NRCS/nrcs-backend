@@ -188,7 +188,7 @@ Highlight(id, created_at, modified_at, created_by, modified_by, heading, descrip
 """
 input HighlightFilter {
   expiryDate: DateDateFilterLookup
-  heading: StrFilterLookup
+  heading: String = null
   AND: HighlightFilter
   OR: HighlightFilter
   NOT: HighlightFilter
@@ -523,6 +523,7 @@ input ResourceFilter {
   name: String
   slug: String
   id: ID
+  directive: DjangoModelFilterInput
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -636,8 +637,8 @@ Work(id, created_at, modified_at, created_by, modified_by, title, description, c
 """
 input WorkFilter {
   id: ID!
-  department: ID!
-  strategicDirective: ID!
+  department: ID = null
+  strategicDirective: ID = null
   AND: WorkFilter
   OR: WorkFilter
   NOT: WorkFilter
