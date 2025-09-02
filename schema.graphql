@@ -515,13 +515,14 @@ type RadioProgramType {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
 input ResourceFilter {
   name: String
   slug: String
   id: ID
   directive: ID = null
+  type: ResourcesType
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -533,7 +534,7 @@ input ResourceOrder {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
 type ResourceType {
   id: ID!
@@ -544,6 +545,12 @@ type ResourceType {
   directive: DjangoModelType
   slug: String!
   coverImage: DjangoFileType
+  type: ResourcesType!
+}
+
+enum ResourcesType {
+  REPORT
+  POLICY_AND_GUIDELINES
 }
 
 enum StatusEnum {
