@@ -6,9 +6,10 @@ from apps.common.models import UserResource
 from utils.common import unique_slugify
 
 
+# FIXME: rename strategicDirective model name into works
 class StrategicDirectives(UserResource):
-    title = models.CharField(max_length=255, verbose_name=_("Strategic Directive Title"))
-    description = models.TextField(verbose_name=_("Strategic Directive Description"))
+    title = models.CharField(max_length=255, verbose_name=_("Title"))
+    description = models.TextField(verbose_name=_("Description"))
     cover_image = models.ImageField(
         upload_to="strategic_directives/cover_images",
         verbose_name=_("Cover Image"),
@@ -28,8 +29,8 @@ class StrategicDirectives(UserResource):
         super().save(*args, **kwargs)
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        verbose_name = _("Strategic Directive")
-        verbose_name_plural = _("Strategic Directives")
+        verbose_name = _("Work")
+        verbose_name_plural = _("Works")
 
 
 class MajorResponsibilities(UserResource):

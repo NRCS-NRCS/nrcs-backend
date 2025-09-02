@@ -14,7 +14,7 @@ type AppEnumCollectionDummyEnum {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive, work)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
 input BlogFilter {
   id: ID
@@ -35,7 +35,7 @@ input BlogOrder {
 }
 
 """
-Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive, work)
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
 type BlogType {
   id: ID!
@@ -49,7 +49,6 @@ type BlogType {
   slug: String!
   department: DjangoModelType
   directive: DjangoModelType
-  work: DjangoModelType
 }
 
 input BoolBaseFilterLookup {
@@ -470,8 +469,6 @@ type Query {
   procurement(id: ID!): ProcurementType!
   jobVacancies(filters: JobVacancyFilter, order: JobVacancyOrder): [JobVacancyType!]!
   jobVacancy(id: ID!): JobVacancyType!
-  work(id: ID!): WorkType!
-  works(filters: WorkFilter, order: WorkOrder): [WorkType!]!
   faqs(filters: FaqFilter, order: FaqOrder): [FaqType!]!
   faq(id: ID!): FaqType!
   resources(filters: ResourceFilter, order: ResourceOrder): [ResourceType!]!
@@ -631,35 +628,4 @@ type StrategicDirectivesType {
   coverImage: DjangoFileType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
-}
-
-"""
-Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
-"""
-input WorkFilter {
-  id: ID = null
-  department: ID = null
-  strategicDirective: ID = null
-  AND: WorkFilter
-  OR: WorkFilter
-  NOT: WorkFilter
-  DISTINCT: Boolean
-}
-
-input WorkOrder {
-  id: Ordering
-}
-
-"""
-Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
-"""
-type WorkType {
-  id: ID!
-  title: String!
-  description: String!
-  coverImage: DjangoFileType!
-  department: DepartmentType!
-  strategicDirective: StrategicDirectivesType
-  startDate: Date
-  endDate: Date
 }

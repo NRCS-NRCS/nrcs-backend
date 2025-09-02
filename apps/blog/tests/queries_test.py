@@ -29,9 +29,6 @@ class TestBlogQuery(TestCase):
             slug
             status
             title
-            work {
-              pk
-            }
           }
         }
         """
@@ -64,7 +61,6 @@ class TestBlogQuery(TestCase):
                 published_date="2023-01-01",
                 directive=None,
                 cover_image=None,
-                work=None,
             ),
             BlogFactory.create(
                 title="Blog One",
@@ -79,7 +75,6 @@ class TestBlogQuery(TestCase):
                 published_date="2023-01-01",
                 directive=None,
                 cover_image=None,
-                work=None,
             ),
         ]
 
@@ -100,7 +95,6 @@ class TestBlogQuery(TestCase):
                     content=blog.content,
                     directive=None,
                     coverImage=None,
-                    work=None,
                 )
                 for blog in blog_items
             ],
