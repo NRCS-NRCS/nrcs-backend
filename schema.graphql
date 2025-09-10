@@ -17,11 +17,12 @@ type AppEnumCollectionDummyEnum {
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive, work)
 """
 input BlogFilter {
-  id: ID!
+  id: ID
   slug: StrFilterLookup
   status: StatusEnum!
   author: StrFilterLookup
   featured: BoolBaseFilterLookup
+  directive: ID = null
   AND: BlogFilter
   OR: BlogFilter
   NOT: BlogFilter
@@ -188,7 +189,7 @@ Highlight(id, created_at, modified_at, created_by, modified_by, heading, descrip
 """
 input HighlightFilter {
   expiryDate: DateDateFilterLookup
-  heading: StrFilterLookup
+  heading: String = null
   AND: HighlightFilter
   OR: HighlightFilter
   NOT: HighlightFilter
@@ -312,7 +313,7 @@ input NewsFilter {
   name: String
   slug: String
   id: ID
-  directive: DjangoModelFilterInput
+  directive: ID = null
   status: StatusEnum
   AND: NewsFilter
   OR: NewsFilter
@@ -523,6 +524,7 @@ input ResourceFilter {
   name: String
   slug: String
   id: ID
+  directive: ID = null
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -635,9 +637,9 @@ type StrategicDirectivesType {
 Work(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, strategic_directive, start_date, end_date)
 """
 input WorkFilter {
-  id: ID!
-  department: ID!
-  strategicDirective: ID!
+  id: ID = null
+  department: ID = null
+  strategicDirective: ID = null
   AND: WorkFilter
   OR: WorkFilter
   NOT: WorkFilter
