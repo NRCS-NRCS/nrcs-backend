@@ -7,7 +7,6 @@ from mdeditor.fields import MDTextField
 from apps.common.models import StatusEnum, UserResource
 from apps.department.models import Department
 from apps.strategic.models import StrategicDirectives
-from apps.work.models import Work
 from utils.common import unique_slugify
 
 
@@ -38,13 +37,6 @@ class Blog(UserResource):
         null=True,
         blank=True,
         verbose_name=_("Strategic Directive"),
-    )
-    work = models.ForeignKey(
-        Work,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name=_("Work"),
     )
 
     def save(self, *args, **kwargs):

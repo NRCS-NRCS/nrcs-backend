@@ -1,14 +1,13 @@
-from apps.department.factories import DepartmentFactory
+from apps.project.factories import ProjectFactory
 from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
-from apps.work.factories import WorkFactory
 from main.tests.base_test import TestCase
 
 
-class TestWorkQuery(TestCase):
+class TestprojectQuery(TestCase):
     class Query:
-        WORK = """
-          query works($order: WorkOrder) {
-            works(order: $order) {
+        project = """
+          query projects($order: ProjectOrder) {
+            projects(order: $order) {
               id
               title
               description
@@ -23,10 +22,6 @@ class TestWorkQuery(TestCase):
               coverImage {
                 url
               }
-              department {
-                id
-                title
-              }
             }
           }
         """
@@ -36,36 +31,30 @@ class TestWorkQuery(TestCase):
         super().setUpClass()
         cls.user = UserFactory.create(username="nrcs-test")
 
-    def test_work_query(self):
+    def test_project_query(self):
         def _query():
             return self.query_check(
-                self.Query.WORK,
+                self.Query.project,
                 variables={
                     "order": {"id": "ASC"},
                 },
             )
 
-        work_items = [
-            WorkFactory.create(
-                title="work one",
+        project_items = [
+            ProjectFactory.create(
+                title="project one",
                 description="Something",
-                cover_image="work1.jpg",
-                department=DepartmentFactory.create(
-                    title="department one",
-                ),
+                cover_image="project1.jpg",
                 strategic_directive=StrategicDirectivesFactory.create(
                     title="strategic directive one",
                 ),
                 start_date="2023-01-01",
                 end_date="2023-12-31",
             ),
-            WorkFactory.create(
-                title="work two",
+            ProjectFactory.create(
+                title="project two",
                 description="Something2",
-                cover_image="work2.jpg",
-                department=DepartmentFactory.create(
-                    title="department two",
-                ),
+                cover_image="project2.jpg",
                 strategic_directive=StrategicDirectivesFactory.create(
                     title="strategic directive two",
                 ),
@@ -76,25 +65,21 @@ class TestWorkQuery(TestCase):
 
         content = _query()
         assert content["data"] == {
-            "works": [
+            "projects": [
                 dict(
-                    id=self.gID(work.id),
-                    title=work.title,
+                    id=self.gID(project.id),
+                    title=project.title,
                     coverImage={
-                        "url": self.get_media_url(work.cover_image.name),
+                        "url": self.get_media_url(project.cover_image.name),
                     },
-                    description=work.description,
-                    department={
-                        "id": self.gID(work.department.id),
-                        "title": work.department.title,
-                    },
+                    description=project.description,
                     strategicDirective={
-                        "id": self.gID(work.strategic_directive.id),
-                        "title": work.strategic_directive.title,
+                        "id": self.gID(project.strategic_directive.id),
+                        "title": project.strategic_directive.title,
                     },
-                    startDate=work.start_date,
-                    endDate=work.end_date,
+                    startDate=project.start_date,
+                    endDate=project.end_date,
                 )
-                for work in work_items
+                for project in project_items
             ],
         }, content

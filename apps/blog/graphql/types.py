@@ -18,4 +18,3 @@ class BlogType:
     slug: strawberry.auto
     department: strawberry.auto
     directive: strawberry.auto
-    work: strawberry.auto

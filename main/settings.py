@@ -129,7 +129,7 @@ INSTALLED_APPS = [
     "apps.department",
     "apps.procurement",
     "apps.vacancy",
-    "apps.work",
+    "apps.project",
     "apps.faq",
     "apps.resources",
     "apps.partner",
