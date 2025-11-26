@@ -1,5 +1,5 @@
 from apps.project.factories import ProjectFactory
-from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
+from apps.strategic.factories import UserFactory
 from main.tests.base_test import TestCase
 
 
@@ -14,10 +14,6 @@ class TestprojectQuery(TestCase):
               endDate
               id
               startDate
-              strategicDirective {
-                id
-                title
-              }
               title
               coverImage {
                 url
@@ -45,9 +41,6 @@ class TestprojectQuery(TestCase):
                 title="project one",
                 description="Something",
                 cover_image="project1.jpg",
-                strategic_directive=StrategicDirectivesFactory.create(
-                    title="strategic directive one",
-                ),
                 start_date="2023-01-01",
                 end_date="2023-12-31",
             ),
@@ -55,9 +48,6 @@ class TestprojectQuery(TestCase):
                 title="project two",
                 description="Something2",
                 cover_image="project2.jpg",
-                strategic_directive=StrategicDirectivesFactory.create(
-                    title="strategic directive two",
-                ),
                 start_date="2023-01-01",
                 end_date="2023-12-31",
             ),
@@ -73,10 +63,6 @@ class TestprojectQuery(TestCase):
                         "url": self.get_media_url(project.cover_image.name),
                     },
                     description=project.description,
-                    strategicDirective={
-                        "id": self.gID(project.strategic_directive.id),
-                        "title": project.strategic_directive.title,
-                    },
                     startDate=project.start_date,
                     endDate=project.end_date,
                 )

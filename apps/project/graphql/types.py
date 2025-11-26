@@ -1,8 +1,8 @@
 import strawberry
 import strawberry_django
 
+from apps.department.graphql.types import DepartmentType
 from apps.project.models import Project
-from apps.strategic.graphql.types import StrategicDirectivesType
 from utils.graphql.types import DjangoFileType
 
 
@@ -12,6 +12,6 @@ class ProjectType:
     title: strawberry.auto
     description: strawberry.auto
     cover_image: DjangoFileType
-    strategic_directive: StrategicDirectivesType | None
+    department: DepartmentType | None
     start_date: strawberry.auto
     end_date: strawberry.auto

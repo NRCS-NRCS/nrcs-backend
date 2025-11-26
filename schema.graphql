@@ -459,11 +459,11 @@ type ProcurementType {
 }
 
 """
-Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, strategic_directive, start_date, end_date)
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, start_date, end_date)
 """
 input ProjectFilter {
   id: ID = null
-  strategicDirective: ID = null
+  department_StrategicDirective: StrategicDirectivesFilter = null
   AND: ProjectFilter
   OR: ProjectFilter
   NOT: ProjectFilter
@@ -475,14 +475,14 @@ input ProjectOrder {
 }
 
 """
-Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, strategic_directive, start_date, end_date)
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, start_date, end_date)
 """
 type ProjectType {
   id: ID!
   title: String!
   description: String!
   coverImage: DjangoFileType!
-  strategicDirective: StrategicDirectivesType
+  department: DepartmentType
   startDate: Date
   endDate: Date
 }
@@ -546,13 +546,14 @@ type RadioProgramType {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
 input ResourceFilter {
   name: String
   slug: String
   id: ID
   directive: ID = null
+  type: ResourceTypeEnum
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -564,7 +565,7 @@ input ResourceOrder {
 }
 
 """
-Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image)
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
 type ResourceType {
   id: ID!
@@ -575,6 +576,12 @@ type ResourceType {
   directive: DjangoModelType
   slug: String!
   coverImage: DjangoFileType
+  type: ResourceTypeEnum!
+}
+
+enum ResourceTypeEnum {
+  REPORT
+  POLICY_AND_GUIDELINES
 }
 
 enum StatusEnum {
