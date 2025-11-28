@@ -15,3 +15,4 @@ class ResourceType:
     directive: strawberry.auto
     slug: strawberry.auto
     cover_image: DjangoFileType | None
+    type: strawberry.auto

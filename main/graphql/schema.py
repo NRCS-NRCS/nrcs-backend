@@ -11,11 +11,11 @@ from apps.home.graphql import queries as home_queries
 from apps.news.graphql import queries as news_queries
 from apps.partner.graphql import queries as partner_queries
 from apps.procurement.graphql import queries as procurement_queries
+from apps.project.graphql import queries as project_queries
 from apps.radio_program.graphql import queries as radio_program_queries
 from apps.resources.graphql import queries as resources_queries
 from apps.strategic.graphql import queries as strategic_queries
 from apps.vacancy.graphql import queries as vacancy_queries
-from apps.work.graphql import queries as work_queries
 
 from .context import GraphQLContext
 from .dataloaders import GlobalDataLoader
@@ -37,7 +37,7 @@ class Query(
     department_queries.Query,
     procurement_queries.Query,
     vacancy_queries.Query,
-    work_queries.Query,
+    project_queries.Query,
     faq_queries.Query,
     resources_queries.Query,
     partner_queries.Query,
