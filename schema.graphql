@@ -459,7 +459,7 @@ type ProcurementType {
 }
 
 """
-Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, start_date, end_date)
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
 input ProjectFilter {
   id: ID = null
@@ -475,7 +475,7 @@ input ProjectOrder {
 }
 
 """
-Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department, start_date, end_date)
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
 type ProjectType {
   id: ID!
@@ -483,8 +483,6 @@ type ProjectType {
   description: String!
   coverImage: DjangoFileType!
   department: DepartmentType
-  startDate: Date
-  endDate: Date
 }
 
 type Query {

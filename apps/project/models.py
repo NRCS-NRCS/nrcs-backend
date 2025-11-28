@@ -10,8 +10,6 @@ class Project(UserResource):
     description = models.TextField()
     cover_image = models.ImageField(upload_to="project/cover_image", null=True, blank=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.title

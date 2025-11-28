@@ -11,9 +11,7 @@ class TestprojectQuery(TestCase):
               id
               title
               description
-              endDate
               id
-              startDate
               title
               coverImage {
                 url
@@ -41,15 +39,11 @@ class TestprojectQuery(TestCase):
                 title="project one",
                 description="Something",
                 cover_image="project1.jpg",
-                start_date="2023-01-01",
-                end_date="2023-12-31",
             ),
             ProjectFactory.create(
                 title="project two",
                 description="Something2",
                 cover_image="project2.jpg",
-                start_date="2023-01-01",
-                end_date="2023-12-31",
             ),
         ]
 
@@ -63,8 +57,6 @@ class TestprojectQuery(TestCase):
                         "url": self.get_media_url(project.cover_image.name),
                     },
                     description=project.description,
-                    startDate=project.start_date,
-                    endDate=project.end_date,
                 )
                 for project in project_items
             ],

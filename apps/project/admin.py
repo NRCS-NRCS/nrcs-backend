@@ -8,6 +8,6 @@ from apps.project.models import Project
 
 @admin.register(Project)
 class ProjectAdmin(UserResourceAdmin):
-    list_display = ("title", "start_date", "end_date")
+    list_display = ("title",)
     search_fields = ("title",)
     list_select_related = True

@@ -13,5 +13,3 @@ class ProjectType:
     description: strawberry.auto
     cover_image: DjangoFileType
     department: DepartmentType | None
-    start_date: strawberry.auto
-    end_date: strawberry.auto
