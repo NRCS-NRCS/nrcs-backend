@@ -11,3 +11,4 @@ class RadioProgramType:
     title: strawberry.auto
     audio_file: DjangoFileType
     published_date: strawberry.auto
+    type: strawberry.auto

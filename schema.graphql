@@ -517,12 +517,13 @@ type Query {
 }
 
 """
-RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date)
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
 input RadioProgramFilter {
-  id: ID!
-  title: String!
   publishedDate: DateDateFilterLookup
+  id: ID
+  title: String
+  type: RadioProgramTypeEnum
   AND: RadioProgramFilter
   OR: RadioProgramFilter
   NOT: RadioProgramFilter
@@ -536,13 +537,19 @@ input RadioProgramOrder {
 }
 
 """
-RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date)
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
 type RadioProgramType {
   id: ID!
   title: String!
   audioFile: DjangoFileType!
   publishedDate: Date!
+  type: RadioProgramTypeEnum!
+}
+
+enum RadioProgramTypeEnum {
+  TUESDAY_PROGRAM
+  TOGETHER_FOR_HUMANITY
 }
 
 """
