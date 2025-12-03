@@ -10,6 +10,9 @@ media
 rest-media-temp
 postgres-data
 redis-data
+data/*
+data/media
+data/static
 
 production.env
 
