@@ -1,4 +1,4 @@
-
+name: nrcs-backend
 x-server: &base_server_setup
   build:
     context: ./
