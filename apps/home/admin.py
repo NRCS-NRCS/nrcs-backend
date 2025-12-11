@@ -10,18 +10,9 @@ class ActionLinkInline(admin.TabularInline):  # Tabular inline form
 
 @admin.register(Highlight)
 class HighlightAdmin(admin.ModelAdmin):
-    list_display = ("heading", "expiry_date", "is_active")
+    list_display = ("heading", "is_active")
     search_fields = ("heading", "description")
-    list_filter = ("expiry_date",)
-    ordering = ("-expiry_date",)
     inlines = [ActionLinkInline]
-
-    def is_active(self, obj):
-        from django.utils import timezone
-
-        if obj.expiry_date >= timezone.now().date():
-            return "Expired"
-        return "Active"
 
 
 # @admin.register(ActionLink)

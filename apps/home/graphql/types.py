@@ -12,7 +12,7 @@ class HighlightType:
     description: strawberry.auto
     image: DjangoFileType | None
     action_links: list["ActionLinkType"] = strawberry_django.field()
-    expiry_date: strawberry.auto
+    is_active: strawberry.auto
 
 
 @strawberry_django.type(ActionLink)

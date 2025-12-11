@@ -7,7 +7,7 @@ from mdeditor.fields import MDTextField
 from apps.common.models import StatusEnum, UserResource
 from apps.department.models import Department
 from apps.strategic.models import StrategicDirectives
-from utils.common import unique_slugify
+from utils.common import MAX_IMAGE_FILE_SIZE, unique_slugify, validate_file_size
 
 
 class Blog(UserResource):
@@ -38,6 +38,11 @@ class Blog(UserResource):
         blank=True,
         verbose_name=_("Strategic Directive"),
     )
+
+    def clean(self):
+        if self.cover_image:
+            validate_file_size(self.cover_image, MAX_IMAGE_FILE_SIZE)
+        return super().clean()
 
     def save(self, *args, **kwargs):
         if not self.slug:

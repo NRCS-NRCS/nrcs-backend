@@ -22,13 +22,13 @@ class Department(UserResource):
     contact_person_email = models.EmailField(max_length=255, verbose_name=_("Contact Person Email"), null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
 
-    def __str__(self):
-        return self.title
-
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.title))
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Department")
