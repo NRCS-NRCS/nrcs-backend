@@ -1,5 +1,7 @@
 # --- Move this to a common app later? --- #
 
+import datetime
+
 import strawberry
 import strawberry_django
 from django.contrib.auth.models import User
@@ -15,3 +17,13 @@ class UserType:
 @strawberry_django.type(User)
 class UserMeType(UserType):
     email: strawberry.auto
+
+
+# -- Interfaces
+@strawberry.interface
+class UserResourceTypeMixin:
+    created_at: datetime.datetime
+    modified_at: datetime.datetime
+
+    created_by: UserType
+    modified_by: UserType

@@ -10,16 +10,10 @@ class DrfContextType(typing.TypedDict):
     request: HttpRequest
 
 
-class UserResourceSerializer[ModelType: UserResource, ContextType: DrfContextType = DrfContextType](
+class UserResourceSerializer[ModelType: UserResource](
     serializers.ModelSerializer[ModelType],
 ):
     instance: ModelType | None  # type: ignore[override]
-
-    @property
-    def context(self) -> ContextType:  # type: ignore[override]
-        context = super().context
-        assert context is not None, f"Always pass context when using {type(self)}"
-        return typing.cast("ContextType", context)
 
     @typing.override
     def create(self, validated_data: dict[str, typing.Any]) -> ModelType:

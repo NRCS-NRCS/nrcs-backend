@@ -146,6 +146,21 @@ class TestDepartmentMutation(TestCase):
 
         resp_data = content["data"]["updateDepartment"]
         assert resp_data["errors"] is None, content
-        assert resp_data["result"]["title"] == data["title"], content
-        assert resp_data["result"]["description"] == data["description"], content
-        assert resp_data["result"]["strategicDirective"]["id"] == self.gID(new_strategic_directive.id), content
+        assert resp_data == self.g_mutation_response(
+            ok=True,
+            result={
+                "id": self.gID(department.id),
+                "title": data["title"],
+                "description": data["description"],
+                "contactPersonName": data["contactPersonName"],
+                "contactPersonEmail": department.contact_person_email,
+                "strategicDirective": dict(
+                    id=self.gID(new_strategic_directive.id),
+                    slug=new_strategic_directive.slug,
+                    title=new_strategic_directive.title,
+                    description=new_strategic_directive.description,
+                    contactPersonName=new_strategic_directive.contact_person_name,
+                    contactPersonEmail=new_strategic_directive.contact_person_email,
+                ),
+            },
+        ), content

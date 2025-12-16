@@ -28,6 +28,28 @@ type AppEnumCollectionDummyEnum {
 """
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
+input BlogCreateInput {
+  title: String!
+  publishedDate: Date!
+  author: String!
+  content: String!
+  coverImage: Upload
+  featured: Boolean
+  status: StatusEnum
+  department: ID
+  directive: ID
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogDeleteInput {
+  id: ID!
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
 input BlogFilter {
   id: ID
   slug: StrFilterLookup
@@ -49,7 +71,11 @@ input BlogOrder {
 """
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
-type BlogType {
+type BlogType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   publishedDate: Date!
@@ -59,8 +85,31 @@ type BlogType {
   featured: Boolean!
   status: StatusEnum!
   slug: String!
-  department: DjangoModelType
-  directive: DjangoModelType
+  departmentId: ID
+  directiveId: ID
+  department: DepartmentType
+  directive: StrategicDirectivesType
+}
+
+type BlogTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: BlogType
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogUpdateInput {
+  title: String
+  publishedDate: Date
+  author: String
+  content: String!
+  coverImage: Upload
+  featured: Boolean
+  status: StatusEnum
+  department: ID
+  directive: ID
 }
 
 input BoolBaseFilterLookup {
@@ -75,6 +124,8 @@ input BoolBaseFilterLookup {
   """
   inList: [Boolean!]
 }
+
+union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
 union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
@@ -128,6 +179,11 @@ input DateRangeLookup {
   start: Date = null
   end: Date = null
 }
+
+"""Date with time (isoformat)"""
+scalar DateTime
+
+union DeleteBlogPayload = BlogType | OperationInfo
 
 union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
@@ -254,7 +310,11 @@ input FaqOrder {
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
-type FaqType {
+type FaqType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   question: String!
   answer: String!
@@ -410,6 +470,9 @@ type Mutation {
   deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isAuthenticated
   createProject(data: ProjectCreateInput!): CreateProjectPayload! @isAuthenticated
   updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isAuthenticated
+  deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isAuthenticated
+  createBlog(data: BlogCreateInput!): CreateBlogPayload! @isAuthenticated
+  updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
 }
 
 """
@@ -840,6 +903,8 @@ type StrategicDirectivesType {
   majorResponsibilities: [MajorResponsibilitiesType!]!
 }
 
+union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
@@ -859,4 +924,23 @@ type UserMeType {
   firstName: String!
   lastName: String!
   email: String!
+}
+
+interface UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+type UserType {
+  id: ID!
+  firstName: String!
+  lastName: String!
 }
