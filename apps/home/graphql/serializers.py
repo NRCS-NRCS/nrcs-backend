@@ -1,6 +1,8 @@
 import typing
-from rest_framework import serializers
+
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+
 from apps.common.serializers import UserResourceSerializer
 from apps.home.models import ActionLink, Highlight
 
@@ -37,7 +39,6 @@ class HighlightSerializer(UserResourceSerializer):
     @typing.override
     def update(self, instance, validated_data):
         action_links_data = validated_data.pop("action_links", [])
-        print(validated_data)
         highlight = super().update(instance, validated_data)
 
         action_links_qs = ActionLink.objects.filter(highlight=highlight)

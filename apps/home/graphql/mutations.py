@@ -49,7 +49,6 @@ class Mutation:
                 return (True, obj.create)
 
             if obj.update is not None and obj.update != strawberry.UNSET:
-                print("Updating:", obj.update)
                 return (True, obj.update)
 
             return (False, obj)

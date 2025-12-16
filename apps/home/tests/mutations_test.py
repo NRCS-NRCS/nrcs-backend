@@ -1,7 +1,6 @@
+from apps.home.factories import HighlightFactory
 from apps.strategic.factories import UserFactory
 from main.tests.base_test import TestCase
-
-from apps.home.factories import HighlightFactory
 
 # TODO: Add tests for action links and image uploads
 

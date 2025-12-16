@@ -1,9 +1,8 @@
 import strawberry
 import strawberry_django
-
-from apps.home.models import ActionLink, Highlight
 from strawberry.file_uploads import Upload
 
+from apps.home.models import ActionLink, Highlight
 from utils.graphql.types import CudInput
 
 # NOTE: Make sure this matches with the serializers ../serializers.py

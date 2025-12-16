@@ -153,6 +153,8 @@ union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
 union CreateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
 union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
 """A generic type to return error messages"""
@@ -216,6 +218,8 @@ union DeleteHighlightPayload = HighlightType | OperationInfo
 input DeleteInput {
   id: ID!
 }
+
+union DeleteNewsPayload = NewsType | OperationInfo
 
 union DeleteProjectPayload = ProjectType | OperationInfo
 
@@ -543,6 +547,30 @@ type Mutation {
   deleteHighlight(data: HighlightDeleteInput!): DeleteHighlightPayload! @isAuthenticated
   createHighlight(data: HighlightCreateInput!): CreateHighlightPayload! @isAuthenticated
   updateHighlight(data: HighlightUpdateInput!, pk: ID!): UpdateHighlightPayload! @isAuthenticated
+  deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isAuthenticated
+  createNews(data: NewsCreateInput!): CreateNewsPayload! @isAuthenticated
+  updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  slug: String
+  status: StatusEnum
+  directive: ID!
+  file: Upload
+  coverImage: Upload
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsDeleteInput {
+  id: ID!
 }
 
 """
@@ -570,15 +598,41 @@ input NewsOrder {
 """
 News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
 """
-type NewsType {
+type NewsType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType
   content: String!
+  status: StatusEnum!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID
+  directive: StrategicDirectivesType
   slug: String!
   coverImage: DjangoFileType
+}
+
+type NewsTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: NewsType
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsUpdateInput {
+  title: String
+  content: String!
+  publishedDate: Date
+  status: StatusEnum
+  slug: String
+  directive: ID!
+  file: Upload
+  coverImage: Upload
 }
 
 type OperationInfo {
@@ -980,6 +1034,8 @@ union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationIn
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
 union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
+
+union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
