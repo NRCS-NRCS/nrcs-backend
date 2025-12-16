@@ -1,5 +1,3 @@
-from rest_framework import serializers
-
 from apps.common.serializers import UserResourceSerializer
 from apps.department.models import Department
 

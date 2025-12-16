@@ -3,7 +3,7 @@ from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
 
 
-class TestDepartmentQuery(TestCase):
+class TestDepartmentMutation(TestCase):
     class Mutation:
         CREATE_DEPARTMENT = """
           mutation createDepartment($data: DepartmentCreateInput!) {
@@ -107,10 +107,7 @@ class TestDepartmentQuery(TestCase):
         assert resp_data["errors"] is None, content
         assert resp_data["result"]["title"] == data["title"], content
         assert resp_data["result"]["description"] == data["description"], content
-        assert (
-            resp_data["result"]["strategicDirective"]["id"]
-            == self.gID(strategic_directive.id)
-        ), content
+        assert resp_data["result"]["strategicDirective"]["id"] == self.gID(strategic_directive.id), content
 
     def test_update_department(self):
         department = DepartmentFactory.create(
@@ -151,7 +148,4 @@ class TestDepartmentQuery(TestCase):
         assert resp_data["errors"] is None, content
         assert resp_data["result"]["title"] == data["title"], content
         assert resp_data["result"]["description"] == data["description"], content
-        assert (
-            resp_data["result"]["strategicDirective"]["id"]
-            == self.gID(new_strategic_directive.id)
-        ), content
+        assert resp_data["result"]["strategicDirective"]["id"] == self.gID(new_strategic_directive.id), content

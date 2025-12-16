@@ -8,6 +8,7 @@ from apps.blog.graphql import queries as blog_queries
 from apps.common.graphql import mutations as common_mutation
 from apps.department.graphql import mutations as department_mutations
 from apps.department.graphql import queries as department_queries
+from apps.faq.graphql import mutations as faq_mutation
 from apps.faq.graphql import queries as faq_queries
 from apps.home.graphql import queries as home_queries
 from apps.news.graphql import queries as news_queries
@@ -58,6 +59,7 @@ class Query(
 class Mutation(
     department_mutations.Mutation,
     common_mutation.Mutation,
+    faq_mutation.Mutation,
 ): ...
 
 

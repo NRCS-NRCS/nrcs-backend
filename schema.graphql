@@ -78,6 +78,8 @@ input BoolBaseFilterLookup {
 
 union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
+union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -126,6 +128,8 @@ input DateRangeLookup {
 }
 
 union DeleteDepartmentPayload = DepartmentType | OperationInfo
+
+union DeleteFaqPayload = FaqType | OperationInfo
 
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
@@ -206,6 +210,15 @@ enum DummyEnum {
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
+input FaqCreateInput {
+  question: String!
+  answer: String!
+  orderIndex: Int
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
 input FaqFilter {
   id: ID!
   orderIndex: IntComparisonFilterLookup
@@ -228,6 +241,21 @@ type FaqType {
   question: String!
   answer: String!
   orderIndex: Int!
+}
+
+type FaqTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: FaqType
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqUpdateInput {
+  question: String
+  answer: String
+  orderIndex: Int
 }
 
 """
@@ -358,6 +386,9 @@ type Mutation {
   updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isAuthenticated
   login(username: String!, password: String!): UserMeType!
   logout: Boolean!
+  deleteFaq: DeleteFaqPayload! @isAuthenticated
+  createFaq(data: FaqCreateInput!): CreateFaqPayload! @isAuthenticated
+  updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isAuthenticated
 }
 
 """
@@ -756,6 +787,8 @@ type StrategicDirectivesType {
 }
 
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
+
+union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
 """
 Users within the Django authentication system are represented by this
