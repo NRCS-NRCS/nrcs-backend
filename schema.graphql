@@ -80,6 +80,8 @@ union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationIn
 
 union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
+union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -131,6 +133,8 @@ union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
 union DeleteFaqPayload = FaqType | OperationInfo
 
+union DeleteProjectPayload = ProjectType | OperationInfo
+
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
@@ -140,6 +144,13 @@ input DepartmentCreateInput {
   contactPersonName: String
   contactPersonEmail: String
   strategicDirective: ID!
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentDeleteInput {
+  id: ID!
 }
 
 """
@@ -214,6 +225,13 @@ input FaqCreateInput {
   question: String!
   answer: String!
   orderIndex: Int
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqDeleteInput {
+  id: ID!
 }
 
 """
@@ -381,14 +399,17 @@ type MajorResponsibilitiesType {
 }
 
 type Mutation {
-  deleteDepartment: DeleteDepartmentPayload! @isAuthenticated
+  deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isAuthenticated
   createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isAuthenticated
   updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isAuthenticated
   login(username: String!, password: String!): UserMeType!
   logout: Boolean!
-  deleteFaq: DeleteFaqPayload! @isAuthenticated
+  deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isAuthenticated
   createFaq(data: FaqCreateInput!): CreateFaqPayload! @isAuthenticated
   updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isAuthenticated
+  deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isAuthenticated
+  createProject(data: ProjectCreateInput!): CreateProjectPayload! @isAuthenticated
+  updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isAuthenticated
 }
 
 """
@@ -576,6 +597,23 @@ type ProcurementType {
 """
 Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
+input ProjectCreateInput {
+  title: String!
+  description: String!
+  coverImage: Upload
+  department: ID
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectDeleteInput {
+  id: ID!
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
 input ProjectFilter {
   id: ID = null
   department_StrategicDirective: StrategicDirectivesFilter = null
@@ -598,6 +636,22 @@ type ProjectType {
   description: String!
   coverImage: DjangoFileType!
   department: DepartmentType
+}
+
+type ProjectTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProjectType
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectUpdateInput {
+  title: String
+  description: String
+  coverImage: Upload
+  department: ID
 }
 
 type Query {
@@ -789,6 +843,10 @@ type StrategicDirectivesType {
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+scalar Upload
 
 """
 Users within the Django authentication system are represented by this

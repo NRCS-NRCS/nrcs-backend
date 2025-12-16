@@ -18,3 +18,8 @@ class FaqUpdateInput:
     question: strawberry.auto
     answer: strawberry.auto
     order_index: strawberry.auto
+
+
+@strawberry_django.input(Faq)
+class FaqDeleteInput:
+    id: strawberry.ID

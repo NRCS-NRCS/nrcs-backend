@@ -1,5 +1,4 @@
 from apps.faq.factories import FaqFactory
-from apps.faq.models import Faq
 from apps.strategic.factories import UserFactory
 from main.tests.base_test import TestCase
 

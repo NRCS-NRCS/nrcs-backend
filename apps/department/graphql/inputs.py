@@ -21,3 +21,8 @@ class DepartmentUpdateInput:
     contact_person_name: strawberry.auto
     contact_person_email: strawberry.auto
     strategic_directive: strawberry.ID
+
+
+@strawberry_django.input(Department)
+class DepartmentDeleteInput:
+    id: strawberry.ID

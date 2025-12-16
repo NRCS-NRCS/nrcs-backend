@@ -2,7 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry_django.permissions import IsAuthenticated
 
-from apps.faq.graphql.inputs import FaqCreateInput, FaqUpdateInput
+from apps.faq.graphql.inputs import FaqCreateInput, FaqDeleteInput, FaqUpdateInput
 from apps.faq.graphql.types import FaqType
 from apps.faq.models import Faq
 from apps.faq.serializers import FAQSerializer
@@ -13,7 +13,11 @@ from utils.graphql.types import MutationResponseType
 
 @strawberry.type
 class Mutation:
-    delete_faq: FaqType = strawberry_django.mutations.delete(extensions=[IsAuthenticated()])
+    delete_faq: FaqType = strawberry_django.mutations.delete(
+        FaqDeleteInput,
+        key_attr="pk",
+        extensions=[IsAuthenticated()],
+    )
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_faq(self, info: Info, data: FaqCreateInput) -> MutationResponseType[FaqType]:

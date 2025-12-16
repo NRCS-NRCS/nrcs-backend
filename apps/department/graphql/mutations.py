@@ -2,7 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry_django.permissions import IsAuthenticated
 
-from apps.department.graphql.inputs import DepartmentCreateInput, DepartmentUpdateInput
+from apps.department.graphql.inputs import DepartmentCreateInput, DepartmentDeleteInput, DepartmentUpdateInput
 from apps.department.graphql.types import DepartmentType
 from apps.department.models import Department
 from apps.department.serializers import DepartmentSerializer
@@ -13,7 +13,11 @@ from utils.graphql.types import MutationResponseType
 
 @strawberry.type
 class Mutation:
-    delete_department: DepartmentType = strawberry_django.mutations.delete(extensions=[IsAuthenticated()])
+    delete_department: DepartmentType = strawberry_django.mutations.delete(
+        DepartmentDeleteInput,
+        key_attr="pk",
+        extensions=[IsAuthenticated()],
+    )
 
     @strawberry_django.mutation(extensions=[IsAuthenticated()])
     async def create_department(self, info: Info, data: DepartmentCreateInput) -> MutationResponseType[DepartmentType]:
