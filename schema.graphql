@@ -11,9 +11,29 @@ When the condition fails, the following can be returned (following this priority
 directive @isAuthenticated repeatable on FIELD_DEFINITION
 
 """ActionLink(id, url, label, highlight)"""
+input ActionLinkCreateInput {
+  url: String!
+  label: String!
+}
+
+input ActionLinkInput {
+  create: ActionLinkCreateInput
+  update: ActionLinkUpdateInput
+  delete: DeleteInput
+}
+
+"""ActionLink(id, url, label, highlight)"""
 type ActionLinkType {
+  id: ID!
   label: String!
   url: String!
+}
+
+"""ActionLink(id, url, label, highlight)"""
+input ActionLinkUpdateInput {
+  id: ID!
+  url: String
+  label: String
 }
 
 type AppEnumCollection {
@@ -33,9 +53,9 @@ input BlogCreateInput {
   publishedDate: Date!
   author: String!
   content: String!
-  coverImage: Upload
   featured: Boolean
   status: StatusEnum
+  coverImage: Upload
   department: ID
   directive: ID
 }
@@ -105,9 +125,9 @@ input BlogUpdateInput {
   publishedDate: Date
   author: String
   content: String!
-  coverImage: Upload
   featured: Boolean
   status: StatusEnum
+  coverImage: Upload
   department: ID
   directive: ID
 }
@@ -130,6 +150,8 @@ union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
 union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union CreateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 
 union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
@@ -188,6 +210,12 @@ union DeleteBlogPayload = BlogType | OperationInfo
 union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
 union DeleteFaqPayload = FaqType | OperationInfo
+
+union DeleteHighlightPayload = HighlightType | OperationInfo
+
+input DeleteInput {
+  id: ID!
+}
 
 union DeleteProjectPayload = ProjectType | OperationInfo
 
@@ -339,6 +367,24 @@ input FaqUpdateInput {
 """
 Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
 """
+input HighlightCreateInput {
+  heading: String!
+  description: String!
+  isActive: Boolean
+  actionLinks: [ActionLinkCreateInput!]
+  image: Upload
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+"""
+input HighlightDeleteInput {
+  id: ID!
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+"""
 input HighlightFilter {
   heading: String = null
   isActive: Boolean
@@ -356,13 +402,34 @@ input HighlightOrder {
 """
 Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
 """
-type HighlightType {
+type HighlightType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   heading: String!
   description: String!
   image: DjangoFileType
-  actionLinks: [ActionLinkType!]!
   isActive: Boolean!
+  actionLinks: [ActionLinkType!]
+}
+
+type HighlightTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: HighlightType
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+"""
+input HighlightUpdateInput {
+  heading: String
+  description: String
+  isActive: Boolean
+  image: Upload
+  actionLinks: [ActionLinkInput!]
 }
 
 input IntComparisonFilterLookup {
@@ -473,6 +540,9 @@ type Mutation {
   deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isAuthenticated
   createBlog(data: BlogCreateInput!): CreateBlogPayload! @isAuthenticated
   updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
+  deleteHighlight(data: HighlightDeleteInput!): DeleteHighlightPayload! @isAuthenticated
+  createHighlight(data: HighlightCreateInput!): CreateHighlightPayload! @isAuthenticated
+  updateHighlight(data: HighlightUpdateInput!, pk: ID!): UpdateHighlightPayload! @isAuthenticated
 }
 
 """
@@ -908,6 +978,8 @@ union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 

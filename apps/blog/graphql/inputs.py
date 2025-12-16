@@ -12,9 +12,9 @@ class BlogCreateInput:
     published_date: strawberry.auto
     author: strawberry.auto
     content: str
-    cover_image: Upload | None = strawberry.UNSET
     featured: strawberry.auto
     status: strawberry.auto
+    cover_image: Upload | None = strawberry.UNSET
     department: strawberry.ID | None = strawberry.UNSET
     directive: strawberry.ID | None = strawberry.UNSET
 
@@ -25,9 +25,9 @@ class BlogUpdateInput:
     published_date: strawberry.auto
     author: strawberry.auto
     content: str
-    cover_image: Upload | None = strawberry.UNSET
     featured: strawberry.auto
     status: strawberry.auto
+    cover_image: Upload | None = strawberry.UNSET
     department: strawberry.ID | None = strawberry.UNSET
     directive: strawberry.ID | None = strawberry.UNSET
 
