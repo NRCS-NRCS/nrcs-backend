@@ -5,6 +5,8 @@ from strawberry.file_uploads import Upload
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.blog.graphql import queries as blog_queries
+from apps.common.graphql import mutations as common_mutation
+from apps.department.graphql import mutations as department_mutations
 from apps.department.graphql import queries as department_queries
 from apps.faq.graphql import queries as faq_queries
 from apps.home.graphql import queries as home_queries
@@ -53,11 +55,15 @@ class Query(
 
 # NOTE: for now we are not using mutation
 @strawberry.type
-class Mutation: ...
+class Mutation(
+    department_mutations.Mutation,
+    common_mutation.Mutation,
+): ...
 
 
 schema = strawberry.Schema(
     query=Query,
+    mutation=Mutation,
     extensions=[
         DjangoOptimizerExtension,
     ],
