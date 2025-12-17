@@ -10,7 +10,7 @@ class TestJobVacancyQuery(TestCase):
             jobVacancies(order: $order) {
                 id
                 title
-                file{
+                file {
                     url
                 }
                 description
