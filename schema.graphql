@@ -157,6 +157,8 @@ union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 union CreatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
 
+union CreateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
+
 union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
 """A generic type to return error messages"""
@@ -224,6 +226,8 @@ input DeleteInput {
 union DeleteNewsPayload = NewsType | OperationInfo
 
 union DeletePartnerPayload = PartnerType | OperationInfo
+
+union DeleteProcurementPayload = ProcurementType | OperationInfo
 
 union DeleteProjectPayload = ProjectType | OperationInfo
 
@@ -557,6 +561,9 @@ type Mutation {
   deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isAuthenticated
   createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isAuthenticated
   updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isAuthenticated
+  deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isAuthenticated
+  createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isAuthenticated
+  updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isAuthenticated
 }
 
 """
@@ -797,6 +804,24 @@ input PartnerUpdateInput {
 """
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
+input ProcurementCreateInput {
+  title: String!
+  description: String!
+  publishedDate: Date!
+  expiryDate: Date!
+  file: Upload
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementDeleteInput {
+  id: ID!
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
 input ProcurementFilter {
   id: ID!
   expiryDate: DateDateFilterLookup
@@ -814,13 +839,34 @@ input ProcurementOrder {
 """
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
-type ProcurementType {
+type ProcurementType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   file: DjangoFileType
   publishedDate: Date!
   expiryDate: Date!
+}
+
+type ProcurementTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProcurementType
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementUpdateInput {
+  title: String
+  description: String
+  publishedDate: Date
+  expiryDate: Date
+  file: Upload
 }
 
 """
@@ -1084,6 +1130,8 @@ union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
 union UpdatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
+union UpdateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
 
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
