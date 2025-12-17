@@ -161,6 +161,8 @@ union CreateProcurementPayload = ProcurementTypeMutationResponseType | Operation
 
 union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
+union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -230,6 +232,8 @@ union DeletePartnerPayload = PartnerType | OperationInfo
 union DeleteProcurementPayload = ProcurementType | OperationInfo
 
 union DeleteProjectPayload = ProjectType | OperationInfo
+
+union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
 
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
@@ -564,6 +568,9 @@ type Mutation {
   deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isAuthenticated
   createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isAuthenticated
   updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isAuthenticated
+  deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isAuthenticated
+  createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isAuthenticated
+  updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isAuthenticated
 }
 
 """
@@ -965,6 +972,23 @@ type Query {
 """
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
+input RadioProgramCreateInput {
+  title: String!
+  publishedDate: Date!
+  type: RadioProgramTypeEnum
+  audioFile: Upload!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramDeleteInput {
+  id: ID!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
 input RadioProgramFilter {
   publishedDate: DateDateFilterLookup
   id: ID
@@ -985,7 +1009,11 @@ input RadioProgramOrder {
 """
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
-type RadioProgramType {
+type RadioProgramType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   audioFile: DjangoFileType!
@@ -996,6 +1024,22 @@ type RadioProgramType {
 enum RadioProgramTypeEnum {
   RADIO_RED_CROSS
   TOGETHER_FOR_HUMANITY
+}
+
+type RadioProgramTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: RadioProgramType
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramUpdateInput {
+  title: String
+  publishedDate: Date
+  type: RadioProgramTypeEnum
+  audioFile: Upload
 }
 
 """
@@ -1134,6 +1178,8 @@ union UpdatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
 union UpdateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
 
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+union UpdateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
 
 scalar Upload
 
