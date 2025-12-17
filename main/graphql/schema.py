@@ -15,6 +15,7 @@ from apps.home.graphql import mutations as home_mutations
 from apps.home.graphql import queries as home_queries
 from apps.news.graphql import mutations as news_mutations
 from apps.news.graphql import queries as news_queries
+from apps.partner.graphql import mutations as partner_mutations
 from apps.partner.graphql import queries as partner_queries
 from apps.procurement.graphql import queries as procurement_queries
 from apps.project.graphql import mutations as project_mutation
@@ -68,6 +69,7 @@ class Mutation(
     blog_mutations.Mutation,
     home_mutations.Mutation,
     news_mutations.Mutation,
+    partner_mutations.Mutation,
 ): ...
 
 

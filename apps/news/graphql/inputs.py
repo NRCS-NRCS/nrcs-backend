@@ -1,8 +1,8 @@
 import strawberry
 import strawberry_django
+from strawberry.file_uploads import Upload
 
 from apps.news.models import News
-from strawberry.file_uploads import Upload
 
 
 @strawberry_django.input(News)

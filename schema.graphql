@@ -155,6 +155,8 @@ union CreateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 
 union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
 
+union CreatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
 union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
 """A generic type to return error messages"""
@@ -220,6 +222,8 @@ input DeleteInput {
 }
 
 union DeleteNewsPayload = NewsType | OperationInfo
+
+union DeletePartnerPayload = PartnerType | OperationInfo
 
 union DeleteProjectPayload = ProjectType | OperationInfo
 
@@ -550,6 +554,9 @@ type Mutation {
   deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isAuthenticated
   createNews(data: NewsCreateInput!): CreateNewsPayload! @isAuthenticated
   updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
+  deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isAuthenticated
+  createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isAuthenticated
+  updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isAuthenticated
 }
 
 """
@@ -676,6 +683,22 @@ enum Ordering {
 """
 Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
 """
+input PartnerCreateInput {
+  title: String!
+  scope: PartnerScopeEnum!
+  image: Upload
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerDeleteInput {
+  id: ID!
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
 input PartnerFilter {
   scope: PartnerScopeEnumFilterLookup
   AND: PartnerFilter
@@ -745,11 +768,30 @@ input PartnerScopeEnumFilterLookup {
 """
 Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
 """
-type PartnerType {
+type PartnerType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   scope: PartnerScopeEnum!
   image: DjangoFileType
+}
+
+type PartnerTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: PartnerType
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerUpdateInput {
+  title: String
+  scope: PartnerScopeEnum
+  image: Upload
 }
 
 """
@@ -817,7 +859,11 @@ input ProjectOrder {
 """
 Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
-type ProjectType {
+type ProjectType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
@@ -1036,6 +1082,8 @@ union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
 
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+union UpdatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
 
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
