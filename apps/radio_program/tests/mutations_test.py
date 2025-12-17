@@ -21,7 +21,6 @@ def graphql_audio_mutation(
     radio_program_data: dict,
     **kwargs,
 ) -> dict:
-
     variables = {"data": radio_program_data}
     if pk := kwargs.pop("pk", None):
         variables["pk"] = pk

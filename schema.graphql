@@ -163,6 +163,8 @@ union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
 union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
 
+union CreateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -234,6 +236,8 @@ union DeleteProcurementPayload = ProcurementType | OperationInfo
 union DeleteProjectPayload = ProjectType | OperationInfo
 
 union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
+
+union DeleteResourcePayload = ResourceType | OperationInfo
 
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
@@ -571,6 +575,9 @@ type Mutation {
   deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isAuthenticated
   createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isAuthenticated
   updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isAuthenticated
+  deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isAuthenticated
+  createResource(data: ResourceCreateInput!): CreateResourcePayload! @isAuthenticated
+  updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isAuthenticated
 }
 
 """
@@ -1045,6 +1052,26 @@ input RadioProgramUpdateInput {
 """
 Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
+input ResourceCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload!
+  coverImage: Upload
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceDeleteInput {
+  id: ID!
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
 input ResourceFilter {
   name: String
   slug: String
@@ -1064,13 +1091,18 @@ input ResourceOrder {
 """
 Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
-type ResourceType {
+type ResourceType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType!
   content: String!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID!
+  directive: StrategicDirectivesType!
   slug: String!
   coverImage: DjangoFileType
   type: ResourceTypeEnum!
@@ -1079,6 +1111,25 @@ type ResourceType {
 enum ResourceTypeEnum {
   REPORT
   POLICY_AND_GUIDELINES
+}
+
+type ResourceTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ResourceType
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceUpdateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload
+  coverImage: Upload
 }
 
 enum StatusEnum {
@@ -1180,6 +1231,8 @@ union UpdateProcurementPayload = ProcurementTypeMutationResponseType | Operation
 union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 
 union UpdateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
+union UpdateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
 
 scalar Upload
 
