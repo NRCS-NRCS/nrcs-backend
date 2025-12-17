@@ -165,6 +165,8 @@ union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | Operati
 
 union CreateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
 
+union CreateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
 """A generic type to return error messages"""
 scalar CustomErrorType
 
@@ -238,6 +240,8 @@ union DeleteProjectPayload = ProjectType | OperationInfo
 union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
 
 union DeleteResourcePayload = ResourceType | OperationInfo
+
+union DeleteStrategicDirectivesPayload = StrategicDirectivesType | OperationInfo
 
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
@@ -578,6 +582,9 @@ type Mutation {
   deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isAuthenticated
   createResource(data: ResourceCreateInput!): CreateResourcePayload! @isAuthenticated
   updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isAuthenticated
+  deleteStrategicDirectives(data: StrategicDirectivesDeleteInput!): DeleteStrategicDirectivesPayload! @isAuthenticated
+  createStrategicDirectives(data: StrategicDirectivesCreateInput!): CreateStrategicDirectivesPayload! @isAuthenticated
+  updateStrategicDirectives(data: StrategicDirectivesUpdateInput!, pk: ID!): UpdateStrategicDirectivesPayload! @isAuthenticated
 }
 
 """
@@ -1189,6 +1196,24 @@ input StrFilterLookup {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
+input StrategicDirectivesCreateInput {
+  title: String!
+  description: String!
+  contactPersonName: String
+  contactPersonEmail: String
+  coverImage: Upload
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+"""
+input StrategicDirectivesDeleteInput {
+  id: ID!
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+"""
 input StrategicDirectivesFilter {
   id: ID!
   slug: StrFilterLookup
@@ -1214,6 +1239,24 @@ type StrategicDirectivesType {
   majorResponsibilities: [MajorResponsibilitiesType!]!
 }
 
+type StrategicDirectivesTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: StrategicDirectivesType
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+"""
+input StrategicDirectivesUpdateInput {
+  id: ID!
+  title: String
+  description: String
+  contactPersonName: String
+  contactPersonEmail: String
+  coverImage: Upload
+}
+
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
@@ -1233,6 +1276,8 @@ union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
 union UpdateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
 
 union UpdateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
+union UpdateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
 
 scalar Upload
 

@@ -25,6 +25,7 @@ from apps.radio_program.graphql import mutations as radio_program_mutations
 from apps.radio_program.graphql import queries as radio_program_queries
 from apps.resources.graphql import mutations as resources_mutations
 from apps.resources.graphql import queries as resources_queries
+from apps.strategic.graphql import mutations as strategic_mutations
 from apps.strategic.graphql import queries as strategic_queries
 from apps.vacancy.graphql import queries as vacancy_queries
 
@@ -76,6 +77,7 @@ class Mutation(
     procurement_mutations.Mutation,
     radio_program_mutations.Mutation,
     resources_mutations.Mutation,
+    strategic_mutations.Mutation,
 ): ...
 
 
