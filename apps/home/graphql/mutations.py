@@ -7,9 +7,9 @@ from apps.home.graphql.inputs import (
     HighlightDeleteInput,
     HighlightUpdateInput,
 )
-from apps.home.graphql.serializers import HighlightSerializer
 from apps.home.graphql.types import HighlightType
 from apps.home.models import ActionLink, Highlight
+from apps.home.serializers import HighlightSerializer
 from main.graphql.context import Info
 from utils.graphql.common import DataclassInstance
 from utils.graphql.mutations import ModelMutation

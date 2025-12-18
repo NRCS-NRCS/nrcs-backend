@@ -104,10 +104,24 @@ class TestDepartmentMutation(TestCase):
             },
         )
         resp_data = content["data"]["createDepartment"]
-        assert resp_data["errors"] is None, content
-        assert resp_data["result"]["title"] == data["title"], content
-        assert resp_data["result"]["description"] == data["description"], content
-        assert resp_data["result"]["strategicDirective"]["id"] == self.gID(strategic_directive.id), content
+        assert resp_data == self.g_mutation_response(
+            ok=True,
+            result=dict(
+                id=resp_data["result"]["id"],
+                title=data["title"],
+                description=data["description"],
+                contactPersonName=data["contactPersonName"],
+                contactPersonEmail=data["contactPersonEmail"],
+                strategicDirective=dict(
+                    id=self.gID(strategic_directive.id),
+                    slug=strategic_directive.slug,
+                    title=strategic_directive.title,
+                    description=strategic_directive.description,
+                    contactPersonName=strategic_directive.contact_person_name,
+                    contactPersonEmail=strategic_directive.contact_person_email,
+                ),
+            ),
+        ), content
 
     def test_update_department(self):
         department = DepartmentFactory.create(
@@ -148,13 +162,13 @@ class TestDepartmentMutation(TestCase):
         assert resp_data["errors"] is None, content
         assert resp_data == self.g_mutation_response(
             ok=True,
-            result={
-                "id": self.gID(department.id),
-                "title": data["title"],
-                "description": data["description"],
-                "contactPersonName": data["contactPersonName"],
-                "contactPersonEmail": department.contact_person_email,
-                "strategicDirective": dict(
+            result=dict(
+                id=resp_data["result"]["id"],
+                title=data["title"],
+                description=data["description"],
+                contactPersonName=data["contactPersonName"],
+                contactPersonEmail=department.contact_person_email,
+                strategicDirective=dict(
                     id=self.gID(new_strategic_directive.id),
                     slug=new_strategic_directive.slug,
                     title=new_strategic_directive.title,
@@ -162,5 +176,5 @@ class TestDepartmentMutation(TestCase):
                     contactPersonName=new_strategic_directive.contact_person_name,
                     contactPersonEmail=new_strategic_directive.contact_person_email,
                 ),
-            },
+            ),
         ), content

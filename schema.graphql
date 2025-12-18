@@ -284,14 +284,19 @@ input DepartmentOrder {
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
-type DepartmentType {
+type DepartmentType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   contactPersonName: String
   contactPersonEmail: String
   slug: String!
-  strategicDirective: StrategicDirectivesType!
+  strategicDirectiveId: ID
+  strategicDirective: StrategicDirectivesType
 }
 
 type DepartmentTypeMutationResponseType {

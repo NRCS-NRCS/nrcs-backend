@@ -1,6 +1,41 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 from apps.procurement.factories import ProcurementFactory
 from apps.strategic.factories import UserFactory
 from main.tests.base_test import TestCase
+
+
+def generate_test_file():
+    return SimpleUploadedFile(
+        name="test_document.pdf",
+        content=b"Fake PDF binary content",
+        content_type="application/pdf",
+    )
+
+
+def graphql_file_mutation(
+    *,
+    query_check_func,
+    query: str,
+    data: dict,
+    **kwargs,
+) -> dict:
+    variables = {"data": data}
+    if pk := kwargs.pop("pk", None):
+        variables["pk"] = pk
+
+    with generate_test_file() as file:
+        return query_check_func(
+            query,
+            variables=variables,
+            files={
+                "file": file,
+            },
+            map={
+                "file": ["variables.data.file"],
+            },
+            **kwargs,
+        )
 
 
 class TestProcurementMutation(TestCase):
@@ -19,6 +54,9 @@ class TestProcurementMutation(TestCase):
                           expiryDate
                           createdBy {
                             id
+                          }
+                          file {
+                            url
                           }
                        }
                   }
@@ -58,11 +96,10 @@ class TestProcurementMutation(TestCase):
         }
 
         self.force_login(self.user)
-        content = self.query_check(
-            self.Mutation.CREATE_PARTNER,
-            variables={
-                "data": data,
-            },
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_PARTNER,
+            data=data,
         )
         resp_data = content["data"]["createProcurement"]
         assert resp_data == self.g_mutation_response(
@@ -76,6 +113,9 @@ class TestProcurementMutation(TestCase):
                 expiryDate=data["expiryDate"],
                 createdBy=dict(
                     id=self.gID(self.user.id),
+                ),
+                file=dict(
+                    url=resp_data["result"]["file"]["url"],
                 ),
             ),
         ), content

@@ -1,7 +1,42 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 from apps.common.models import StatusEnum
 from apps.news.factories import NewsFactory
 from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
+
+
+def generate_test_file():
+    return SimpleUploadedFile(
+        name="test_document.pdf",
+        content=b"Fake PDF binary content",
+        content_type="application/pdf",
+    )
+
+
+def graphql_file_mutation(
+    *,
+    query_check_func,
+    query: str,
+    data: dict,
+    **kwargs,
+) -> dict:
+    variables = {"data": data}
+    if pk := kwargs.pop("pk", None):
+        variables["pk"] = pk
+
+    with generate_test_file() as file:
+        return query_check_func(
+            query,
+            variables=variables,
+            files={
+                "file": file,
+            },
+            map={
+                "file": ["variables.data.file"],
+            },
+            **kwargs,
+        )
 
 
 class TestNewsMutation(TestCase):
@@ -30,6 +65,9 @@ class TestNewsMutation(TestCase):
                      status
                      directive {
                         id
+                     }
+                     file {
+                         url
                      }
                    }
                 }
@@ -87,12 +125,12 @@ class TestNewsMutation(TestCase):
             "status": self.genum(StatusEnum.DRAFT),
         }
         self.force_login(self.user)
-        content = self.query_check(
-            self.Mutation.CREATE_NEWS,
-            variables={
-                "data": data,
-            },
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_NEWS,
+            data=data,
         )
+
         resp_data = content["data"]["createNews"]
         assert resp_data["errors"] is None, content
 
@@ -107,6 +145,9 @@ class TestNewsMutation(TestCase):
                 status=data["status"],
                 directive=dict(
                     id=str(strategic_directive.id),
+                ),
+                file=dict(
+                    url=resp_data["result"]["file"]["url"],
                 ),
             ),
         ), content

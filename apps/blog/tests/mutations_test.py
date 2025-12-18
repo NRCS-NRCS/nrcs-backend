@@ -137,25 +137,25 @@ class TestBlogMutation(TestCase):
         resp_data = content["data"]["createBlog"]
         assert resp_data["errors"] is None, content
 
-        assert {
-            "title": resp_data["result"]["title"],
-            "content": resp_data["result"]["content"],
-            "author": resp_data["result"]["author"],
-            "featured": resp_data["result"]["featured"],
-            "status": resp_data["result"]["status"],
-            "department": resp_data["result"]["department"]["id"],
-            "directive": resp_data["result"]["directive"]["id"],
-        } == {
-            "title": data["title"],
-            "content": data["content"],
-            "author": data["author"],
-            "featured": data["featured"],
-            "status": data["status"],
-            "department": self.gID(department.id),
-            "directive": self.gID(strategic_directive.id),
-        }, content
+        assert resp_data == self.g_mutation_response(
+            ok=True,
+            result=dict(
+                id=resp_data["result"]["id"],
+                title=data["title"],
+                content=data["content"],
+                author=data["author"],
+                featured=data["featured"],
+                status=data["status"],
+                slug=resp_data["result"]["slug"],
+                department=dict(
+                    id=self.gID(department.id),
+                ),
+                directive=dict(
+                    id=self.gID(strategic_directive.id),
+                ),
+            ),
+        ), content
 
-    def test_update_blog(self):
         strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
