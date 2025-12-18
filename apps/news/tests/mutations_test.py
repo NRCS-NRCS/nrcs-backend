@@ -114,8 +114,6 @@ class TestNewsMutation(TestCase):
         strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
-            contact_person_name="John Doe",
-            contact_person_email="johndoe@example.com",
         )
         data = {
             "title": "New News Title",
@@ -161,15 +159,11 @@ class TestNewsMutation(TestCase):
             directive=StrategicDirectivesFactory.create(
                 title="Old Directive",
                 description="Old Description",
-                contact_person_name="Jane Doe",
-                contact_person_email="jane@example.com",
             ),
         )
         new_strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
-            contact_person_name="John Doe",
-            contact_person_email="johndoe@example.com",
         )
         data = {
             "title": "Updated News Title",

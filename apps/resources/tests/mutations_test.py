@@ -97,8 +97,6 @@ class TestResourceMutation(TestCase):
         new_strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive Two",
             description="Something New",
-            contact_person_name="Jane Smith",
-            contact_person_email="janesmith@example.com",
         )
         data = {
             "title": "New Resource",
@@ -148,15 +146,11 @@ class TestResourceMutation(TestCase):
             directive=StrategicDirectivesFactory.create(
                 title="Strategic Directive",
                 description="Something New",
-                contact_person_name="Jane Smith",
-                contact_person_email="janesmith@example.com",
             ),
         )
         new_strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive Two",
             description="Something New",
-            contact_person_name="Jane Smith",
-            contact_person_email="janesmith@example.com",
         )
 
         data = {

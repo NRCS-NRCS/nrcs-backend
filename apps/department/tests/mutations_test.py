@@ -31,8 +31,6 @@ class TestDepartmentMutation(TestCase):
                        slug
                        title
                        description
-                       contactPersonName
-                       contactPersonEmail
                      }
                    }
                 }
@@ -66,8 +64,6 @@ class TestDepartmentMutation(TestCase):
                            slug
                            title
                            description
-                           contactPersonName
-                           contactPersonEmail
                          }
                        }
                     }
@@ -84,15 +80,13 @@ class TestDepartmentMutation(TestCase):
         strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
-            contact_person_name="John Doe",
-            contact_person_email="johndoe@example.com",
         )
 
         data = {
             "title": "Department",
             "description": "Something",
             "contactPersonName": "John Doe",
-            "contactPersonEmail": "johndoe@example.com",
+            "contactPersonEmail": "john@gmail.com",
             "strategicDirective": strategic_directive.pk,
         }
 
@@ -117,8 +111,6 @@ class TestDepartmentMutation(TestCase):
                     slug=strategic_directive.slug,
                     title=strategic_directive.title,
                     description=strategic_directive.description,
-                    contactPersonName=strategic_directive.contact_person_name,
-                    contactPersonEmail=strategic_directive.contact_person_email,
                 ),
             ),
         ), content
@@ -132,20 +124,17 @@ class TestDepartmentMutation(TestCase):
             strategic_directive=StrategicDirectivesFactory.create(
                 title="Strategic Directive One",
                 description="Something",
-                contact_person_name="John Doe",
-                contact_person_email="johndoe@example.com",
             ),
         )
         new_strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive Two",
             description="Something New",
-            contact_person_name="Jane Smith",
-            contact_person_email="janesmith@example.com",
         )
         data = {
             "title": "Updated Department",
             "description": "Updated Something",
             "contactPersonName": "Jane Smith",
+            "contactPersonEmail": "jane@gmail.com",
             "strategicDirective": new_strategic_directive.pk,
         }
 
@@ -167,14 +156,12 @@ class TestDepartmentMutation(TestCase):
                 title=data["title"],
                 description=data["description"],
                 contactPersonName=data["contactPersonName"],
-                contactPersonEmail=department.contact_person_email,
+                contactPersonEmail=data["contactPersonEmail"],
                 strategicDirective=dict(
                     id=self.gID(new_strategic_directive.id),
                     slug=new_strategic_directive.slug,
                     title=new_strategic_directive.title,
                     description=new_strategic_directive.description,
-                    contactPersonName=new_strategic_directive.contact_person_name,
-                    contactPersonEmail=new_strategic_directive.contact_person_email,
                 ),
             ),
         ), content

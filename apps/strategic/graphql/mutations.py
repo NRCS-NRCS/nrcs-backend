@@ -8,11 +8,12 @@ from apps.strategic.graphql.inputs import (
     StrategicDirectivesUpdateInput,
 )
 from apps.strategic.graphql.types import StrategicDirectivesType
-from apps.strategic.models import StrategicDirectives
+from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 from apps.strategic.serializers import StrategicDirectivesSerializer
 from main.graphql.context import Info
+from utils.graphql.common import DataclassInstance
 from utils.graphql.mutations import ModelMutation
-from utils.graphql.types import MutationResponseType
+from utils.graphql.types import CudInput, MutationResponseType
 
 
 @strawberry.type
@@ -39,4 +40,31 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[StrategicDirectivesType]:
         strategic_directives = await StrategicDirectives.objects.aget(pk=pk)
-        return await ModelMutation(StrategicDirectivesSerializer).handle_update_mutation(data, info, strategic_directives)
+
+        def transformer(obj: DataclassInstance):
+            if not isinstance(obj, CudInput):
+                return (False, obj)
+
+            if obj.delete is not None and obj.delete != strawberry.UNSET:
+                return (True, None)
+
+            if obj.create is not None and obj.create != strawberry.UNSET:
+                return (True, obj.create)
+
+            if obj.update is not None and obj.update != strawberry.UNSET:
+                return (True, obj.update)
+
+            return (False, obj)
+
+        for major_responsibility in data.major_responsibilities or []:
+            if major_responsibility.delete is not None and major_responsibility.delete != strawberry.UNSET:
+                await MajorResponsibilities.objects.filter(id=major_responsibility.delete.id).adelete()
+                continue
+
+        return await ModelMutation(StrategicDirectivesSerializer).handle_update_mutation(
+            data,
+            info,
+            strategic_directives,
+            None,
+            transformer,
+        )

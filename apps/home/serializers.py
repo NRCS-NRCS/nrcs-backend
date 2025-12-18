@@ -8,11 +8,21 @@ from apps.home.models import ActionLink, Highlight
 
 
 class ActionLinkSerializer(UserResourceSerializer):
-    id = serializers.IntegerField(required=False, allow_null=True)
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = ActionLink
         fields = "__all__"
+
+    @typing.override
+    def create(self, validated_data):
+        validated_data["highlight"] = self.context["highlight"]
+        return super().create(validated_data)
+
+    @typing.override
+    def update(self, instance, validated_data):
+        validated_data["highlight"] = self.context["highlight"]
+        return super().update(instance, validated_data)
 
 
 class HighlightSerializer(UserResourceSerializer):
@@ -23,9 +33,9 @@ class HighlightSerializer(UserResourceSerializer):
         fields = [
             "heading",
             "description",
-            # "image",
+            "image",
+            "is_active",
             "action_links",
-            "expiry_date",
         ]
 
     @typing.override
@@ -38,25 +48,32 @@ class HighlightSerializer(UserResourceSerializer):
 
     @typing.override
     def update(self, instance, validated_data):
-        action_links_data = validated_data.pop("action_links", [])
+        action_links_data = validated_data.pop("action_links", None)
         highlight = super().update(instance, validated_data)
 
-        action_links_qs = ActionLink.objects.filter(highlight=highlight)
+        if action_links_data is None:
+            return highlight
 
+        action_links_qs = ActionLink.objects.filter(highlight=highlight)
         for action_link_data in action_links_data:
-            action_link_id = action_link_data.get("id", None)
+            action_link_id = action_link_data.get("id")
+
             action_link_instance = None
             if action_link_id is not None:
-                action_link_instance = get_object_or_404(action_links_qs, id=action_link_id)
+                action_link_instance = get_object_or_404(
+                    action_links_qs,
+                    id=action_link_id,
+                )
 
-            action_link_serializer = ActionLinkSerializer(
-                data=action_link_data,
+            serializer = ActionLinkSerializer(
                 instance=action_link_instance,
+                data=action_link_data,
                 context={
                     **self.context,
                     "highlight": highlight,
                 },
             )
-            action_link_serializer.is_valid(raise_exception=True)
-            action_link_serializer.save()
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
         return highlight

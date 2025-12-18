@@ -98,8 +98,6 @@ class TestProjectMutation(TestCase):
             strategic_directive=StrategicDirectivesFactory.create(
                 title="Strategic Directive One",
                 description="Something",
-                contact_person_name="John Doe",
-                contact_person_email="johndoe@example.com",
             ),
         )
 
@@ -145,8 +143,6 @@ class TestProjectMutation(TestCase):
             strategic_directive=StrategicDirectivesFactory.create(
                 title="Strategic Directive One",
                 description="Something",
-                contact_person_name="John Doe",
-                contact_person_email="johndoe@example.com",
             ),
         )
 

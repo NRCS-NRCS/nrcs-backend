@@ -106,8 +106,6 @@ class TestBlogMutation(TestCase):
         strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
-            contact_person_name="John Doe",
-            contact_person_email="johndoe@example.com",
         )
         department = DepartmentFactory.create(
             title="Department One",
@@ -159,8 +157,6 @@ class TestBlogMutation(TestCase):
         strategic_directive = StrategicDirectivesFactory.create(
             title="Strategic Directive",
             description="Something",
-            contact_person_name="John Doe",
-            contact_person_email="johndoe@example.com",
         )
         department = DepartmentFactory.create(
             title="Department One",

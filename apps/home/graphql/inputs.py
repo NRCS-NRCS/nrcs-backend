@@ -30,8 +30,8 @@ class HighlightCreateInput:
     heading: strawberry.auto
     description: strawberry.auto
     is_active: strawberry.auto
+    image: Upload
     action_links: list[ActionLinkCreateInput] | None = strawberry.UNSET
-    image: Upload | None = strawberry.UNSET
 
 
 @strawberry_django.partial(Highlight)

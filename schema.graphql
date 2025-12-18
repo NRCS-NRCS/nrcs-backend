@@ -404,8 +404,8 @@ input HighlightCreateInput {
   heading: String!
   description: String!
   isActive: Boolean
+  image: Upload!
   actionLinks: [ActionLinkCreateInput!]
-  image: Upload
 }
 
 """
@@ -581,6 +581,14 @@ input JobVacancyUpdateInput {
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
+input MajorResponsibilitiesCreateInput {
+  title: String!
+  description: String!
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
 input MajorResponsibilitiesFilter {
   id: ID!
   slug: StrFilterLookup
@@ -591,6 +599,12 @@ input MajorResponsibilitiesFilter {
   DISTINCT: Boolean
 }
 
+input MajorResponsibilitiesInput {
+  create: MajorResponsibilitiesCreateInput
+  update: MajorResponsibilitiesUpdateInput
+  delete: DeleteInput
+}
+
 input MajorResponsibilitiesOrder {
   id: Ordering
   directive: Ordering
@@ -599,12 +613,25 @@ input MajorResponsibilitiesOrder {
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
-type MajorResponsibilitiesType {
+type MajorResponsibilitiesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   directive: DjangoModelType!
   slug: String!
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesUpdateInput {
+  id: ID!
+  title: String
+  description: String
 }
 
 type Mutation {
@@ -1260,20 +1287,19 @@ StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title,
 input StrategicDirectivesCreateInput {
   title: String!
   description: String!
-  contactPersonName: String
-  contactPersonEmail: String
   coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesCreateInput!]
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
 input StrategicDirectivesDeleteInput {
   id: ID!
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
 input StrategicDirectivesFilter {
   id: ID!
@@ -1291,7 +1317,11 @@ input StrategicDirectivesOrder {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
-type StrategicDirectivesType {
+type StrategicDirectivesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
@@ -1307,15 +1337,13 @@ type StrategicDirectivesTypeMutationResponseType {
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
 input StrategicDirectivesUpdateInput {
-  id: ID!
   title: String
   description: String
-  contactPersonName: String
-  contactPersonEmail: String
   coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesInput!]
 }
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
