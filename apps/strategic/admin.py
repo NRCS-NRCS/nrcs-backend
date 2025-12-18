@@ -8,10 +8,9 @@ from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 
 @admin.register(StrategicDirectives)
 class StrategicDirectivesAdmin(UserResourceAdmin):
-    list_display = ("title", "contact_person_name", "contact_person_email")
-    search_fields = ("title", "contact_person_name", "contact_person_email")
-    list_filter = ("title", "contact_person_name", "contact_person_email")
-    ordering = ("title",)
+    list_display = ("title",)
+    search_fields = ("title",)
+    list_filter = ("title",)
     readonly_fields = ("slug",)
 
 

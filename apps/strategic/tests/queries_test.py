@@ -10,8 +10,6 @@ class TestStrategicDirectivesQuery(TestCase):
                 id
                 title
                 description
-                contactPersonName
-                contactPersonEmail
                 majorResponsibilities {
                     description
                     id
@@ -43,15 +41,11 @@ class TestStrategicDirectivesQuery(TestCase):
             StrategicDirectivesFactory.create(
                 title="Strategic Directive One",
                 description="Something",
-                contact_person_name="John Doe",
-                contact_person_email="johndoe@example.com",
                 cover_image="test.jpg",
             ),
             StrategicDirectivesFactory.create(
                 title="Strategic Directive Two",
                 description="Something2",
-                contact_person_name="Test 2",
-                contact_person_email="test@xyz.com",
                 cover_image="test.jpg",
             ),
         ]
@@ -73,8 +67,6 @@ class TestStrategicDirectivesQuery(TestCase):
                     id=self.gID(strategic.id),
                     title=strategic.title,
                     description=strategic.description,
-                    contactPersonName=strategic.contact_person_name,
-                    contactPersonEmail=strategic.contact_person_email,
                     coverImage=dict(url=self.get_media_url(strategic.cover_image.name)),
                     majorResponsibilities=[
                         dict(

@@ -19,9 +19,6 @@ class TestDepartmentQuery(TestCase):
                 slug
                 title
                 description
-                contactPersonName
-                contactPersonEmail
-
               }
             }
           }
@@ -50,8 +47,6 @@ class TestDepartmentQuery(TestCase):
                 strategic_directive=StrategicDirectivesFactory.create(
                     title="Strategic Directive",
                     description="Something",
-                    contact_person_name="John Doe",
-                    contact_person_email="johndoe@example.com",
                 ),
             ),
             DepartmentFactory.create(
@@ -62,8 +57,6 @@ class TestDepartmentQuery(TestCase):
                 strategic_directive=StrategicDirectivesFactory.create(
                     title="Strategic Directive One",
                     description="Something",
-                    contact_person_name="John Doe",
-                    contact_person_email="johndoe@example.com",
                 ),
             ),
         ]
@@ -83,8 +76,6 @@ class TestDepartmentQuery(TestCase):
                         "slug": department.strategic_directive.slug,
                         "title": department.strategic_directive.title,
                         "description": department.strategic_directive.description,
-                        "contactPersonName": department.strategic_directive.contact_person_name,
-                        "contactPersonEmail": department.strategic_directive.contact_person_email,
                     },
                 )
                 for department in department_items

@@ -19,7 +19,6 @@ class TestHighlightQuery(TestCase):
                 image {
                     url
                 }
-                expiryDate
             }
           }
         """
@@ -43,13 +42,11 @@ class TestHighlightQuery(TestCase):
                 heading="Highlight One",
                 description="Something",
                 image="test.jpg",
-                expiry_date="2023-01-01",
             ),
             HighlightFactory.create(
                 heading="Highlight Two",
                 description="Something2",
                 image="test.jpg",
-                expiry_date="2023-01-01",
             ),
         ]
         ActionLinkFactory.create(
@@ -71,7 +68,6 @@ class TestHighlightQuery(TestCase):
                     heading=highlight.heading,
                     description=highlight.description,
                     image=dict(url=self.get_media_url(highlight.image.name)),
-                    expiryDate=highlight.expiry_date,
                     actionLinks=[
                         dict(
                             url=action_link.url,

@@ -10,8 +10,6 @@ class StrategicDirectivesType:
     id: strawberry.ID
     title: strawberry.auto
     description: strawberry.auto
-    contact_person_name: strawberry.auto
-    contact_person_email: strawberry.auto
     cover_image: DjangoFileType | None
     slug: strawberry.auto
     major_responsibilities: list["MajorResponsibilitiesType"] = strawberry_django.field()

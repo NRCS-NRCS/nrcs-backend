@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import UserResource
-from utils.common import unique_slugify
+from utils.common import MAX_IMAGE_FILE_SIZE, unique_slugify, validate_file_size
 
 
 class StrategicDirectives(UserResource):
@@ -15,17 +15,20 @@ class StrategicDirectives(UserResource):
         null=True,
         blank=True,
     )
-    contact_person_name = models.CharField(max_length=255, verbose_name=_("Contact Person Name"), null=True, blank=True)
-    contact_person_email = models.EmailField(max_length=255, verbose_name=_("Contact Person Email"), null=True, blank=True)
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
 
-    def __str__(self):
-        return self.title
+    def clean(self):
+        if self.cover_image:
+            validate_file_size(self.cover_image, MAX_IMAGE_FILE_SIZE)
+        return super().clean()
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.title))
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         verbose_name = _("Strategic Directive")

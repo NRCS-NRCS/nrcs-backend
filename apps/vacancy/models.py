@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import UserResource
+from utils.common import MAX_FILE_SIZE, validate_file_size
 
 
 class JobVacancy(UserResource):
@@ -20,6 +21,11 @@ class JobVacancy(UserResource):
     )
     is_archived = models.BooleanField(default=False)
     published_at = models.DateField()
+
+    def clean(self):
+        if self.file:
+            validate_file_size(self.file, MAX_FILE_SIZE)
+        return super().clean()
 
     def __str__(self):
         return f"{self.position} - {self.id}"

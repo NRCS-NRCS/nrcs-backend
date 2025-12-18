@@ -184,11 +184,11 @@ type FaqType {
 }
 
 """
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, expiry_date)
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
 """
 input HighlightFilter {
-  expiryDate: DateDateFilterLookup
   heading: String = null
+  isActive: Boolean
   AND: HighlightFilter
   OR: HighlightFilter
   NOT: HighlightFilter
@@ -201,7 +201,7 @@ input HighlightOrder {
 }
 
 """
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, expiry_date)
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
 """
 type HighlightType {
   id: ID!
@@ -209,7 +209,7 @@ type HighlightType {
   description: String!
   image: DjangoFileType
   actionLinks: [ActionLinkType!]!
-  expiryDate: Date!
+  isActive: Boolean!
 }
 
 input IntComparisonFilterLookup {
@@ -546,7 +546,7 @@ type RadioProgramType {
 }
 
 enum RadioProgramTypeEnum {
-  TUESDAY_PROGRAM
+  RADIO_RED_CROSS
   TOGETHER_FOR_HUMANITY
 }
 
@@ -644,7 +644,7 @@ input StrFilterLookup {
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
 input StrategicDirectivesFilter {
   id: ID!
@@ -660,14 +660,12 @@ input StrategicDirectivesOrder {
 }
 
 """
-StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, contact_person_name, contact_person_email, slug)
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
 type StrategicDirectivesType {
   id: ID!
   title: String!
   description: String!
-  contactPersonName: String
-  contactPersonEmail: String
   coverImage: DjangoFileType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
