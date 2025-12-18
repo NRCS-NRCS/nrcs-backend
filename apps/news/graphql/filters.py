@@ -12,3 +12,4 @@ class NewsFilter:
     id: strawberry.ID | None = strawberry.UNSET
     directive: strawberry.ID | None = None
     status: StatusEnum | None = strawberry.UNSET
+    is_notice: bool | None = strawberry.UNSET

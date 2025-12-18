@@ -306,7 +306,7 @@ type MajorResponsibilitiesType {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_notice)
 """
 input NewsFilter {
   name: String
@@ -314,6 +314,7 @@ input NewsFilter {
   id: ID
   directive: ID = null
   status: StatusEnum
+  isNotice: Boolean
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
@@ -328,7 +329,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_notice)
 """
 type NewsType {
   id: ID!
@@ -339,6 +340,7 @@ type NewsType {
   directive: DjangoModelType
   slug: String!
   coverImage: DjangoFileType
+  isNotice: Boolean!
 }
 
 enum Ordering {

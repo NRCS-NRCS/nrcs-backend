@@ -15,3 +15,4 @@ class NewsType:
     directive: strawberry.auto
     slug: strawberry.auto
     cover_image: DjangoFileType | None
+    is_notice: strawberry.auto
