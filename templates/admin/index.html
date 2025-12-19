@@ -1,0 +1,28 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{{ block.super }}
+
+{% if request.user.is_superuser %}
+<div class="app-app module">
+    <table>
+        <caption>
+            <a class="section" title="Operations">Operations</a>
+        </caption>
+        <tbody>
+            <tr class="model-deployments">
+                <th scope="row">
+                    <a href="{% url 'admin:deployments' %}">
+                        Deployments
+                    </a>
+                </th>
+                <td>
+                    Trigger and monitor production deployments
+                </td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

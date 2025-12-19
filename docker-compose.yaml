@@ -21,6 +21,11 @@ x-server: &base_server_setup
     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     POSTGRES_HOST: ${POSTGRES_HOST:-db}
     POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+    # Github
+    GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    GITHUB_OWNER: ${GITHUB_OWNER:-nrcs-nrcs}
+    GITHUB_REPO: ${GITHUB_REPO:-nrcs-client}
+    GITHUB_WORKFLOW_FILE: ${GITHUB_WORKFLOW_FILE:-cd.yml}
   env_file:
     - path: .env
       required: false
