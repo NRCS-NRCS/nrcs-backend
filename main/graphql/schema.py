@@ -7,6 +7,7 @@ from strawberry_django.optimizer import DjangoOptimizerExtension
 from apps.blog.graphql import mutations as blog_mutations
 from apps.blog.graphql import queries as blog_queries
 from apps.common.graphql import mutations as common_mutation
+from apps.common.graphql import queries as common_queries
 from apps.department.graphql import mutations as department_mutations
 from apps.department.graphql import queries as department_queries
 from apps.faq.graphql import mutations as faq_mutation
@@ -46,6 +47,7 @@ class CustomAsyncGraphQLView(AsyncGraphQLView):
 
 @strawberry.type
 class Query(
+    common_queries.Query,
     strategic_queries.Query,
     department_queries.Query,
     procurement_queries.Query,
