@@ -8,15 +8,17 @@ class TestResourcesQuery(TestCase):
         RESOURCES = """
           query resources($order: ResourceOrder) {
             resources(order: $order) {
-                content
-                file {
-                    url
-                }
-                id
-                publishedDate
-                title
-                directive {
+                results {
+                    content
+                    file {
+                        url
+                    }
                     id
+                    publishedDate
+                    title
+                    directive {
+                        id
+                    }
                 }
             }
           }
@@ -58,18 +60,16 @@ class TestResourcesQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "resources": [
-                dict(
-                    id=self.gID(resource.id),
-                    title=resource.title,
-                    content=resource.content,
-                    file=dict(
-                        url=self.get_media_url(resource.file.name),
-                    ),
-                    publishedDate=resource.published_date,
-                    directive=(dict(id=self.gID(resource.directive.id)) if resource.directive else None),
-                )
-                for resource in resources_items
-            ],
-        }, content
+        assert content["data"]["resources"]["results"] == [
+            dict(
+                id=self.gID(resource.id),
+                title=resource.title,
+                content=resource.content,
+                file=dict(
+                    url=self.get_media_url(resource.file.name),
+                ),
+                publishedDate=resource.published_date,
+                directive=(dict(id=self.gID(resource.directive.id)) if resource.directive else None),
+            )
+            for resource in resources_items
+        ], content

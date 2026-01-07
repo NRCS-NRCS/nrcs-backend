@@ -10,25 +10,27 @@ class TestBlogQuery(TestCase):
         BLOG = """
           query blogs($order: BlogOrder) {
             blogs(order: $order) {
-            author
-            content
-            coverImage {
-              name
-              size
-              url
+            results {
+                author
+                content
+                coverImage {
+                  name
+                  size
+                  url
+                }
+                department {
+                  id
+                }
+                directive {
+                  id
+                }
+                featured
+                id
+                publishedDate
+                slug
+                status
+                title
             }
-            department {
-              id
-            }
-            directive {
-              id
-            }
-            featured
-            id
-            publishedDate
-            slug
-            status
-            title
           }
         }
         """
@@ -79,23 +81,21 @@ class TestBlogQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "blogs": [
-                dict(
-                    id=self.gID(blog.id),
-                    title=blog.title,
-                    slug=blog.slug,
-                    department={
-                        "id": self.gID(blog.department.id),
-                    },
-                    publishedDate=blog.published_date,
-                    status=self.genum(blog.status),
-                    featured=blog.featured,
-                    author=blog.author,
-                    content=blog.content,
-                    directive=None,
-                    coverImage=None,
-                )
-                for blog in blog_items
-            ],
-        }, content
+        assert content["data"]["blogs"]["results"] == [
+            dict(
+                id=self.gID(blog.id),
+                title=blog.title,
+                slug=blog.slug,
+                department={
+                    "id": self.gID(blog.department.id),
+                },
+                publishedDate=blog.published_date,
+                status=self.genum(blog.status),
+                featured=blog.featured,
+                author=blog.author,
+                content=blog.content,
+                directive=None,
+                coverImage=None,
+            )
+            for blog in blog_items
+        ], content

@@ -8,19 +8,20 @@ class TestJobVacancyQuery(TestCase):
         JOB_VACANCIES = """
           query jobVacancies($order: JobVacancyOrder) {
             jobVacancies(order: $order) {
-                id
-                title
-                file {
-                    url
+                results {
+                    id
+                    title
+                    file {
+                        url
+                    }
+                    description
+                    numberOfVacancies
+                    expiryDate
+                    isArchived
+                    position
+                    publishedAt
                 }
-                description
-                numberOfVacancies
-                expiryDate
-                isArchived
-                position
-                publishedAt
               }
-
           }
         """
 
@@ -62,21 +63,19 @@ class TestJobVacancyQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "jobVacancies": [
-                dict(
-                    id=self.gID(job.id),
-                    title=job.title,
-                    file=dict(
-                        url=self.get_media_url(job.file.name),
-                    ),
-                    description=job.description,
-                    position=job.position,
-                    numberOfVacancies=job.number_of_vacancies,
-                    expiryDate=job.expiry_date,
-                    isArchived=job.is_archived,
-                    publishedAt=job.published_at,
-                )
-                for job in job_vacancies_items
-            ],
-        }, content
+        assert content["data"]["jobVacancies"]["results"] == [
+            dict(
+                id=self.gID(job.id),
+                title=job.title,
+                file=dict(
+                    url=self.get_media_url(job.file.name),
+                ),
+                description=job.description,
+                position=job.position,
+                numberOfVacancies=job.number_of_vacancies,
+                expiryDate=job.expiry_date,
+                isArchived=job.is_archived,
+                publishedAt=job.published_at,
+            )
+            for job in job_vacancies_items
+        ], content
