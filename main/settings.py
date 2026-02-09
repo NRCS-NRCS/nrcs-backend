@@ -60,13 +60,6 @@ env = environ.Env(
     SENTRY_PROFILE_SAMPLE_RATE=(float, 0.2),
     # Pytest
     PYTEST_XDIST_WORKER=(str, None),
-    # Github
-    # NOTE: If we don't get GITHUB_TOKEN, deployment through
-    # django admin panel will be skipped
-    GITHUB_TOKEN=str,
-    GITHUB_OWNER=str,
-    GITHUB_REPO=str,
-    GITHUB_WORKFLOW_FILE=str,
 )
 
 
@@ -80,10 +73,6 @@ APP_ENVIRONMENT = env("APP_ENVIRONMENT").upper()
 APP_TYPE = env("APP_TYPE").upper()
 APP_RELEASE = env("APP_RELEASE") or fetch_git_sha(BASE_DIR, raise_on_error=False)
 SECRET_KEY = env("DJANGO_SECRET_KEY")
-GITHUB_TOKEN = env("GITHUB_TOKEN")
-GITHUB_OWNER = env("GITHUB_OWNER", default="NRCS-NRCS")
-GITHUB_REPO = env("GITHUB_REPO", default="nrcs-client")
-GITHUB_WORKFLOW_FILE = env("GITHUB_WORKFLOW_FILE", default="cd.yml")
 
 DEBUG = env("DEBUG")
 
@@ -167,7 +156,7 @@ ROOT_URLCONF = "main.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
