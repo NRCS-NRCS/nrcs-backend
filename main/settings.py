@@ -61,6 +61,8 @@ env = environ.Env(
     # Pytest
     PYTEST_XDIST_WORKER=(str, None),
     # Github
+    # NOTE: If we don't get GITHUB_TOKEN, deployment through
+    # django admin panel will be skipped
     GITHUB_TOKEN=str,
     GITHUB_OWNER=str,
     GITHUB_REPO=str,
@@ -79,9 +81,9 @@ APP_TYPE = env("APP_TYPE").upper()
 APP_RELEASE = env("APP_RELEASE") or fetch_git_sha(BASE_DIR, raise_on_error=False)
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 GITHUB_TOKEN = env("GITHUB_TOKEN")
-GITHUB_OWNER = env("GITHUB_OWNER")
-GITHUB_REPO = env("GITHUB_REPO")
-GITHUB_WORKFLOW_FILE = env("GITHUB_WORKFLOW_FILE")
+GITHUB_OWNER = env("GITHUB_OWNER", default="NRCS-NRCS")
+GITHUB_REPO = env("GITHUB_REPO", default="nrcs-client")
+GITHUB_WORKFLOW_FILE = env("GITHUB_WORKFLOW_FILE", default="cd.yml")
 
 DEBUG = env("DEBUG")
 

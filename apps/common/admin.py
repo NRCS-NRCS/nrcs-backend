@@ -1,7 +1,7 @@
 # make a base admin class for auto created by and modified by
 
 
-import requests
+import httpx
 from django.conf import settings
 from django.contrib import admin, messages
 from django.template.response import TemplateResponse
@@ -23,9 +23,9 @@ class UserResourceAdmin(admin.ModelAdmin):
 
 
 # ---- Custom admin page: /admin/deployments/ ----
-OWNER = getattr(settings, "GITHUB_OWNER", "NRCS-NRCS")
-REPO = getattr(settings, "GITHUB_REPO", "nrcs-client")
-WORKFLOW_FILE = getattr(settings, "GITHUB_WORKFLOW_FILE", "cd.yml")
+OWNER = settings.GITHUB_OWNER
+REPO = settings.GITHUB_REPO
+WORKFLOW_FILE = settings.GITHUB_WORKFLOW_FILE
 
 
 def _github_headers():
@@ -41,7 +41,7 @@ def _github_headers():
 
 def fetch_latest_workflow_runs(limit=5):
     url = f"https://api.github.com/repos/{OWNER}/{REPO}/actions/workflows/{WORKFLOW_FILE}/runs"
-    r = requests.get(
+    r = httpx.get(
         url,
         params={"per_page": limit},
         headers=_github_headers(),
@@ -67,7 +67,7 @@ def trigger_workflow_dispatch(ref="main", inputs=None):
     if inputs:
         payload["inputs"] = inputs
 
-    r = requests.post(url, json=payload, headers=_github_headers(), timeout=15)
+    r = httpx.post(url, json=payload, headers=_github_headers(), timeout=15)
 
     # success is 204 No Content
     if r.status_code != 204:
@@ -83,7 +83,7 @@ def deployments_view(request):
     except Exception as e:
         error = str(e)
 
-    active = has_active_run(runs)
+    is_workflow_active = has_active_run(runs)
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -93,7 +93,7 @@ def deployments_view(request):
             messages.error(request, "Unknown action.")
         elif not request.user.is_superuser:
             messages.error(request, "You do not have permission to deploy.")
-        elif active:
+        elif is_workflow_active:
             messages.warning(request, "A deployment is already running.")
         else:
             try:
@@ -102,7 +102,7 @@ def deployments_view(request):
                 messages.success(request, f"Deployment triggered on '{ref}'.")
                 # refresh state
                 runs = fetch_latest_workflow_runs(limit=5)
-                active = has_active_run(runs)
+                is_workflow_active = has_active_run(runs)
             except Exception as e:
                 messages.error(request, f"Failed to trigger deployment: {e}")
 
@@ -111,7 +111,7 @@ def deployments_view(request):
         "title": "Deployments",
         "runs": runs,
         "error": error,
-        "has_active_run": active,
+        "has_active_run": is_workflow_active,
         "repo_url": f"https://github.com/{OWNER}/{REPO}/actions/workflows/{WORKFLOW_FILE}",
         "default_ref": "main",
     }
@@ -121,6 +121,9 @@ def deployments_view(request):
 def inject_deployments_url(original_get_urls):
     def get_urls():
         urls = list(original_get_urls())
+
+        if not settings.GITHUB_TOKEN:
+            return urls
 
         # If already added, don’t add again
         if any(getattr(u, "name", None) == "deployments" for u in urls):
