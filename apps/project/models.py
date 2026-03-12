@@ -9,7 +9,7 @@ from utils.common import MAX_IMAGE_FILE_SIZE, validate_file_size
 class Project(UserResource):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    cover_image = models.ImageField(upload_to="project/cover_image", null=True, blank=True)
+    cover_image = models.ImageField(upload_to="project/cover_image")
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
 
     def clean(self):
