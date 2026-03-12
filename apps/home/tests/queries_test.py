@@ -8,16 +8,17 @@ class TestHighlightQuery(TestCase):
         HIGHLIGHT = """
           query highlights($order: HighlightOrder) {
             highlights(order: $order) {
-                id
-                heading
-                description
-
-                actionLinks {
-                    url
-                    label
-                }
-                image {
-                    url
+                results {
+                    id
+                    heading
+                    description
+                    actionLinks {
+                        url
+                        label
+                    }
+                    image {
+                        url
+                    }
                 }
             }
           }
@@ -61,21 +62,19 @@ class TestHighlightQuery(TestCase):
         )
 
         content = _query()
-        assert content["data"] == {
-            "highlights": [
-                dict(
-                    id=self.gID(highlight.id),
-                    heading=highlight.heading,
-                    description=highlight.description,
-                    image=dict(url=self.get_media_url(highlight.image.name)),
-                    actionLinks=[
-                        dict(
-                            url=action_link.url,
-                            label=action_link.label,
-                        )
-                        for action_link in highlight.action_links.all()
-                    ],
-                )
-                for highlight in highlights_items
-            ],
-        }, content
+        assert content["data"]["highlights"]["results"] == [
+            dict(
+                id=self.gID(highlight.id),
+                heading=highlight.heading,
+                description=highlight.description,
+                image=dict(url=self.get_media_url(highlight.image.name)),
+                actionLinks=[
+                    dict(
+                        url=action_link.url,
+                        label=action_link.label,
+                    )
+                    for action_link in highlight.action_links.all()
+                ],
+            )
+            for highlight in highlights_items
+        ], content

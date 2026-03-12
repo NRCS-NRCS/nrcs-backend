@@ -19,6 +19,18 @@ CustomErrorType = strawberry.scalar(
 )
 
 
+@strawberry.input
+class DeleteInput:
+    id: strawberry.ID
+
+
+@strawberry.input
+class CudInput[X, Y]:
+    create: X | None = strawberry.UNSET
+    update: Y | None = strawberry.UNSET
+    delete: DeleteInput | None = strawberry.UNSET
+
+
 @strawberry.type
 class MutationResponseType(typing.Generic[ResultTypeVar]):
     ok: bool = True

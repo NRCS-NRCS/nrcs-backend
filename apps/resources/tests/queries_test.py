@@ -8,18 +8,19 @@ class TestResourcesQuery(TestCase):
         RESOURCES = """
           query resources($order: ResourceOrder) {
             resources(order: $order) {
-                content
-                file{
-                    url
-                }
-                id
-                publishedDate
-                title
-                directive {
-                    pk
+                results {
+                    content
+                    file {
+                        url
+                    }
+                    id
+                    publishedDate
+                    title
+                    directive {
+                        id
+                    }
                 }
             }
-
           }
         """
 
@@ -52,22 +53,23 @@ class TestResourcesQuery(TestCase):
                 published_date="2023-12-31",
                 title="Resource Two",
                 file="resource2.pdf",
+                directive=StrategicDirectivesFactory.create(
+                    title="Directive One",
+                ),
             ),
         ]
 
         content = _query()
-        assert content["data"] == {
-            "resources": [
-                dict(
-                    id=self.gID(resource.id),
-                    title=resource.title,
-                    content=resource.content,
-                    file=dict(
-                        url=self.get_media_url(resource.file.name),
-                    ),
-                    publishedDate=resource.published_date,
-                    directive=(dict(pk=self.gID(resource.directive.id)) if resource.directive else None),
-                )
-                for resource in resources_items
-            ],
-        }, content
+        assert content["data"]["resources"]["results"] == [
+            dict(
+                id=self.gID(resource.id),
+                title=resource.title,
+                content=resource.content,
+                file=dict(
+                    url=self.get_media_url(resource.file.name),
+                ),
+                publishedDate=resource.published_date,
+                directive=(dict(id=self.gID(resource.directive.id)) if resource.directive else None),
+            )
+            for resource in resources_items
+        ], content

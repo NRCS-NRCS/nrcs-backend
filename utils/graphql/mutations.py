@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from asgiref.sync import sync_to_async
 from django.db import models, transaction
@@ -6,7 +7,7 @@ from rest_framework import serializers
 
 from main.graphql.context import Info
 
-from .common import parse_input_data
+from .common import DataclassInstance, InputDataType, parse_input_data
 from .drf import _CustomErrorType, mutation_is_not_valid
 from .types import CustomErrorType, MutationResponseType
 
@@ -73,14 +74,20 @@ class ModelMutation:
 
     async def handle_update_mutation(
         self,
-        data,
+        data,  # type: ignore[reportMissingParameterType]
         info: Info,
         instance: models.Model,
-        extra_context: dict | None = None,
-    ) -> MutationResponseType:
+        extra_context: dict | None = None,  # type: ignore[reportMissingTypeArgument]
+        dataclass_transformer: typing.Callable[[DataclassInstance], tuple[bool, InputDataType]] | None = None,
+    ) -> MutationResponseType:  # type: ignore[reportMissingTypeArgument]
+        parsed_dict = parse_input_data(
+            data,
+            dataclass_transformer,
+        )
+
         errors, saved_instance = await self.handle_mutation(
             self.serializer_class,
-            parse_input_data(data),
+            parsed_dict,
             info,
             extra_context,
             instance=instance,

@@ -8,14 +8,16 @@ class TestprojectQuery(TestCase):
         project = """
           query projects($order: ProjectOrder) {
             projects(order: $order) {
-              id
-              title
-              description
-              id
-              title
-              coverImage {
-                url
-              }
+                results {
+                  id
+                  title
+                  description
+                  id
+                  title
+                  coverImage {
+                    url
+                  }
+                }
             }
           }
         """
@@ -48,16 +50,14 @@ class TestprojectQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "projects": [
-                dict(
-                    id=self.gID(project.id),
-                    title=project.title,
-                    coverImage={
-                        "url": self.get_media_url(project.cover_image.name),
-                    },
-                    description=project.description,
-                )
-                for project in project_items
-            ],
-        }, content
+        assert content["data"]["projects"]["results"] == [
+            dict(
+                id=self.gID(project.id),
+                title=project.title,
+                coverImage={
+                    "url": self.get_media_url(project.cover_image.name),
+                },
+                description=project.description,
+            )
+            for project in project_items
+        ], content
