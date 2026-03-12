@@ -52,11 +52,13 @@ log_cli = true
 
 [tool.ruff]
 line-length = 125
+# FIXME: Remove uv.lock later
 extend-exclude = [
     ".git",
     ".pytest_cache",
     ".mypy_cache",
     ".ruff_cache",
+    "uv.lock",
     ".venv",
     "venv",
     "**/migrations/*",

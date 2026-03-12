@@ -36,7 +36,7 @@ def unique_slugify(instance: T, slug: str) -> str:
 
 
 MAX_IMAGE_FILE_SIZE = 4
-MAX_FILE_SIZE = 7
+MAX_FILE_SIZE = 30
 MAX_RADIO_PROGRAM_FILE_SIZE = 40
 
 
