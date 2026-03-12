@@ -7,4 +7,4 @@ from .models import News
 
 @admin.register(News)
 class NewsAdmin(UserResourceAdmin):
-    list_display = ["title", "status"]
+    list_display = ["title", "status", "is_notice"]
