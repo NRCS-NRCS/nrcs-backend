@@ -3,7 +3,6 @@ from enum import Enum
 
 import strawberry
 
-
 @strawberry.enum
 class DummyEnum(Enum):
     VALUE_1 = "Value 1"

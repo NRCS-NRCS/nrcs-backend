@@ -14,4 +14,5 @@ class NewsSerializer(UserResourceSerializer[News]):
             "directive",
             "slug",
             "cover_image",
+            "is_highlighted",
         ]
