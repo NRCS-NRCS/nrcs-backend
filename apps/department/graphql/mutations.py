@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.department.graphql.inputs import DepartmentCreateInput, DepartmentDeleteInput, DepartmentUpdateInput
 from apps.department.graphql.types import DepartmentType
@@ -16,14 +16,14 @@ class Mutation:
     delete_department: DepartmentType = strawberry_django.mutations.delete(
         DepartmentDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_department(self, info: Info, data: DepartmentCreateInput) -> MutationResponseType[DepartmentType]:
         return await ModelMutation(DepartmentSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_department(
         self,
         info: Info,

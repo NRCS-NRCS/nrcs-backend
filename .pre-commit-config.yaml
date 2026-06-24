@@ -27,6 +27,7 @@ repos:
       - id: check-docstring-first
       - id: detect-private-key
       - id: name-tests-test
+        exclude: "factory\\.py$"
 
   # Run the Ruff linter.
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -36,9 +37,11 @@ repos:
       - id: ruff
         types_or: [python, pyi, jupyter, toml]
         args: [--fix, --exit-non-zero-on-fix]
+        exclude: "uv\\.lock$"
       # Formatter
       - id: ruff-format
         types_or: [python, pyi, jupyter, toml]
+        exclude: "uv\\.lock$"
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.398
