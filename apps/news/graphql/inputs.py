@@ -32,6 +32,7 @@ class NewsCreateInput:
     status: strawberry.auto
     directive: strawberry.ID
     is_highlighted: strawberry.auto
+    show_in_popup: strawberry.auto
     file: Upload | None = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
     action_links: list[ActionLinkCreateInput] | None = strawberry.UNSET
@@ -46,6 +47,7 @@ class NewsUpdateInput:
     slug: strawberry.auto
     directive: strawberry.ID
     is_highlighted: strawberry.auto
+    show_in_popup: strawberry.auto
     file: Upload | None = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
     action_links: list[ActionLinkInput] | None = strawberry.UNSET

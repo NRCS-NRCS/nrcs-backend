@@ -42,6 +42,7 @@ class NewsSerializer(UserResourceSerializer[News]):
             "slug",
             "cover_image",
             "is_highlighted",
+            "show_in_popup",
             "action_links",
         ]
 
