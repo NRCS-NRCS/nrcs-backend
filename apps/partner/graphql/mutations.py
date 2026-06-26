@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.partner.graphql.inputs import PartnerCreateInput, PartnerDeleteInput, PartnerUpdateInput
 from apps.partner.graphql.types import PartnerType
@@ -16,14 +16,14 @@ class Mutation:
     delete_partner: PartnerType = strawberry_django.mutations.delete(
         PartnerDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_partner(self, info: Info, data: PartnerCreateInput) -> MutationResponseType[PartnerType]:
         return await ModelMutation(PartnerSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_partner(
         self,
         info: Info,

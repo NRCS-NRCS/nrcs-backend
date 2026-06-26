@@ -12,8 +12,6 @@ from apps.department.graphql import mutations as department_mutations
 from apps.department.graphql import queries as department_queries
 from apps.faq.graphql import mutations as faq_mutation
 from apps.faq.graphql import queries as faq_queries
-from apps.home.graphql import mutations as home_mutations
-from apps.home.graphql import queries as home_queries
 from apps.news.graphql import mutations as news_mutations
 from apps.news.graphql import queries as news_queries
 from apps.partner.graphql import mutations as partner_mutations
@@ -28,6 +26,8 @@ from apps.resources.graphql import mutations as resources_mutations
 from apps.resources.graphql import queries as resources_queries
 from apps.strategic.graphql import mutations as strategic_mutations
 from apps.strategic.graphql import queries as strategic_queries
+from apps.users.graphql import mutations as users_mutations
+from apps.users.graphql import queries as users_queries
 from apps.vacancy.graphql import mutations as vacancy_mutations
 from apps.vacancy.graphql import queries as vacancy_queries
 
@@ -47,6 +47,7 @@ class CustomAsyncGraphQLView(AsyncGraphQLView):
 
 @strawberry.type
 class Query(
+    users_queries.Query,
     common_queries.Query,
     strategic_queries.Query,
     department_queries.Query,
@@ -58,7 +59,6 @@ class Query(
     partner_queries.Query,
     blog_queries.Query,
     news_queries.Query,
-    home_queries.Query,
     radio_program_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
@@ -69,12 +69,12 @@ class Query(
 # NOTE: for now we are not using mutation
 @strawberry.type
 class Mutation(
+    users_mutations.Mutation,
     department_mutations.Mutation,
     common_mutation.Mutation,
     faq_mutation.Mutation,
     project_mutation.Mutation,
     blog_mutations.Mutation,
-    home_mutations.Mutation,
     news_mutations.Mutation,
     partner_mutations.Mutation,
     procurement_mutations.Mutation,

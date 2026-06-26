@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.project.graphql.inputs import ProjectCreateInput, ProjectDeleteInput, ProjectUpdateInput
 from apps.project.graphql.types import ProjectType
@@ -16,14 +16,14 @@ class Mutation:
     delete_project: ProjectType = strawberry_django.mutations.delete(
         ProjectDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_project(self, info: Info, data: ProjectCreateInput) -> MutationResponseType[ProjectType]:
         return await ModelMutation(ProjectSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_project(
         self,
         info: Info,

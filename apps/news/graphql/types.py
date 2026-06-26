@@ -19,3 +19,4 @@ class NewsType(UserResourceTypeMixin):
     directive: StrategicDirectivesType | None
     slug: strawberry.auto
     cover_image: DjangoFileType | None
+    is_highlighted: strawberry.auto

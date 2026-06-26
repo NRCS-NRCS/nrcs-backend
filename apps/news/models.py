@@ -30,6 +30,7 @@ class News(UserResource):
     slug = models.SlugField(unique=True, max_length=250, blank=True, verbose_name=_("Slug"))
     cover_image = models.ImageField(upload_to="news/", null=True, blank=True)
     status = IntegerChoicesField(choices_enum=StatusEnum, default=StatusEnum.DRAFT)
+    is_highlighted = models.BooleanField(default=False)
 
     def clean(self):
         if self.cover_image:

@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.news.graphql.inputs import NewsCreateInput, NewsDeleteInput, NewsUpdateInput
 from apps.news.graphql.types import NewsType
@@ -16,10 +16,10 @@ class Mutation:
     delete_news: NewsType = strawberry_django.mutations.delete(
         NewsDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_news(
         self,
         info: Info,
@@ -27,7 +27,7 @@ class Mutation:
     ) -> MutationResponseType[NewsType]:
         return await ModelMutation(NewsSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_news(
         self,
         info: Info,

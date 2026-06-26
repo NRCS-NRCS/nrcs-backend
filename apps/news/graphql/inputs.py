@@ -13,6 +13,7 @@ class NewsCreateInput:
     slug: strawberry.auto
     status: strawberry.auto
     directive: strawberry.ID
+    is_highlighted: strawberry.auto
     file: Upload | None = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
 
@@ -25,6 +26,7 @@ class NewsUpdateInput:
     status: strawberry.auto
     slug: strawberry.auto
     directive: strawberry.ID
+    is_highlighted: strawberry.auto
     file: Upload | None = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
 

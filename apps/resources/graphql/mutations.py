@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.resources.graphql.inputs import ResourceCreateInput, ResourceDeleteInput, ResourceUpdateInput
 from apps.resources.graphql.types import ResourceType
@@ -16,14 +16,14 @@ class Mutation:
     delete_resource: ResourceType = strawberry_django.mutations.delete(
         ResourceDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_resource(self, info: Info, data: ResourceCreateInput) -> MutationResponseType[ResourceType]:
         return await ModelMutation(ResourceSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_resource(
         self,
         info: Info,

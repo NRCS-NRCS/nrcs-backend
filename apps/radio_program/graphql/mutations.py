@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.radio_program.graphql.inputs import RadioProgramCreateInput, RadioProgramDeleteInput, RadioProgramUpdateInput
 from apps.radio_program.graphql.types import RadioProgramType
@@ -16,10 +16,10 @@ class Mutation:
     delete_radio_program: RadioProgramType = strawberry_django.mutations.delete(
         RadioProgramDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_radio_program(
         self,
         info: Info,
@@ -27,7 +27,7 @@ class Mutation:
     ) -> MutationResponseType[RadioProgramType]:
         return await ModelMutation(RadioProgramSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_radio_program(
         self,
         info: Info,
