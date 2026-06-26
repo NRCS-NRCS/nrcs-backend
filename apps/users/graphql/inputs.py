@@ -4,16 +4,23 @@ from .types import UserTypeEnum
 
 
 @strawberry.input
-class CreateUserInput:
+class UserCreateInput:
     email: str
-    full_name: str
     password: str
+    first_name: str = ""
+    last_name: str = ""
     user_type: UserTypeEnum = UserTypeEnum.VIEWER
 
 
 @strawberry.input
-class UpdateUserInput:
+class UserUpdateInput:
     email: str | None = strawberry.UNSET
-    full_name: str | None = strawberry.UNSET
-    password: str | None = strawberry.UNSET
+    first_name: str | None = strawberry.UNSET
+    last_name: str | None = strawberry.UNSET
     user_type: UserTypeEnum | None = strawberry.UNSET
+
+
+@strawberry.input
+class PasswordUpdateInput:
+    current_password: str
+    new_password: str

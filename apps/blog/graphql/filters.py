@@ -10,13 +10,11 @@ from apps.common.models import StatusEnum
 class BlogFilter:
     id: strawberry.ID | None
     slug: strawberry.auto
-    status: StatusEnum
     author: strawberry.auto
     featured: strawberry.auto
+    status: StatusEnum | None = strawberry.UNSET
     directive: strawberry.ID | None = None
-    search: str | None = strawberry.UNSET
 
-    def filter_search(self, queryset, info, value):
-        if not value or value is strawberry.UNSET:
-            return queryset
-        return queryset.filter(Q(title__icontains=value))
+    @strawberry_django.filter_field
+    def search(self, value: str, prefix: str) -> Q:
+        return Q(title__icontains=value)

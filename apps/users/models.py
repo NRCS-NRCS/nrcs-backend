@@ -1,1 +1,3 @@
-# User management is handled through Django's built-in auth.User model.
+from django.contrib.auth.models import User
+
+__all__ = ["User"]

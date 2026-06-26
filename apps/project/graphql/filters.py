@@ -10,7 +10,6 @@ from apps.strategic.graphql.filters import StrategicDirectivesFilter
 class ProjectFilter:
     id: strawberry.ID | None = None
     department__strategic_directive: StrategicDirectivesFilter | None = None
-    search: str | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:

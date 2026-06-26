@@ -10,31 +10,17 @@ When the condition fails, the following can be returned (following this priority
 """
 directive @isAuthenticated repeatable on FIELD_DEFINITION
 
-"""ActionLink(id, url, label, highlight)"""
-input ActionLinkCreateInput {
-  url: String!
-  label: String!
-}
+"""
+Can only be resolved by staff users.
 
-input ActionLinkInput {
-  create: ActionLinkCreateInput
-  update: ActionLinkUpdateInput
-  delete: DeleteInput
-}
-
-"""ActionLink(id, url, label, highlight)"""
-type ActionLinkType {
-  id: ID!
-  label: String!
-  url: String!
-}
-
-"""ActionLink(id, url, label, highlight)"""
-input ActionLinkUpdateInput {
-  id: ID!
-  url: String
-  label: String
-}
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
+"""
+directive @isStaff repeatable on FIELD_DEFINITION
 
 type AppEnumCollection {
   DummyEnum: [AppEnumCollectionDummyEnum!]!
@@ -77,6 +63,7 @@ input BlogFilter {
   author: StrFilterLookup
   featured: BoolBaseFilterLookup
   directive: ID = null
+  search: String
   AND: BlogFilter
   OR: BlogFilter
   NOT: BlogFilter
@@ -161,8 +148,6 @@ union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationIn
 
 union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
-union CreateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
-
 union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
@@ -178,6 +163,15 @@ union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | Operati
 union CreateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
 
 union CreateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
+input CreateUserInput {
+  email: String!
+  fullName: String!
+  password: String!
+  userType: UserTypeEnum! = VIEWER
+}
+
+union CreateUserPayload = UserTypeMutationResponseType | OperationInfo
 
 """A generic type to return error messages"""
 scalar CustomErrorType
@@ -235,8 +229,6 @@ union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
 union DeleteFaqPayload = FaqType | OperationInfo
 
-union DeleteHighlightPayload = HighlightType | OperationInfo
-
 input DeleteInput {
   id: ID!
 }
@@ -256,6 +248,8 @@ union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
 union DeleteResourcePayload = ResourceType | OperationInfo
 
 union DeleteStrategicDirectivesPayload = StrategicDirectivesType | OperationInfo
+
+union DeleteUserPayload = UserTypeMutationResponseType | OperationInfo
 
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
@@ -281,6 +275,7 @@ Department(id, created_at, modified_at, created_by, modified_by, title, descript
 input DepartmentFilter {
   id: ID!
   slug: StrFilterLookup
+  search: String
   AND: DepartmentFilter
   OR: DepartmentFilter
   NOT: DepartmentFilter
@@ -377,6 +372,7 @@ Faq(id, created_at, modified_at, created_by, modified_by, question, answer, orde
 input FaqFilter {
   id: ID!
   orderIndex: IntComparisonFilterLookup
+  search: String
   AND: FaqFilter
   OR: FaqFilter
   NOT: FaqFilter
@@ -425,84 +421,6 @@ input FaqUpdateInput {
   question: String
   answer: String
   orderIndex: Int
-}
-
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-input HighlightCreateInput {
-  heading: String!
-  description: String!
-  isActive: Boolean
-  image: Upload!
-  actionLinks: [ActionLinkCreateInput!]
-}
-
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-input HighlightDeleteInput {
-  id: ID!
-}
-
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-input HighlightFilter {
-  heading: String = null
-  isActive: Boolean
-  AND: HighlightFilter
-  OR: HighlightFilter
-  NOT: HighlightFilter
-  DISTINCT: Boolean
-}
-
-input HighlightOrder {
-  id: Ordering
-  heading: Ordering
-}
-
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-type HighlightType implements UserResourceTypeMixin {
-  createdAt: DateTime!
-  modifiedAt: DateTime!
-  createdBy: UserType!
-  modifiedBy: UserType!
-  id: ID!
-  heading: String!
-  description: String!
-  image: DjangoFileType
-  isActive: Boolean!
-  actionLinks: [ActionLinkType!]
-}
-
-type HighlightTypeMutationResponseType {
-  ok: Boolean!
-  errors: CustomErrorType
-  result: HighlightType
-}
-
-type HighlightTypeOffsetPaginated {
-  pageInfo: OffsetPaginationInfo!
-
-  """Total count of existing results."""
-  totalCount: Int!
-
-  """List of paginated results."""
-  results: [HighlightType!]!
-}
-
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-input HighlightUpdateInput {
-  heading: String
-  description: String
-  isActive: Boolean
-  image: Upload
-  actionLinks: [ActionLinkInput!]
 }
 
 input IntComparisonFilterLookup {
@@ -566,6 +484,7 @@ JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, po
 input JobVacancyFilter {
   expiryDate: DateDateFilterLookup
   isArchived: Boolean
+  search: String
   AND: JobVacancyFilter
   OR: JobVacancyFilter
   NOT: JobVacancyFilter
@@ -643,6 +562,7 @@ input MajorResponsibilitiesFilter {
   id: ID!
   slug: StrFilterLookup
   directive: DjangoModelFilterInput
+  search: String
   AND: MajorResponsibilitiesFilter
   OR: MajorResponsibilitiesFilter
   NOT: MajorResponsibilitiesFilter
@@ -695,48 +615,48 @@ input MajorResponsibilitiesUpdateInput {
 }
 
 type Mutation {
-  deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isAuthenticated
-  createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isAuthenticated
-  updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isAuthenticated
-  login(username: String!, password: String!): UserMeType!
+  login(email: String!, password: String!): UserMeType!
   logout: Boolean!
-  deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isAuthenticated
-  createFaq(data: FaqCreateInput!): CreateFaqPayload! @isAuthenticated
-  updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isAuthenticated
-  deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isAuthenticated
-  createProject(data: ProjectCreateInput!): CreateProjectPayload! @isAuthenticated
-  updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isAuthenticated
-  deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isAuthenticated
-  createBlog(data: BlogCreateInput!): CreateBlogPayload! @isAuthenticated
-  updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
-  deleteHighlight(data: HighlightDeleteInput!): DeleteHighlightPayload! @isAuthenticated
-  createHighlight(data: HighlightCreateInput!): CreateHighlightPayload! @isAuthenticated
-  updateHighlight(data: HighlightUpdateInput!, pk: ID!): UpdateHighlightPayload! @isAuthenticated
-  deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isAuthenticated
-  createNews(data: NewsCreateInput!): CreateNewsPayload! @isAuthenticated
-  updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
-  deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isAuthenticated
-  createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isAuthenticated
-  updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isAuthenticated
-  deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isAuthenticated
-  createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isAuthenticated
-  updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isAuthenticated
-  deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isAuthenticated
-  createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isAuthenticated
-  updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isAuthenticated
-  deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isAuthenticated
-  createResource(data: ResourceCreateInput!): CreateResourcePayload! @isAuthenticated
-  updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isAuthenticated
-  deleteStrategicDirectives(data: StrategicDirectivesDeleteInput!): DeleteStrategicDirectivesPayload! @isAuthenticated
-  createStrategicDirectives(data: StrategicDirectivesCreateInput!): CreateStrategicDirectivesPayload! @isAuthenticated
-  updateStrategicDirectives(data: StrategicDirectivesUpdateInput!, pk: ID!): UpdateStrategicDirectivesPayload! @isAuthenticated
-  deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isAuthenticated
-  createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isAuthenticated
-  updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isAuthenticated
+  createUser(data: CreateUserInput!): CreateUserPayload! @isAuthenticated
+  updateUser(data: UpdateUserInput!, pk: ID!): UpdateUserPayload! @isAuthenticated
+  deleteUser(pk: ID!): DeleteUserPayload! @isAuthenticated
+  deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isStaff
+  createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isStaff
+  updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isStaff
+  deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isStaff
+  createFaq(data: FaqCreateInput!): CreateFaqPayload! @isStaff
+  updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isStaff
+  deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isStaff
+  createProject(data: ProjectCreateInput!): CreateProjectPayload! @isStaff
+  updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isStaff
+  deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isStaff
+  createBlog(data: BlogCreateInput!): CreateBlogPayload! @isStaff
+  updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isStaff
+  deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isStaff
+  createNews(data: NewsCreateInput!): CreateNewsPayload! @isStaff
+  updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isStaff
+  deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isStaff
+  createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isStaff
+  updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isStaff
+  deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isStaff
+  createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isStaff
+  updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isStaff
+  deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isStaff
+  createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isStaff
+  updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isStaff
+  deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isStaff
+  createResource(data: ResourceCreateInput!): CreateResourcePayload! @isStaff
+  updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isStaff
+  deleteStrategicDirectives(data: StrategicDirectivesDeleteInput!): DeleteStrategicDirectivesPayload! @isStaff
+  createStrategicDirectives(data: StrategicDirectivesCreateInput!): CreateStrategicDirectivesPayload! @isStaff
+  updateStrategicDirectives(data: StrategicDirectivesUpdateInput!, pk: ID!): UpdateStrategicDirectivesPayload! @isStaff
+  deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isStaff
+  createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isStaff
+  updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isStaff
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 input NewsCreateInput {
   title: String!
@@ -745,26 +665,28 @@ input NewsCreateInput {
   slug: String
   status: StatusEnum
   directive: ID!
+  isHighlighted: Boolean
   file: Upload
   coverImage: Upload
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 input NewsDeleteInput {
   id: ID!
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 input NewsFilter {
-  name: String
   slug: String
   id: ID
   directive: ID = null
   status: StatusEnum
+  isHighlighted: Boolean
+  search: String
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
@@ -779,7 +701,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 type NewsType implements UserResourceTypeMixin {
   createdAt: DateTime!
@@ -796,6 +718,7 @@ type NewsType implements UserResourceTypeMixin {
   directive: StrategicDirectivesType
   slug: String!
   coverImage: DjangoFileType
+  isHighlighted: Boolean!
 }
 
 type NewsTypeMutationResponseType {
@@ -815,7 +738,7 @@ type NewsTypeOffsetPaginated {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 input NewsUpdateInput {
   title: String
@@ -824,6 +747,7 @@ input NewsUpdateInput {
   status: StatusEnum
   slug: String
   directive: ID!
+  isHighlighted: Boolean
   file: Upload
   coverImage: Upload
 }
@@ -897,6 +821,7 @@ Partner(id, created_at, modified_at, created_by, modified_by, title, image, scop
 """
 input PartnerFilter {
   scope: PartnerScopeEnumFilterLookup
+  search: String
   AND: PartnerFilter
   OR: PartnerFilter
   NOT: PartnerFilter
@@ -1025,6 +950,7 @@ input ProcurementFilter {
   id: ID!
   expiryDate: DateDateFilterLookup
   publishedDate: DateDateFilterLookup
+  search: String
   AND: ProcurementFilter
   OR: ProcurementFilter
   NOT: ProcurementFilter
@@ -1101,6 +1027,7 @@ Project(id, created_at, modified_at, created_by, modified_by, title, description
 input ProjectFilter {
   id: ID = null
   department_StrategicDirective: StrategicDirectivesFilter = null
+  search: String
   AND: ProjectFilter
   OR: ProjectFilter
   NOT: ProjectFilter
@@ -1154,7 +1081,7 @@ input ProjectUpdateInput {
 
 type Query {
   me: UserMeType
-  users(pagination: OffsetPaginationInput): UserTypeOffsetPaginated! @isAuthenticated
+  users(filters: UserFilter, pagination: OffsetPaginationInput): UserTypeOffsetPaginated! @isAuthenticated
   strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
   strategicDirective(id: ID!): StrategicDirectivesType!
   majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
@@ -1177,8 +1104,6 @@ type Query {
   blog(id: ID!): BlogType!
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated!
   newsItem(id: ID!): NewsType!
-  highlights(pagination: OffsetPaginationInput, filters: HighlightFilter, order: HighlightOrder): HighlightTypeOffsetPaginated!
-  highlight(id: ID!): HighlightType!
   radioProgram(pagination: OffsetPaginationInput, filters: RadioProgramFilter, order: RadioProgramOrder): RadioProgramTypeOffsetPaginated!
   enums: AppEnumCollection!
 }
@@ -1208,6 +1133,7 @@ input RadioProgramFilter {
   id: ID
   title: String
   type: RadioProgramTypeEnum
+  search: String
   AND: RadioProgramFilter
   OR: RadioProgramFilter
   NOT: RadioProgramFilter
@@ -1295,6 +1221,7 @@ input ResourceFilter {
   id: ID
   directive: ID = null
   type: ResourceTypeEnum
+  search: String
   AND: ResourceFilter
   OR: ResourceFilter
   NOT: ResourceFilter
@@ -1436,6 +1363,7 @@ StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title,
 input StrategicDirectivesFilter {
   id: ID!
   slug: StrFilterLookup
+  search: String
   AND: StrategicDirectivesFilter
   OR: StrategicDirectivesFilter
   NOT: StrategicDirectivesFilter
@@ -1494,8 +1422,6 @@ union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationIn
 
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
 
-union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
-
 union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
 
 union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
@@ -1512,7 +1438,39 @@ union UpdateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
 
 union UpdateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
 
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
+  userType: UserTypeEnum
+}
+
+union UpdateUserPayload = UserTypeMutationResponseType | OperationInfo
+
 scalar Upload
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+input UserFilter {
+  id: ID
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: BoolBaseFilterLookup
+
+  """Designates whether the user can log into this admin site."""
+  isStaff: BoolBaseFilterLookup
+  search: String
+  AND: UserFilter
+  OR: UserFilter
+  NOT: UserFilter
+  DISTINCT: Boolean
+}
 
 """
 Users within the Django authentication system are represented by this
@@ -1522,9 +1480,16 @@ Username and password are required. Other fields are optional.
 """
 type UserMeType {
   id: ID!
-  firstName: String!
-  lastName: String!
   email: String!
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean!
+  fullName: String!
+  userType: UserTypeEnum!
+  lastLogin: DateTime
+  createdAt: DateTime!
 }
 
 interface UserResourceTypeMixin {
@@ -1542,8 +1507,26 @@ Username and password are required. Other fields are optional.
 """
 type UserType {
   id: ID!
-  firstName: String!
-  lastName: String!
+  email: String!
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean!
+  fullName: String!
+  userType: UserTypeEnum!
+}
+
+enum UserTypeEnum {
+  VIEWER
+  STAFF
+  ADMIN
+}
+
+type UserTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: UserType
 }
 
 type UserTypeOffsetPaginated {

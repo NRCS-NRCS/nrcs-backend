@@ -12,7 +12,6 @@ class ResourceFilter:
     id: strawberry.ID | None = strawberry.UNSET
     directive: strawberry.ID | None = None
     type: ResourceTypeEnum | None = strawberry.UNSET
-    search: str | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:

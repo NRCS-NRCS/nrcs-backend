@@ -1,5 +1,5 @@
 # Create your models here.
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -14,12 +14,12 @@ class UserResource(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         related_name="%(class)s_created",
         on_delete=models.PROTECT,
     )
     modified_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         related_name="%(class)s_modified",
         on_delete=models.PROTECT,
     )

@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+
 from apps.users.tests.factory import UserFactory
 from main.tests.base_test import TestCase
 
@@ -12,7 +14,8 @@ _USER_RESULT_FRAGMENT = """
     result {
       id
       email
-      fullName
+      firstName
+      lastName
       isActive
       userType
     }
@@ -61,7 +64,8 @@ class TestUserMutation(TestCase):
         self.force_login(self.admin)
         data = {
             "email": "new-viewer@example.com",
-            "fullName": "Viewer User",
+            "firstName": "Viewer",
+            "lastName": "User",
             "password": "securepassword123",
         }
         content = self.query_check(self.Mutation.CREATE_USER, variables={"data": data})
@@ -73,7 +77,8 @@ class TestUserMutation(TestCase):
         self.force_login(self.admin)
         data = {
             "email": "new-staff@example.com",
-            "fullName": "Staff User",
+            "firstName": "Staff",
+            "lastName": "User",
             "password": "securepassword123",
             "userType": "STAFF",
         }
@@ -89,7 +94,8 @@ class TestUserMutation(TestCase):
         self.force_login(self.admin)
         data = {
             "email": "new-admin@example.com",
-            "fullName": "Admin User",
+            "firstName": "Admin",
+            "lastName": "User",
             "password": "securepassword123",
             "userType": "ADMIN",
         }
@@ -97,7 +103,6 @@ class TestUserMutation(TestCase):
         resp = self._get_mutation_payload(content, "createUser")
         assert resp["ok"] is True, content
         assert resp["result"]["userType"] == "ADMIN"
-        from apps.users.models import User
         created = User.objects.get(email="new-admin@example.com")
         assert created.is_staff is True
         assert created.is_superuser is True
@@ -106,7 +111,7 @@ class TestUserMutation(TestCase):
         self.force_login(self.user)
         content = self.query_check(
             self.Mutation.CREATE_USER,
-            variables={"data": {"email": "x@x.com", "fullName": "X", "password": "pass"}},
+            variables={"data": {"email": "x@x.com", "password": "pass"}},
         )
         resp = content["data"]["createUser"]
         assert resp["__typename"] == "OperationInfo", content
@@ -114,7 +119,7 @@ class TestUserMutation(TestCase):
 
     def test_create_user_duplicate_email(self):
         self.force_login(self.admin)
-        data = {"email": self.user.email, "fullName": "Dup", "password": "pass123"}
+        data = {"email": self.user.email, "password": "pass123"}
         content = self.query_check(self.Mutation.CREATE_USER, variables={"data": data})
         resp = self._get_mutation_payload(content, "createUser")
         assert resp["ok"] is False, content
@@ -127,11 +132,12 @@ class TestUserMutation(TestCase):
         self.force_login(target)
         content = self.query_check(
             self.Mutation.UPDATE_USER,
-            variables={"pk": str(target.pk), "data": {"fullName": "Updated Name"}},
+            variables={"pk": str(target.pk), "data": {"firstName": "Updated", "lastName": "Name"}},
         )
         resp = self._get_mutation_payload(content, "updateUser")
         assert resp["ok"] is True, content
-        assert resp["result"]["fullName"] == "Updated Name"
+        assert resp["result"]["firstName"] == "Updated"
+        assert resp["result"]["lastName"] == "Name"
 
     def test_update_user_type(self):
         target = UserFactory.create(email="type-update@example.com")
@@ -152,18 +158,18 @@ class TestUserMutation(TestCase):
         self.force_login(self.admin)
         content = self.query_check(
             self.Mutation.UPDATE_USER,
-            variables={"pk": str(target.pk), "data": {"fullName": "AdminUpdated"}},
+            variables={"pk": str(target.pk), "data": {"firstName": "AdminUpdated"}},
         )
         resp = self._get_mutation_payload(content, "updateUser")
         assert resp["ok"] is True, content
-        assert resp["result"]["fullName"] == "AdminUpdated"
+        assert resp["result"]["firstName"] == "AdminUpdated"
 
     def test_update_user_permission_denied(self):
         other = UserFactory.create(email="update-other@example.com")
         self.force_login(self.user)
         content = self.query_check(
             self.Mutation.UPDATE_USER,
-            variables={"pk": str(other.pk), "data": {"fullName": "Hacked"}},
+            variables={"pk": str(other.pk), "data": {"firstName": "Hacked"}},
         )
         resp = self._get_mutation_payload(content, "updateUser")
         assert resp["ok"] is False, content

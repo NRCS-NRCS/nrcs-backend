@@ -8,7 +8,6 @@ from apps.partner.models import Partner
 @strawberry_django.filters.filter(Partner, lookups=True)
 class PartnerFilter:
     scope: strawberry.auto
-    search: str | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:

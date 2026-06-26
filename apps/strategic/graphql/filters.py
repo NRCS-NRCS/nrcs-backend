@@ -7,9 +7,8 @@ from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 
 @strawberry_django.filters.filter(StrategicDirectives, lookups=True)
 class StrategicDirectivesFilter:
-    id: strawberry.ID
     slug: strawberry.auto
-    search: str | None = strawberry.UNSET
+    id: strawberry.ID | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:
@@ -18,10 +17,9 @@ class StrategicDirectivesFilter:
 
 @strawberry_django.filters.filter(MajorResponsibilities, lookups=True)
 class MajorResponsibilitiesFilter:
-    id: strawberry.ID
     slug: strawberry.auto
     directive: strawberry.auto
-    search: str | None = strawberry.UNSET
+    id: strawberry.ID | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:

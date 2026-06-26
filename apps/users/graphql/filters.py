@@ -9,7 +9,6 @@ class UserFilter:
     id: strawberry.ID | None
     is_active: strawberry.auto
     is_staff: strawberry.auto
-    search: str | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:

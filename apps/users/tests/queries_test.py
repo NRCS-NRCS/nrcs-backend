@@ -4,10 +4,10 @@ from main.tests.base_test import TestCase
 _USER_FRAGMENT = """
   id
   email
-  fullName
-  role
+  firstName
+  lastName
   isActive
-  isStaff
+  userType
 """
 
 
@@ -27,7 +27,7 @@ class TestUserQuery(TestCase):
               results {
                 id
                 email
-                role
+                userType
               }
             }
           }

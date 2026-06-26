@@ -3,6 +3,7 @@ from enum import Enum
 
 import strawberry
 import strawberry_django
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 
 
@@ -17,24 +18,29 @@ class UserTypeEnum(Enum):
 class UserType:
     id: strawberry.ID
     email: strawberry.auto
+    first_name: strawberry.auto
+    last_name: strawberry.auto
     is_active: strawberry.auto
+    last_login: strawberry.auto
 
     @strawberry.field
-    def full_name(self) -> str:
-        return self.__dict__.get("_full_name", "").strip() or self.__dict__.get("email", "")  # type: ignore[reportAttributeAccessIssue]
+    @sync_to_async
+    def created_at(self) -> datetime.datetime:
+        return self.date_joined  # type: ignore[reportAttributeAccessIssue]
 
     @strawberry.field
+    @sync_to_async
     def user_type(self) -> UserTypeEnum:
-        return UserTypeEnum(self.__dict__.get("_user_type", "viewer"))
+        if self.is_superuser:  # type: ignore[reportAttributeAccessIssue]
+            return UserTypeEnum.ADMIN
+        if self.is_staff:  # type: ignore[reportAttributeAccessIssue]
+            return UserTypeEnum.STAFF
+        return UserTypeEnum.VIEWER
 
 
 @strawberry_django.type(User)
 class UserMeType(UserType):
-    last_login: strawberry.auto
-
-    @strawberry.field
-    def created_at(self) -> datetime.datetime:
-        return self.__dict__.get("date_joined") or self.date_joined  # type: ignore[reportAttributeAccessIssue]
+    pass
 
 
 @strawberry.interface
