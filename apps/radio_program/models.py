@@ -7,11 +7,11 @@ from apps.common.models import UserResource
 from utils.common import MAX_RADIO_PROGRAM_FILE_SIZE, validate_file_size
 
 # update audio file only validation
-file_extensions = [".mp3", ".aac", ".wav", ".flac", ".ogg"]
+ALLOWED_AUDIO_EXTENSIONS = ["mp3", "mpeg", "aac", "wav", "flac", "ogg"]
 
 
 def validate_audio_file(value):
-    if not any(value.name.endswith(ext) for ext in file_extensions):
+    if not any(value.name.lower().endswith(ext) for ext in ALLOWED_AUDIO_EXTENSIONS):
         raise ValidationError("Unsupported Audio format")
 
 
