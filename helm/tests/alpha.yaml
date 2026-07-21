@@ -1,0 +1,22 @@
+# Snapshot dummy for the `alpha` matrix entry — supplies the image, ingress host
+# and the CICD-provided app secrets so the alpha manifests render standalone.
+# No className here: values/traefik.yaml sets it (layered after this in tests.yaml).
+app:
+  environment: ALPHA
+  image:
+    name: local.test/nrcs-backend
+    tag: alpha.testtag
+  api:
+    ingress:
+      host: nrcs-api.alpha.test.local
+  env:
+    APP_DOMAIN: "https://nrcs-api.alpha.test.local"
+    FRONTEND_DOMAIN: "https://nrcs.alpha.test.local"
+    SESSION_COOKIE_DOMAIN: ".alpha.test.local"
+    CSRF_COOKIE_DOMAIN: ".alpha.test.local"
+    AWS_S3_MEDIA_BUCKET_NAME: "dummy-media"
+    AWS_S3_STATIC_BUCKET_NAME: "dummy-static"
+  secrets:
+    DJANGO_SECRET_KEY: dummy-secret-key
+    GITHUB_TOKEN: dummy-github-token
+    SENTRY_DSN: https://dummy@sentry.invalid/1

@@ -1,0 +1,16 @@
+# Alpha environment overlay — neutral structural config only.
+#
+# Platform-provided credentials (Postgres + S3) and per-environment values (ingress
+# host, APP_DOMAIN / FRONTEND_DOMAIN / cookie domains) are injected at deploy time by
+# the platform / CICD — they are NOT committed here. App-owned secrets
+# (DJANGO_SECRET_KEY, GITHUB_TOKEN, SENTRY_DSN) likewise come from CICD.
+# See main/settings.py for all available options.
+app:
+  environment: ALPHA
+
+  api:
+    ingress:
+      enabled: true
+
+  env:
+    SENTRY_ENABLED: "true"
