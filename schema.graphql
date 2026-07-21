@@ -415,6 +415,10 @@ input FaqOrder {
   orderIndex: Ordering
 }
 
+input FaqReorderInput {
+  orderedIds: [ID!]!
+}
+
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
@@ -427,6 +431,12 @@ type FaqType implements UserResourceTypeMixin {
   question: String!
   answer: String!
   orderIndex: Int!
+}
+
+type FaqTypeListMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: [FaqType!]
 }
 
 type FaqTypeMutationResponseType {
@@ -659,6 +669,7 @@ type Mutation {
   deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isStaff
   createFaq(data: FaqCreateInput!): CreateFaqPayload! @isStaff
   updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isStaff
+  reorderFaq(data: FaqReorderInput!): ReorderFaqPayload! @isStaff
   deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isStaff
   createProject(data: ProjectCreateInput!): CreateProjectPayload! @isStaff
   updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isStaff
@@ -1237,6 +1248,8 @@ input RadioProgramUpdateInput {
   type: RadioProgramTypeEnum
   audioFile: Upload
 }
+
+union ReorderFaqPayload = FaqTypeListMutationResponseType | OperationInfo
 
 union ResetUserPasswordPayload = UserTypeMutationResponseType | OperationInfo
 

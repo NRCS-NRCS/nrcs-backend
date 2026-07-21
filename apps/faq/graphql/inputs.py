@@ -23,3 +23,8 @@ class FaqUpdateInput:
 @strawberry_django.input(Faq)
 class FaqDeleteInput:
     id: strawberry.ID
+
+
+@strawberry.input
+class FaqReorderInput:
+    ordered_ids: list[strawberry.ID]

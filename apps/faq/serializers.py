@@ -8,4 +8,5 @@ class FAQSerializer(UserResourceSerializer[Faq]):
         fields = [
             "question",
             "answer",
+            "order_index",
         ]

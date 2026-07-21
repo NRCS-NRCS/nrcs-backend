@@ -6,6 +6,8 @@ from rest_framework import serializers
 from apps.common.serializers import UserResourceSerializer
 from apps.news.models import ActionLink, News
 
+MAX_HIGHLIGHTED_NEWS = 6
+
 
 class ActionLinkSerializer(UserResourceSerializer):
     id = serializers.IntegerField(required=False)
@@ -42,6 +44,20 @@ class NewsSerializer(UserResourceSerializer[News]):
             "is_highlighted",
             "action_links",
         ]
+
+    def validate_is_highlighted(self, value):
+        if not value:
+            return value
+
+        highlighted_qs = News.objects.filter(is_highlighted=True)
+        if self.instance is not None:
+            highlighted_qs = highlighted_qs.exclude(pk=self.instance.pk)
+
+        if highlighted_qs.count() >= MAX_HIGHLIGHTED_NEWS:
+            raise serializers.ValidationError(
+                f"Only {MAX_HIGHLIGHTED_NEWS} news items can be highlighted at a time.",
+            )
+        return value
 
     @typing.override
     def create(self, validated_data):
