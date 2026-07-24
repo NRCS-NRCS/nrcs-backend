@@ -46,7 +46,8 @@ class Mutation:
         data: UserDeleteInput,
     ) -> MutationResponseType[UserType]:
         instance = await User.objects.aget(pk=data.id)
-        await instance.adelete()
+        instance.is_active = False
+        await instance.asave(update_fields=["is_active"])
         return MutationResponseType(ok=True)
 
     @strawberry_django.mutation(extensions=[IsSuperuser()])

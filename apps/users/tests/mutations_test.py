@@ -178,7 +178,7 @@ class TestUserMutation(TestCase):
         )
         self._assert_permission_denied(content, "updateUser")
 
-    # --- delete_user (superuser only, hard delete) ---
+    # --- delete_user (superuser only, soft delete) ---
 
     def test_delete_user_admin(self):
         target = UserFactory.create(email="delete-target@example.com")
@@ -186,7 +186,9 @@ class TestUserMutation(TestCase):
         content = self.query_check(self.Mutation.DELETE_USER, variables={"data": {"id": str(target.pk)}})
         resp = self._get_mutation_payload(content, "deleteUser")
         assert resp["ok"] is True, content
-        assert User.objects.filter(pk=target.pk).exists() is False
+        assert User.objects.filter(pk=target.pk).exists() is True
+        target.refresh_from_db()
+        assert target.is_active is False
 
     def test_delete_user_requires_superuser(self):
         target = UserFactory.create(email="delete-denied@example.com")
