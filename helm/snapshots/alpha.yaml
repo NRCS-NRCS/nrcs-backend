@@ -1,0 +1,340 @@
+---
+# Source: nrcs-backend-helm/charts/app/templates/config/secret.yaml
+kind: Secret
+apiVersion: v1
+metadata:
+  name: release-name-app-secret
+  labels:
+    app: release-name-app
+    environment: ALPHA
+    release: release-name
+type: Opaque
+stringData:
+  # secrets
+  DJANGO_SECRET_KEY: "dummy-secret-key"
+  GITHUB_TOKEN: "dummy-github-token"
+  SENTRY_DSN: "https://dummy@sentry.invalid/1"
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/config/configmap.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: release-name-app-env-name
+  labels:
+    app: release-name-app
+    environment: ALPHA
+    release: release-name
+data:
+  # Configs
+  APP_DOMAIN: "https://nrcs-api.alpha.test.local"
+  APP_ENVIRONMENT: "ALPHA"
+  APP_RELEASE: "alpha.testtag"
+  AWS_S3_ENABLED: "true"
+  AWS_S3_MEDIA_BUCKET_NAME: "dummy-media"
+  AWS_S3_STATIC_BUCKET_NAME: "dummy-static"
+  CSRF_COOKIE_DOMAIN: ".alpha.test.local"
+  DEBUG: "false"
+  FRONTEND_DOMAIN: "https://nrcs.alpha.test.local"
+  SENTRY_ENABLED: "true"
+  SENTRY_PROFILE_SAMPLE_RATE: "0.2"
+  SENTRY_TRACES_SAMPLE_RATE: "0.2"
+  SESSION_COOKIE_DOMAIN: ".alpha.test.local"
+  TIME_ZONE: "Asia/Kathmandu"
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-app-api
+  labels:
+    app: release-name-app
+    component: api
+    environment: ALPHA
+    release: release-name
+spec:
+  type: ClusterIP
+  selector:
+    app: release-name-app
+    component: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-app-api
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: release-name-app
+    component: api
+    environment: ALPHA
+    release: release-name
+spec:
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: release-name-app
+      component: api
+  template:
+    metadata:
+      annotations:
+        checksum/secret: a53ad31b5cb7cf1e9bfc58ae37651010d19fee5ff19e4c8ed823e3f9ee5a612a
+        checksum/configmap: 3347f034937f5f9fa1fd26d7d6fdc662621cb59e7f18f324e9be1867de7ed829
+      labels:
+        app: release-name-app
+        component: api
+    spec:
+      terminationGracePeriodSeconds: 38
+      containers:
+        - name: api
+          image: "local.test/nrcs-backend:alpha.testtag"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /code/deploy/run_prod.sh
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz/live/
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz/ready/
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /healthz/ready/
+              port: http
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "2"
+              memory: 1Gi
+            requests:
+              cpu: "0.1"
+              memory: 0.5Gi
+          envFrom:
+            - secretRef:
+                name: release-name-app-secret
+            - configMapRef:
+                name: release-name-app-env-name
+          env:
+            - name: APP_TYPE
+              value: "web"
+            
+          lifecycle:
+            preStop:
+              sleep:
+                seconds: 8
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: collect-static
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: release-name-app-collect-static
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "20"
+  labels:
+    app: release-name-app
+    component: hook
+    hookName: collect-static
+    environment: ALPHA
+    release: release-name
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/secret: a53ad31b5cb7cf1e9bfc58ae37651010d19fee5ff19e4c8ed823e3f9ee5a612a
+        checksum/configmap: 3347f034937f5f9fa1fd26d7d6fdc662621cb59e7f18f324e9be1867de7ed829
+      labels:
+        app: release-name-app
+        component: hook
+        hookName: collect-static
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: collect-static
+          image: "local.test/nrcs-backend:alpha.testtag"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - collectstatic
+            - --noinput
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: release-name-app-secret
+            - configMapRef:
+                name: release-name-app-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+---
+# Source: nrcs-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: db-migrate
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: release-name-app-db-migrate-
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "20"
+  labels:
+    app: release-name-app
+    component: hook
+    hookName: db-migrate
+    environment: ALPHA
+    release: release-name
+spec:
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 604800
+  template:
+    metadata:
+      annotations:
+        checksum/secret: a53ad31b5cb7cf1e9bfc58ae37651010d19fee5ff19e4c8ed823e3f9ee5a612a
+        checksum/configmap: 3347f034937f5f9fa1fd26d7d6fdc662621cb59e7f18f324e9be1867de7ed829
+      labels:
+        app: release-name-app
+        component: hook
+        hookName: db-migrate
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: db-migrate
+          image: "local.test/nrcs-backend:alpha.testtag"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - migrate
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: release-name-app-secret
+            - configMapRef:
+                name: release-name-app-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+---
+# Source: nrcs-backend-helm/charts/app/templates/hooks/job.yaml
+# Hook: wait-for-resources
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: release-name-app-wait-for-resources
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app: release-name-app
+    component: hook
+    hookName: wait-for-resources
+    environment: ALPHA
+    release: release-name
+spec:
+  template:
+    metadata:
+      annotations:
+        checksum/secret: a53ad31b5cb7cf1e9bfc58ae37651010d19fee5ff19e4c8ed823e3f9ee5a612a
+        checksum/configmap: 3347f034937f5f9fa1fd26d7d6fdc662621cb59e7f18f324e9be1867de7ed829
+      labels:
+        app: release-name-app
+        component: hook
+        hookName: wait-for-resources
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: wait-for-resources
+          image: "local.test/nrcs-backend:alpha.testtag"
+          imagePullPolicy: IfNotPresent
+          command: 
+            - ./manage.py
+            - wait_for_resources
+            - --db
+            - --minio
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: release-name-app-secret
+            - configMapRef:
+                name: release-name-app-env-name
+          env:
+            - name: APP_TYPE
+              value: "hook"
+            
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/api/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: release-name-app-api
+  labels:
+    app: release-name-app
+    component: api
+    environment: ALPHA
+    release: release-name
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+    traefik.ingress.kubernetes.io/router.middlewares: default-nrcs-body-size@kubernetescrd
+spec:
+  ingressClassName: "traefik"
+  rules:
+    - host: "nrcs-api.alpha.test.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: release-name-app-api
+                port:
+                  number: 80
+
+---
+# Source: nrcs-backend-helm/charts/app/templates/extraManifests.yaml
+# Manifest: traefik-body-size-middleware
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: nrcs-body-size
+spec:
+  buffering:
+    maxRequestBodyBytes: 52428800

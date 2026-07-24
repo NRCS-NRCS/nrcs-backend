@@ -5,7 +5,7 @@ from pathlib import Path
 
 import environ
 
-from main.logging import log_render_extra_context
+from main.logging import log_render_extra_context, skip_health_probe_logs
 from main.sentry import SentryConfig
 from utils.git import fetch_git_sha
 
@@ -123,6 +123,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # External
+    "banjo_utils",
     "strawberry_django",
     "corsheaders",
     "django_premailer",
@@ -151,6 +152,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # banjo_utils HealthProbeMiddleware serves pod-local /healthz/live/ and
+    # /healthz/ready/ (bypassing ALLOWED_HOSTS); keep it first.
+    "banjo_utils.health.HealthProbeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -301,8 +305,11 @@ MEDIA_URL = env("MEDIA_URL")
 STATIC_URL = env("STATIC_URL")
 
 if env("AWS_S3_ENABLED"):
+    # Exposed at module level so banjo_utils `wait_for_resources --minio` can find
+    # the S3 endpoint (it reads settings.AWS_S3_ENDPOINT_URL).
+    AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL")
     AWS_S3_CONFIG_OPTIONS = {
-        "endpoint_url": env("AWS_S3_ENDPOINT_URL"),
+        "endpoint_url": AWS_S3_ENDPOINT_URL,
         "access_key": env("AWS_S3_ACCESS_KEY_ID"),
         "secret_key": env("AWS_S3_SECRET_ACCESS_KEY"),
         "region_name": env("AWS_S3_REGION_NAME"),
@@ -347,6 +354,10 @@ PREMAILER_OPTIONS = dict(
 )
 
 HEALTHCHECK_CACHE_KEY = "nrcs_healthcheck_key"
+
+# banjo_utils HealthProbeMiddleware — pod-local k8s probe endpoints
+BANJO_HEALTH_PROBE_LIVE_URL = "/healthz/live/"
+BANJO_HEALTH_PROBE_READY_URL = "/healthz/ready/"
 
 # Security Header configuration
 
@@ -447,6 +458,10 @@ LOGGING = {
             "()": "django.utils.log.CallbackFilter",
             "callback": log_render_extra_context,
         },
+        "skip_health_probes": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": skip_health_probe_logs,
+        },
     },
     "formatters": {
         "simple": {
@@ -458,7 +473,7 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "simple",
-            "filters": ["render_extra_context"],
+            "filters": ["render_extra_context", "skip_health_probes"],
         },
     },
     "loggers": {
@@ -495,7 +510,7 @@ if DEBUG:
             "colored_console": {
                 "class": "logging.StreamHandler",
                 "formatter": "colored_verbose",
-                "filters": ["render_extra_context"],
+                "filters": ["render_extra_context", "skip_health_probes"],
             },
         },
         "loggers": {

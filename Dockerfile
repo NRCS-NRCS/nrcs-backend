@@ -2,7 +2,7 @@ FROM python:3.13-slim-bookworm AS base
 COPY --from=ghcr.io/astral-sh/uv:0.6.2 /uv /uvx /bin/
 
 LABEL maintainer="TC Dev"
-LABEL org.opencontainers.image.source="https://github.com/capn-nepal/website-backend/"
+LABEL org.opencontainers.image.source="https://github.com/NRCS-NRCS/nrcs-backend/"
 
 ENV PYTHONUNBUFFERED=1
 
@@ -19,12 +19,14 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     # FIXME: Check and clean up not required packages from here
     && apt-get install -y --no-install-recommends \
         # Build required packages
+        # Required by uv to fetch the banjo-utils git dependency
+        git \
         # Helper packages
         procps \
     && uv lock --locked --offline \
         && uv sync --frozen --no-install-project --all-groups \
     # Clean-up
-    && apt-get remove -y build-essential gcc libc-dev libgdal-dev libproj-dev \
+    && apt-get remove -y build-essential gcc libc-dev libgdal-dev libproj-dev git \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 

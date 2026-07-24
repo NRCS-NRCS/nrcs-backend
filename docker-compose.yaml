@@ -9,7 +9,7 @@ x-server: &base_server_setup
     DEBUG: ${DEBUG:-true}
     ENABLE_DEBUG_TOOLBAR: ${ENABLE_DEBUG_TOOLBAR:-true}
     APP_ENVIRONMENT: ${APP_ENVIRONMENT:-DEV}
-    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?error}
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-django-secret-key}
     # Domain configs
     APP_DOMAIN: ${APP_DOMAIN:-http://localhost:8000}
     FRONTEND_DOMAIN: ${FRONTEND_DOMAIN:-http://localhost:3000}  # NOTE: Not used right now

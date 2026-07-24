@@ -1,0 +1,6 @@
+tests:
+  # traefik.yaml is layered after the env overlay so its ingress class wins;
+  # tests/alpha.yaml (dummy image/host/secrets) is auto-appended last by fugit.
+  alpha.yaml:
+    - values/alpha.yaml
+    - values/traefik.yaml
