@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry_django.pagination import OffsetPaginated
 
 from .filters import FaqFilter
 from .orders import FaqOrder
@@ -8,7 +9,8 @@ from .types import FaqType
 
 @strawberry.type
 class Query:
-    faqs: list[FaqType] = strawberry_django.field(
+    # --- Paginated
+    faqs: OffsetPaginated[FaqType] = strawberry_django.offset_paginated(
         order=FaqOrder,
         filters=FaqFilter,
     )

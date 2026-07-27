@@ -137,6 +137,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     # Internal
     "apps.common",
+    "apps.users",
     "apps.strategic",
     "apps.department",
     "apps.procurement",
@@ -396,7 +397,7 @@ CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_URLS_REGEX = r"(^/media/.*$)|(^/graphql/$)"
+CORS_URLS_REGEX = r"(^/media/.*$)|(^/graphql/$)|(^/health-check/$)"
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",

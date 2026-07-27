@@ -7,26 +7,25 @@ class TestProcurementQuery(TestCase):
     class Query:
         PROCUREMENT = """
           query procurement($order: ProcurementOrder) {
-            procurements(order: $order)
-               {
-                id
-                title
-                description
-                file {
-                  url
+            procurements(order: $order) {
+                results {
+                    id
+                    title
+                    description
+                    file {
+                      url
+                    }
+                    publishedDate
+                    expiryDate
                 }
-                publishedDate
-                expiryDate
-              }
-
-
+            }
           }
         """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_procurement_query(self):
         def _query():
@@ -55,18 +54,16 @@ class TestProcurementQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "procurements": [
-                dict(
-                    id=self.gID(procurement.id),
-                    title=procurement.title,
-                    description=procurement.description,
-                    file={
-                        "url": self.get_media_url(procurement.file.name),
-                    },
-                    publishedDate=procurement.published_date,
-                    expiryDate=procurement.expiry_date,
-                )
-                for procurement in procurement_items
-            ],
-        }, content
+        assert content["data"]["procurements"]["results"] == [
+            dict(
+                id=self.gID(procurement.id),
+                title=procurement.title,
+                description=procurement.description,
+                file={
+                    "url": self.get_media_url(procurement.file.name),
+                },
+                publishedDate=procurement.published_date,
+                expiryDate=procurement.expiry_date,
+            )
+            for procurement in procurement_items
+        ], content

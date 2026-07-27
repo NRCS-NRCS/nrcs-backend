@@ -8,18 +8,20 @@ class TestDepartmentQuery(TestCase):
         DEPARTMENT = """
           query departments($order: DepartmentOrder) {
             departments(order: $order) {
-              id
-              title
-              description
-              contactPersonName
-              contactPersonEmail
-              slug
-              strategicDirective {
-                id
-                slug
-                title
-                description
-              }
+                results {
+                  id
+                  title
+                  description
+                  contactPersonName
+                  contactPersonEmail
+                  slug
+                  strategicDirective {
+                    id
+                    slug
+                    title
+                    description
+                  }
+                }
             }
           }
         """
@@ -27,7 +29,7 @@ class TestDepartmentQuery(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_department_query(self):
         def _query():
@@ -62,22 +64,20 @@ class TestDepartmentQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "departments": [
-                dict(
-                    id=self.gID(department.id),
-                    title=department.title,
-                    description=department.description,
-                    contactPersonName=department.contact_person_name,
-                    contactPersonEmail=department.contact_person_email,
-                    slug=department.slug,
-                    strategicDirective={
-                        "id": self.gID(department.strategic_directive.id),
-                        "slug": department.strategic_directive.slug,
-                        "title": department.strategic_directive.title,
-                        "description": department.strategic_directive.description,
-                    },
-                )
-                for department in department_items
-            ],
-        }, content
+        assert content["data"]["departments"]["results"] == [
+            dict(
+                id=self.gID(department.id),
+                title=department.title,
+                description=department.description,
+                contactPersonName=department.contact_person_name,
+                contactPersonEmail=department.contact_person_email,
+                slug=department.slug,
+                strategicDirective={
+                    "id": self.gID(department.strategic_directive.id),
+                    "slug": department.strategic_directive.slug,
+                    "title": department.strategic_directive.title,
+                    "description": department.strategic_directive.description,
+                },
+            )
+            for department in department_items
+        ], content

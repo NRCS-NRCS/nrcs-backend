@@ -1,7 +1,63 @@
-"""ActionLink(id, url, label, highlight)"""
+"""
+Can only be resolved by authenticated users.
+
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
+"""
+directive @isAuthenticated repeatable on FIELD_DEFINITION
+
+"""
+Can only be resolved by staff users.
+
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
+"""
+directive @isStaff repeatable on FIELD_DEFINITION
+
+"""
+Can only be resolved by superuser users.
+
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
+"""
+directive @isSuperuser repeatable on FIELD_DEFINITION
+
+"""ActionLink(id, url, label, news)"""
+input ActionLinkCreateInput {
+  url: String!
+  label: String!
+}
+
+input ActionLinkInput {
+  create: ActionLinkCreateInput
+  update: ActionLinkUpdateInput
+  delete: DeleteInput
+}
+
+"""ActionLink(id, url, label, news)"""
 type ActionLinkType {
+  id: ID!
   label: String!
   url: String!
+}
+
+"""ActionLink(id, url, label, news)"""
+input ActionLinkUpdateInput {
+  id: ID!
+  url: String
+  label: String
 }
 
 type AppEnumCollection {
@@ -16,17 +72,40 @@ type AppEnumCollectionDummyEnum {
 """
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
+input BlogCreateInput {
+  title: String!
+  publishedDate: Date!
+  author: String!
+  content: String!
+  featured: Boolean
+  status: StatusEnum
+  coverImage: Upload
+  department: ID
+  directive: ID
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogDeleteInput {
+  id: ID!
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
 input BlogFilter {
   id: ID
   slug: StrFilterLookup
-  status: StatusEnum!
   author: StrFilterLookup
   featured: BoolBaseFilterLookup
+  status: StatusEnum
   directive: ID = null
   AND: BlogFilter
   OR: BlogFilter
   NOT: BlogFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input BlogOrder {
@@ -37,7 +116,11 @@ input BlogOrder {
 """
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
-type BlogType {
+type BlogType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   publishedDate: Date!
@@ -47,8 +130,41 @@ type BlogType {
   featured: Boolean!
   status: StatusEnum!
   slug: String!
-  department: DjangoModelType
-  directive: DjangoModelType
+  departmentId: ID
+  directiveId: ID
+  department: DepartmentType
+  directive: StrategicDirectivesType
+}
+
+type BlogTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: BlogType
+}
+
+type BlogTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [BlogType!]!
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogUpdateInput {
+  title: String
+  publishedDate: Date
+  author: String
+  content: String!
+  featured: Boolean
+  status: StatusEnum
+  coverImage: Upload
+  department: ID
+  directive: ID
 }
 
 input BoolBaseFilterLookup {
@@ -63,6 +179,33 @@ input BoolBaseFilterLookup {
   """
   inList: [Boolean!]
 }
+
+union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
+
+union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+union CreatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
+union CreateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
+
+union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
+union CreateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
+union CreateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
+union CreateUserPayload = UserTypeMutationResponseType | OperationInfo
+
+"""A generic type to return error messages"""
+scalar CustomErrorType
 
 """Date (isoformat)"""
 scalar Date
@@ -108,16 +251,66 @@ input DateRangeLookup {
   end: Date = null
 }
 
+"""Date with time (isoformat)"""
+scalar DateTime
+
+union DeleteBlogPayload = BlogType | OperationInfo
+
+union DeleteDepartmentPayload = DepartmentType | OperationInfo
+
+union DeleteFaqPayload = FaqType | OperationInfo
+
+input DeleteInput {
+  id: ID!
+}
+
+union DeleteJobVacancyPayload = JobVacancyType | OperationInfo
+
+union DeleteNewsPayload = NewsType | OperationInfo
+
+union DeletePartnerPayload = PartnerType | OperationInfo
+
+union DeleteProcurementPayload = ProcurementType | OperationInfo
+
+union DeleteProjectPayload = ProjectType | OperationInfo
+
+union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
+
+union DeleteResourcePayload = ResourceType | OperationInfo
+
+union DeleteStrategicDirectivesPayload = StrategicDirectivesType | OperationInfo
+
+union DeleteUserPayload = UserTypeMutationResponseType | OperationInfo
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentCreateInput {
+  title: String!
+  description: String!
+  contactPersonName: String
+  contactPersonEmail: String
+  strategicDirective: ID!
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentDeleteInput {
+  id: ID!
+}
+
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
 input DepartmentFilter {
-  id: ID!
+  id: ID
   slug: StrFilterLookup
   AND: DepartmentFilter
   OR: DepartmentFilter
   NOT: DepartmentFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input DepartmentOrder {
@@ -127,14 +320,46 @@ input DepartmentOrder {
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
-type DepartmentType {
+type DepartmentType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   contactPersonName: String
   contactPersonEmail: String
   slug: String!
-  strategicDirective: StrategicDirectivesType!
+  strategicDirectiveId: ID
+  strategicDirective: StrategicDirectivesType
+}
+
+type DepartmentTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: DepartmentType
+}
+
+type DepartmentTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [DepartmentType!]!
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentUpdateInput {
+  title: String
+  description: String
+  contactPersonName: String
+  contactPersonEmail: String
+  strategicDirective: ID!
 }
 
 type DjangoFileType {
@@ -159,13 +384,29 @@ enum DummyEnum {
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
-input FaqFilter {
+input FaqCreateInput {
+  question: String!
+  answer: String!
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqDeleteInput {
   id: ID!
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqFilter {
   orderIndex: IntComparisonFilterLookup
+  id: ID
   AND: FaqFilter
   OR: FaqFilter
   NOT: FaqFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input FaqOrder {
@@ -173,43 +414,60 @@ input FaqOrder {
   orderIndex: Ordering
 }
 
+input FaqReorderInput {
+  movedId: ID!
+  targetId: ID!
+  position: FaqReorderPosition!
+}
+
+enum FaqReorderPosition {
+  BEFORE
+  AFTER
+}
+
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
-type FaqType {
+type FaqType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   question: String!
   answer: String!
   orderIndex: Int!
 }
 
-"""
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
-"""
-input HighlightFilter {
-  heading: String = null
-  isActive: Boolean
-  AND: HighlightFilter
-  OR: HighlightFilter
-  NOT: HighlightFilter
-  DISTINCT: Boolean
+type FaqTypeListMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: [FaqType!]
 }
 
-input HighlightOrder {
-  id: Ordering
-  heading: Ordering
+type FaqTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: FaqType
+}
+
+type FaqTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [FaqType!]!
 }
 
 """
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
-type HighlightType {
-  id: ID!
-  heading: String!
-  description: String!
-  image: DjangoFileType
-  actionLinks: [ActionLinkType!]!
-  isActive: Boolean!
+input FaqUpdateInput {
+  question: String
+  answer: String
+  orderIndex: Int
 }
 
 input IntComparisonFilterLookup {
@@ -248,6 +506,28 @@ input IntRangeLookup {
 """
 JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
+input JobVacancyCreateInput {
+  title: String!
+  description: String!
+  position: String!
+  numberOfVacancies: Int!
+  expiryDate: Date!
+  isArchived: Boolean
+  publishedAt: Date!
+  department: ID
+  file: Upload!
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
+input JobVacancyDeleteInput {
+  id: ID!
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
 input JobVacancyFilter {
   expiryDate: DateDateFilterLookup
   isArchived: Boolean
@@ -255,6 +535,7 @@ input JobVacancyFilter {
   OR: JobVacancyFilter
   NOT: JobVacancyFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input JobVacancyOrder {
@@ -264,7 +545,11 @@ input JobVacancyOrder {
 """
 JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
-type JobVacancyType {
+type JobVacancyType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType!
@@ -274,19 +559,67 @@ type JobVacancyType {
   expiryDate: Date!
   isArchived: Boolean!
   publishedAt: Date!
+  departmentId: ID
+  department: DepartmentType
+}
+
+type JobVacancyTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: JobVacancyType
+}
+
+type JobVacancyTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [JobVacancyType!]!
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
+input JobVacancyUpdateInput {
+  title: String
+  description: String
+  position: String
+  numberOfVacancies: Int
+  expiryDate: Date
+  isArchived: Boolean
+  publishedAt: Date
+  department: ID
+  file: Upload
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesCreateInput {
+  title: String!
+  description: String!
 }
 
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
 input MajorResponsibilitiesFilter {
-  id: ID!
   slug: StrFilterLookup
   directive: DjangoModelFilterInput
+  id: ID
   AND: MajorResponsibilitiesFilter
   OR: MajorResponsibilitiesFilter
   NOT: MajorResponsibilitiesFilter
   DISTINCT: Boolean
+  search: String
+}
+
+input MajorResponsibilitiesInput {
+  create: MajorResponsibilitiesCreateInput
+  update: MajorResponsibilitiesUpdateInput
+  delete: DeleteInput
 }
 
 input MajorResponsibilitiesOrder {
@@ -297,7 +630,11 @@ input MajorResponsibilitiesOrder {
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
-type MajorResponsibilitiesType {
+type MajorResponsibilitiesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
@@ -305,19 +642,106 @@ type MajorResponsibilitiesType {
   slug: String!
 }
 
+type MajorResponsibilitiesTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [MajorResponsibilitiesType!]!
+}
+
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesUpdateInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+type Mutation {
+  login(username: String!, password: String!): UserMeType!
+  logout: Boolean!
+  createUser(data: UserCreateInput!): CreateUserPayload! @isSuperuser
+  updateUser(data: UserUpdateInput!): UpdateUserPayload! @isSuperuser
+  deleteUser(data: UserDeleteInput!): DeleteUserPayload! @isSuperuser
+  resetUserPassword(data: PasswordResetInput!, newPassword: String!): ResetUserPasswordPayload! @isSuperuser
+  updateMyPassword(data: PasswordUpdateInput!): UpdateMyPasswordPayload! @isAuthenticated
+  deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isStaff
+  createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isStaff
+  updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isStaff
+  deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isStaff
+  createFaq(data: FaqCreateInput!): CreateFaqPayload! @isStaff
+  updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isStaff
+  reorderFaq(data: FaqReorderInput!): ReorderFaqPayload! @isStaff
+  deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isStaff
+  createProject(data: ProjectCreateInput!): CreateProjectPayload! @isStaff
+  updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isStaff
+  deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isStaff
+  createBlog(data: BlogCreateInput!): CreateBlogPayload! @isStaff
+  updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isStaff
+  deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isStaff
+  createNews(data: NewsCreateInput!): CreateNewsPayload! @isStaff
+  updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isStaff
+  deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isStaff
+  createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isStaff
+  updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isStaff
+  deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isStaff
+  createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isStaff
+  updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isStaff
+  deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isStaff
+  createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isStaff
+  updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isStaff
+  deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isStaff
+  createResource(data: ResourceCreateInput!): CreateResourcePayload! @isStaff
+  updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isStaff
+  deleteStrategicDirectives(data: StrategicDirectivesDeleteInput!): DeleteStrategicDirectivesPayload! @isStaff
+  createStrategicDirectives(data: StrategicDirectivesCreateInput!): CreateStrategicDirectivesPayload! @isStaff
+  updateStrategicDirectives(data: StrategicDirectivesUpdateInput!, pk: ID!): UpdateStrategicDirectivesPayload! @isStaff
+  deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isStaff
+  createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isStaff
+  updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isStaff
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+"""
+input NewsCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  slug: String
+  status: StatusEnum
+  directive: ID!
+  isHighlighted: Boolean
+  file: Upload
+  coverImage: Upload
+  actionLinks: [ActionLinkCreateInput!]
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+"""
+input NewsDeleteInput {
+  id: ID!
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
 input NewsFilter {
-  name: String
   slug: String
   id: ID
   directive: ID = null
   status: StatusEnum
+  isHighlighted: Boolean
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input NewsOrder {
@@ -328,17 +752,96 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
 """
-type NewsType {
+type NewsType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType
   content: String!
+  status: StatusEnum!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID
+  directive: StrategicDirectivesType
   slug: String!
   coverImage: DjangoFileType
+  isHighlighted: Boolean!
+  actionLinks: [ActionLinkType!]
+}
+
+type NewsTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: NewsType
+}
+
+type NewsTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [NewsType!]!
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+"""
+input NewsUpdateInput {
+  title: String
+  content: String!
+  publishedDate: Date
+  status: StatusEnum
+  slug: String
+  directive: ID!
+  isHighlighted: Boolean
+  file: Upload
+  coverImage: Upload
+  actionLinks: [ActionLinkInput!]
+}
+
+type OffsetPaginationInfo {
+  offset: Int!
+  limit: Int
+}
+
+input OffsetPaginationInput {
+  offset: Int! = 0
+  limit: Int
+}
+
+type OperationInfo {
+  """List of messages returned by the operation."""
+  messages: [OperationMessage!]!
+}
+
+type OperationMessage {
+  """The kind of this message."""
+  kind: OperationMessageKind!
+
+  """The error message."""
+  message: String!
+
+  """
+  The field that caused the error, or `null` if it isn't associated with any particular field.
+  """
+  field: String
+
+  """The error code, or `null` if no error code was set."""
+  code: String
+}
+
+enum OperationMessageKind {
+  INFO
+  WARNING
+  ERROR
+  PERMISSION
+  VALIDATION
 }
 
 enum Ordering {
@@ -353,12 +856,29 @@ enum Ordering {
 """
 Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
 """
+input PartnerCreateInput {
+  title: String!
+  scope: PartnerScopeEnum!
+  image: Upload
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerDeleteInput {
+  id: ID!
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
 input PartnerFilter {
   scope: PartnerScopeEnumFilterLookup
   AND: PartnerFilter
   OR: PartnerFilter
   NOT: PartnerFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input PartnerOrder {
@@ -422,24 +942,81 @@ input PartnerScopeEnumFilterLookup {
 """
 Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
 """
-type PartnerType {
+type PartnerType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   scope: PartnerScopeEnum!
   image: DjangoFileType
 }
 
+type PartnerTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: PartnerType
+}
+
+type PartnerTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [PartnerType!]!
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerUpdateInput {
+  title: String
+  scope: PartnerScopeEnum
+  image: Upload
+}
+
+input PasswordResetInput {
+  id: ID!
+}
+
+input PasswordUpdateInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementCreateInput {
+  title: String!
+  description: String!
+  publishedDate: Date!
+  expiryDate: Date!
+  file: Upload
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementDeleteInput {
+  id: ID!
+}
+
 """
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
 input ProcurementFilter {
-  id: ID!
   expiryDate: DateDateFilterLookup
   publishedDate: DateDateFilterLookup
+  id: ID
   AND: ProcurementFilter
   OR: ProcurementFilter
   NOT: ProcurementFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input ProcurementOrder {
@@ -449,13 +1026,61 @@ input ProcurementOrder {
 """
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
-type ProcurementType {
+type ProcurementType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   file: DjangoFileType
   publishedDate: Date!
   expiryDate: Date!
+}
+
+type ProcurementTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProcurementType
+}
+
+type ProcurementTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ProcurementType!]!
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementUpdateInput {
+  title: String
+  description: String
+  publishedDate: Date
+  expiryDate: Date
+  file: Upload
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectCreateInput {
+  title: String!
+  description: String!
+  coverImage: Upload
+  department: ID
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectDeleteInput {
+  id: ID!
 }
 
 """
@@ -468,6 +1093,7 @@ input ProjectFilter {
   OR: ProjectFilter
   NOT: ProjectFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input ProjectOrder {
@@ -477,7 +1103,11 @@ input ProjectOrder {
 """
 Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
-type ProjectType {
+type ProjectType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
@@ -485,33 +1115,77 @@ type ProjectType {
   department: DepartmentType
 }
 
+type ProjectTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProjectType
+}
+
+type ProjectTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ProjectType!]!
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectUpdateInput {
+  title: String
+  description: String
+  coverImage: Upload
+  department: ID
+}
+
 type Query {
-  strategicDirectives(filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): [StrategicDirectivesType!]!
+  users(pagination: OffsetPaginationInput, filters: UserFilter, order: UserOrder): UserTypeOffsetPaginated! @isAuthenticated
+  user(id: ID!): UserType! @isAuthenticated
+  me: UserMeType
+  strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
   strategicDirective(id: ID!): StrategicDirectivesType!
-  majorResponsibilities(filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): [MajorResponsibilitiesType!]!
+  majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
   majorResponsibility(id: ID!): MajorResponsibilitiesType!
-  departments(filters: DepartmentFilter, order: DepartmentOrder): [DepartmentType!]!
+  departments(pagination: OffsetPaginationInput, filters: DepartmentFilter, order: DepartmentOrder): DepartmentTypeOffsetPaginated!
   department(id: ID!): DepartmentType!
-  procurements(filters: ProcurementFilter, order: ProcurementOrder): [ProcurementType!]!
+  procurements(pagination: OffsetPaginationInput, filters: ProcurementFilter, order: ProcurementOrder): ProcurementTypeOffsetPaginated!
   procurement(id: ID!): ProcurementType!
-  jobVacancies(filters: JobVacancyFilter, order: JobVacancyOrder): [JobVacancyType!]!
+  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated!
   jobVacancy(id: ID!): JobVacancyType!
   project(id: ID!): ProjectType!
-  projects(filters: ProjectFilter, order: ProjectOrder): [ProjectType!]!
-  faqs(filters: FaqFilter, order: FaqOrder): [FaqType!]!
+  projects(pagination: OffsetPaginationInput, filters: ProjectFilter, order: ProjectOrder): ProjectTypeOffsetPaginated!
+  faqs(pagination: OffsetPaginationInput, filters: FaqFilter, order: FaqOrder): FaqTypeOffsetPaginated!
   faq(id: ID!): FaqType!
-  resources(filters: ResourceFilter, order: ResourceOrder): [ResourceType!]!
+  resources(pagination: OffsetPaginationInput, filters: ResourceFilter, order: ResourceOrder): ResourceTypeOffsetPaginated!
   resource(id: ID!): ResourceType!
-  partners(filters: PartnerFilter, order: PartnerOrder): [PartnerType!]!
+  partners(pagination: OffsetPaginationInput, filters: PartnerFilter, order: PartnerOrder): PartnerTypeOffsetPaginated!
   partner(id: ID!): PartnerType!
-  blogs(filters: BlogFilter, order: BlogOrder): [BlogType!]!
+  blogs(pagination: OffsetPaginationInput, filters: BlogFilter, order: BlogOrder): BlogTypeOffsetPaginated!
   blog(id: ID!): BlogType!
-  news(filters: NewsFilter, order: NewsOrder): [NewsType!]!
+  news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated!
   newsItem(id: ID!): NewsType!
-  highlights(filters: HighlightFilter, order: HighlightOrder): [HighlightType!]!
-  highlight(id: ID!): HighlightType!
-  radioProgram(filters: RadioProgramFilter, order: RadioProgramOrder): [RadioProgramType!]!
+  radioProgram(pagination: OffsetPaginationInput, filters: RadioProgramFilter, order: RadioProgramOrder): RadioProgramTypeOffsetPaginated!
   enums: AppEnumCollection!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramCreateInput {
+  title: String!
+  publishedDate: Date!
+  type: RadioProgramTypeEnum
+  audioFile: Upload!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramDeleteInput {
+  id: ID!
 }
 
 """
@@ -526,6 +1200,7 @@ input RadioProgramFilter {
   OR: RadioProgramFilter
   NOT: RadioProgramFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input RadioProgramOrder {
@@ -537,7 +1212,11 @@ input RadioProgramOrder {
 """
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
-type RadioProgramType {
+type RadioProgramType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   audioFile: DjangoFileType!
@@ -548,6 +1227,56 @@ type RadioProgramType {
 enum RadioProgramTypeEnum {
   RADIO_RED_CROSS
   TOGETHER_FOR_HUMANITY
+}
+
+type RadioProgramTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: RadioProgramType
+}
+
+type RadioProgramTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [RadioProgramType!]!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramUpdateInput {
+  title: String
+  publishedDate: Date
+  type: RadioProgramTypeEnum
+  audioFile: Upload
+}
+
+union ReorderFaqPayload = FaqTypeListMutationResponseType | OperationInfo
+
+union ResetUserPasswordPayload = UserTypeMutationResponseType | OperationInfo
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload!
+  coverImage: Upload
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceDeleteInput {
+  id: ID!
 }
 
 """
@@ -563,6 +1292,7 @@ input ResourceFilter {
   OR: ResourceFilter
   NOT: ResourceFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input ResourceOrder {
@@ -572,13 +1302,18 @@ input ResourceOrder {
 """
 Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
-type ResourceType {
+type ResourceType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType!
   content: String!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID!
+  directive: StrategicDirectivesType!
   slug: String!
   coverImage: DjangoFileType
   type: ResourceTypeEnum!
@@ -587,6 +1322,35 @@ type ResourceType {
 enum ResourceTypeEnum {
   REPORT
   POLICY_AND_GUIDELINES
+}
+
+type ResourceTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ResourceType
+}
+
+type ResourceTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [ResourceType!]!
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceUpdateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload
+  coverImage: Upload
 }
 
 enum StatusEnum {
@@ -646,13 +1410,31 @@ input StrFilterLookup {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
-input StrategicDirectivesFilter {
+input StrategicDirectivesCreateInput {
+  title: String!
+  description: String!
+  coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesCreateInput!]
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
+input StrategicDirectivesDeleteInput {
   id: ID!
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
+input StrategicDirectivesFilter {
   slug: StrFilterLookup
+  id: ID
   AND: StrategicDirectivesFilter
   OR: StrategicDirectivesFilter
   NOT: StrategicDirectivesFilter
   DISTINCT: Boolean
+  search: String
 }
 
 input StrategicDirectivesOrder {
@@ -662,11 +1444,224 @@ input StrategicDirectivesOrder {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
-type StrategicDirectivesType {
+type StrategicDirectivesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   coverImage: DjangoFileType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
+}
+
+type StrategicDirectivesTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: StrategicDirectivesType
+}
+
+type StrategicDirectivesTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [StrategicDirectivesType!]!
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
+input StrategicDirectivesUpdateInput {
+  title: String
+  description: String
+  coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesInput!]
+}
+
+union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
+
+union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+union UpdateMyPasswordPayload = UserTypeMutationResponseType | OperationInfo
+
+union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+union UpdatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
+union UpdateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
+
+union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+union UpdateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
+union UpdateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
+union UpdateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
+union UpdateUserPayload = UserTypeMutationResponseType | OperationInfo
+
+scalar Upload
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+input UserCreateInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String!
+  userType: UserTypeEnum! = VIEWER
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean
+}
+
+input UserDeleteInput {
+  id: ID!
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+input UserFilter {
+  id: ID
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean
+
+  """Designates whether the user can log into this admin site."""
+  isStaff: Boolean
+  AND: UserFilter
+  OR: UserFilter
+  NOT: UserFilter
+  DISTINCT: Boolean
+  search: String
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+type UserMeType {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean!
+  lastLogin: DateTime
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String!
+  createdAt: DateTime!
+  userType: UserTypeEnum!
+}
+
+input UserOrder {
+  id: Ordering
+  email: Ordering
+  firstName: Ordering
+  lastName: Ordering
+}
+
+interface UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+type UserType {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean!
+  lastLogin: DateTime
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String!
+  createdAt: DateTime!
+  userType: UserTypeEnum!
+}
+
+enum UserTypeEnum {
+  VIEWER
+  STAFF
+  ADMIN
+}
+
+type UserTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: UserType
+}
+
+type UserTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [UserType!]!
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+input UserUpdateInput {
+  id: ID!
+  email: String
+  firstName: String
+  lastName: String
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String
+  userType: UserTypeEnum
+
+  """
+  Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+  """
+  isActive: Boolean
 }

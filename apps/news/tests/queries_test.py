@@ -8,25 +8,26 @@ class TestNewsQuery(TestCase):
         NEWS = """
           query news($order: NewsOrder) {
             news(order: $order) {
-                content
-                file{
-                    url
-                }
-                id
-                publishedDate
-                title
-                directive {
-                    pk
+                results {
+                    content
+                    file{
+                        url
+                    }
+                    id
+                    publishedDate
+                    title
+                    directive {
+                        id
+                    }
                 }
             }
-
           }
         """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_news_query(self):
         def _query():
@@ -56,18 +57,16 @@ class TestNewsQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "news": [
-                dict(
-                    id=self.gID(news.id),
-                    title=news.title,
-                    content=news.content,
-                    file=dict(
-                        url=self.get_media_url(news.file.name),
-                    ),
-                    publishedDate=news.published_date,
-                    directive=(dict(pk=self.gID(news.directive.id)) if news.directive else None),
-                )
-                for news in news_items
-            ],
-        }, content
+        assert content["data"]["news"]["results"] == [
+            dict(
+                id=self.gID(news.id),
+                title=news.title,
+                content=news.content,
+                file=dict(
+                    url=self.get_media_url(news.file.name),
+                ),
+                publishedDate=news.published_date,
+                directive=(dict(id=self.gID(news.directive.id)) if news.directive else None),
+            )
+            for news in news_items
+        ], content
