@@ -7,15 +7,14 @@ class TestFaqQuery(TestCase):
     class Query:
         FAQ = """
           query faq($order: FaqOrder) {
-            faqs(order: $order)
-               {
-                id
-                question
-                answer
-                orderIndex
-              }
-
-
+            faqs(order: $order){
+                results {
+                    id
+                    question
+                    answer
+                    orderIndex
+                }
+            }
           }
         """
 
@@ -47,14 +46,12 @@ class TestFaqQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "faqs": [
-                dict(
-                    id=self.gID(faq.id),
-                    question=faq.question,
-                    answer=faq.answer,
-                    orderIndex=faq.order_index,
-                )
-                for faq in faq_items
-            ],
-        }, content
+        assert content["data"]["faqs"]["results"] == [
+            dict(
+                id=self.gID(faq.id),
+                question=faq.question,
+                answer=faq.answer,
+                orderIndex=faq.order_index,
+            )
+            for faq in faq_items
+        ], content

@@ -8,14 +8,15 @@ class TestRadioProgramQuery(TestCase):
         RADIO_PROGRAMS = """
           query radioProgram($order: RadioProgramOrder) {
             radioProgram(order: $order) {
-                id
-                title
-                audioFile{
-                    url
+                results {
+                    id
+                    title
+                    audioFile{
+                        url
+                    }
+                    publishedDate
                 }
-                publishedDate
-              }
-
+            }
           }
         """
 
@@ -47,16 +48,14 @@ class TestRadioProgramQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "radioProgram": [
-                dict(
-                    id=self.gID(radio_program.id),
-                    title=radio_program.title,
-                    audioFile=dict(
-                        url=self.get_media_url(radio_program.audio_file.name),
-                    ),
-                    publishedDate=radio_program.published_date,
-                )
-                for radio_program in radio_program_items
-            ],
-        }, content
+        assert content["data"]["radioProgram"]["results"] == [
+            dict(
+                id=self.gID(radio_program.id),
+                title=radio_program.title,
+                audioFile=dict(
+                    url=self.get_media_url(radio_program.audio_file.name),
+                ),
+                publishedDate=radio_program.published_date,
+            )
+            for radio_program in radio_program_items
+        ], content

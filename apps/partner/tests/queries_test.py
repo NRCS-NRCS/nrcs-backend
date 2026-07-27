@@ -11,12 +11,14 @@ class TestPartnerQuery(TestCase):
         PARTNERS = """
           query partners($order: PartnerOrder) {
             partners(order: $order) {
-              id
-              title
-              image{
-                url
-              }
-              scope
+                results {
+                  id
+                  title
+                  image{
+                    url
+                  }
+                  scope
+                }
             }
           }
         """
@@ -49,16 +51,14 @@ class TestPartnerQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "partners": [
-                dict(
-                    id=self.gID(partner.id),
-                    title=partner.title,
-                    image=dict(
-                        url=self.get_media_url(partner.image.name),
-                    ),
-                    scope=self.genum(partner.scope),
-                )
-                for partner in partner_items
-            ],
-        }, content
+        assert content["data"]["partners"]["results"] == [
+            dict(
+                id=self.gID(partner.id),
+                title=partner.title,
+                image=dict(
+                    url=self.get_media_url(partner.image.name),
+                ),
+                scope=self.genum(partner.scope),
+            )
+            for partner in partner_items
+        ], content

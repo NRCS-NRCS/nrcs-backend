@@ -7,17 +7,19 @@ class TestStrategicDirectivesQuery(TestCase):
         STRATEGIC_DIRECTIVES = """
           query strategicDirectives($order: StrategicDirectivesOrder) {
             strategicDirectives(order: $order) {
-                id
-                title
-                description
-                majorResponsibilities {
-                    description
+                results {
                     id
-                    slug
                     title
-                }
-                coverImage {
-                    url
+                    description
+                    majorResponsibilities {
+                        description
+                        id
+                        slug
+                        title
+                    }
+                    coverImage {
+                        url
+                    }
                 }
             }
           }
@@ -61,23 +63,21 @@ class TestStrategicDirectivesQuery(TestCase):
         )
 
         content = _query()
-        assert content["data"] == {
-            "strategicDirectives": [
-                dict(
-                    id=self.gID(strategic.id),
-                    title=strategic.title,
-                    description=strategic.description,
-                    coverImage=dict(url=self.get_media_url(strategic.cover_image.name)),
-                    majorResponsibilities=[
-                        dict(
-                            id=self.gID(major.id),
-                            title=major.title,
-                            description=major.description,
-                            slug=major.slug,
-                        )
-                        for major in strategic.major_responsibilities.all()
-                    ],
-                )
-                for strategic in strategic_directives_items
-            ],
-        }, content
+        assert content["data"]["strategicDirectives"]["results"] == [
+            dict(
+                id=self.gID(strategic.id),
+                title=strategic.title,
+                description=strategic.description,
+                coverImage=dict(url=self.get_media_url(strategic.cover_image.name)),
+                majorResponsibilities=[
+                    dict(
+                        id=self.gID(major.id),
+                        title=major.title,
+                        description=major.description,
+                        slug=major.slug,
+                    )
+                    for major in strategic.major_responsibilities.all()
+                ],
+            )
+            for strategic in strategic_directives_items
+        ], content
