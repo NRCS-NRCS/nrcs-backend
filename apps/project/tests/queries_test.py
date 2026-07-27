@@ -25,7 +25,7 @@ class TestprojectQuery(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_project_query(self):
         def _query():

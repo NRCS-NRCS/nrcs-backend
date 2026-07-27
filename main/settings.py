@@ -137,6 +137,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     # Internal
     "apps.common",
+    "apps.users",
     "apps.strategic",
     "apps.department",
     "apps.procurement",
