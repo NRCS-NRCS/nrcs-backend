@@ -1,8 +1,51 @@
+import io
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
+
 from apps.department.factories import DepartmentFactory
 from apps.project.factories import ProjectFactory
 from apps.project.models import Project
 from apps.strategic.factories import StrategicDirectivesFactory, UserFactory
 from main.tests.base_test import TestCase
+
+
+def generate_test_image_file():
+    image = Image.new("RGB", (10, 10))
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG")
+    buffer.seek(0)
+
+    return SimpleUploadedFile(
+        "test.jpg",
+        buffer.read(),
+        content_type="image/jpeg",
+    )
+
+
+def project_image_mutation(
+    *,
+    query_check_func,
+    query: str,
+    data: dict,
+    **kwargs,
+) -> dict:
+    variables = {"data": data}
+    if pk := kwargs.pop("pk", None):
+        variables["pk"] = pk
+
+    with generate_test_image_file() as file:
+        return query_check_func(
+            query,
+            variables=variables,
+            files={
+                "coverImage": file,
+            },
+            map={
+                "coverImage": ["variables.data.coverImage"],
+            },
+            **kwargs,
+        )
 
 
 class TestProjectMutation(TestCase):
@@ -108,11 +151,10 @@ class TestProjectMutation(TestCase):
         }
 
         self.force_login(self.user)
-        content = self.query_check(
-            self.Mutation.CREATE_PROJECT,
-            variables={
-                "data": data,
-            },
+        content = project_image_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_PROJECT,
+            data=data,
         )
 
         assert content["data"]["createProject"]["errors"] is None, content
