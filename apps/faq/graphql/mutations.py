@@ -8,6 +8,7 @@ from apps.faq.graphql.inputs import (
     FaqCreateInput,
     FaqDeleteInput,
     FaqReorderInput,
+    FaqReorderPosition,
     FaqUpdateInput,
 )
 from apps.faq.graphql.types import FaqType
@@ -21,31 +22,40 @@ from utils.graphql.types import MutationResponseType
 
 @sync_to_async
 def _reorder_faq(data: FaqReorderInput) -> MutationResponseType[list[FaqType]]:
-    # Client sends the complete ordered list of FAQ ids. The set must match
-    # the existing FAQs exactly — reject (updating nothing) on any missing,
-    # unknown or duplicate id so a stale client can't silently corrupt order.
-    ordered_ids = [str(pk) for pk in data.ordered_ids]
+    # Move-based reorder: the client sends only the dragged FAQ (`moved_id`) and
+    # one adjacent anchor (`target_id`) plus whether it lands before/after it.
+    # The server owns the full ordering, loads every FAQ itself and renumbers,
+    # so this works regardless of how the client is paginated — it never needs
+    # the complete id list.
+    moved_id = str(data.moved_id)
+    target_id = str(data.target_id)
 
-    if len(ordered_ids) != len(set(ordered_ids)):
+    if moved_id == target_id:
         return MutationResponseType(
             ok=False,
-            errors=_CustomErrorType.generate_message("Duplicate FAQ ids in the provided order."),
-        )
-
-    existing_ids = {str(pk) for pk in Faq.objects.values_list("id", flat=True)}
-    if set(ordered_ids) != existing_ids:
-        return MutationResponseType(
-            ok=False,
-            errors=_CustomErrorType.generate_message(
-                "The provided FAQ ids do not match the existing FAQs. Please refresh and try again.",
-            ),
+            errors=_CustomErrorType.generate_message("An FAQ cannot be reordered relative to itself."),
         )
 
     with transaction.atomic():
-        faq_by_id = {str(faq.id): faq for faq in Faq.objects.select_for_update()}
-        for index, pk in enumerate(ordered_ids):
-            faq_by_id[pk].order_index = index
-        Faq.objects.bulk_update(faq_by_id.values(), ["order_index"])
+        faqs = list(Faq.objects.select_for_update().order_by("order_index", "id"))
+        ids = {str(faq.id) for faq in faqs}
+        if moved_id not in ids or target_id not in ids:
+            return MutationResponseType(
+                ok=False,
+                errors=_CustomErrorType.generate_message(
+                    "The provided FAQ ids do not match the existing FAQs. Please refresh and try again.",
+                ),
+            )
+
+        moved = next(faq for faq in faqs if str(faq.id) == moved_id)
+        remaining = [faq for faq in faqs if str(faq.id) != moved_id]
+        target_index = next(index for index, faq in enumerate(remaining) if str(faq.id) == target_id)
+        insert_at = target_index + 1 if data.position == FaqReorderPosition.AFTER else target_index
+        remaining.insert(insert_at, moved)
+
+        for index, faq in enumerate(remaining):
+            faq.order_index = index
+        Faq.objects.bulk_update(remaining, ["order_index"])
         result = list(Faq.objects.order_by("order_index", "id"))
 
     return MutationResponseType(result=result)  # type: ignore[reportReturnType]

@@ -56,6 +56,7 @@ Copy `.env` and fill in values. Key variables:
 | App | Purpose |
 |---|---|
 | `common` | Base models (`UserResource`, `StatusEnum`), serializers, admin, auth |
+| `users` | Auth users, `me` query, user CRUD (superuser-gated) |
 | `blog` | Blog posts |
 | `news` | News articles |
 | `department` | Organizational departments |
@@ -76,7 +77,7 @@ Copy `.env` and fill in values. Key variables:
 - **GraphiQL:** `GET /graphiql/` (DEBUG mode only)
 - **Main schema:** `main/graphql/schema.py` — aggregates `Query` and `Mutation` classes from every app
 - **Context:** `main/graphql/context.py` — provides `info.context.request` and `info.context.dl` (data loaders)
-- **Permissions:** `IsAuthenticated` from `strawberry_django.permissions` — apply via `extensions=[IsAuthenticated()]`
+- **Permissions:** `IsAuthenticated` from `strawberry_django.permissions` — apply via `extensions=[IsAuthenticated()]`. A custom `IsSuperuser()` extension gates user-management mutations (see `apps/users/graphql/mutations.py`).
 
 Each app's GraphQL code lives under `apps/<app>/graphql/`:
 ```

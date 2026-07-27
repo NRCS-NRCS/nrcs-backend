@@ -387,7 +387,6 @@ Faq(id, created_at, modified_at, created_by, modified_by, question, answer, orde
 input FaqCreateInput {
   question: String!
   answer: String!
-  orderIndex: Int
 }
 
 """
@@ -416,7 +415,14 @@ input FaqOrder {
 }
 
 input FaqReorderInput {
-  orderedIds: [ID!]!
+  movedId: ID!
+  targetId: ID!
+  position: FaqReorderPosition!
+}
+
+enum FaqReorderPosition {
+  BEFORE
+  AFTER
 }
 
 """
