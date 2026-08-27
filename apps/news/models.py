@@ -12,6 +12,7 @@ from utils.common import (
     unique_slugify,
     validate_file_size,
 )
+from utils.embed import validate_embeds
 
 
 # Create your models here.
@@ -37,6 +38,7 @@ class News(UserResource):
             validate_file_size(self.cover_image, MAX_IMAGE_FILE_SIZE)
         if self.file:
             validate_file_size(self.file, MAX_FILE_SIZE)
+        validate_embeds(self.content)
         return super().clean()
 
     def save(self, *args, **kwargs):

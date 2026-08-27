@@ -7,6 +7,7 @@ from mdeditor.fields import MDTextField
 from apps.common.models import UserResource
 from apps.strategic.models import StrategicDirectives
 from utils.common import MAX_FILE_SIZE, MAX_IMAGE_FILE_SIZE, unique_slugify, validate_file_size
+from utils.embed import validate_embeds
 
 
 class ResourceTypeEnum(models.IntegerChoices):
@@ -35,6 +36,7 @@ class Resource(UserResource):
             validate_file_size(self.file, MAX_FILE_SIZE)
         if self.cover_image:
             validate_file_size(self.cover_image, MAX_IMAGE_FILE_SIZE)
+        validate_embeds(self.content)
         return super().clean()
 
     def save(self, *args, **kwargs):
