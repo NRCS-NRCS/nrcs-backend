@@ -78,7 +78,6 @@ class TestKeyStatFeaturedLimit(TestCase):
 
     def test_five_featured_rejected(self):
         errors = self._build([True, True, True, True, True])
-
         assert errors
         assert "at most 4 featured" in errors[0]
 
