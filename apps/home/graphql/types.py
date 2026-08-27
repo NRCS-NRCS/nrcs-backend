@@ -9,7 +9,7 @@ from utils.graphql.types import DjangoFileType
 class HighlightType:
     id: strawberry.ID
     heading: strawberry.auto
-    description: strawberry.auto
+    description: str
     image: DjangoFileType | None
     action_links: list["ActionLinkType"] = strawberry_django.field()
     is_active: strawberry.auto
