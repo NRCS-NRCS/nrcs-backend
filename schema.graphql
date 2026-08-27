@@ -209,6 +209,7 @@ type HighlightType {
   description: String!
   image: DjangoFileType
   actionLinks: [ActionLinkType!]!
+  keyStats: [KeyStatType!]!
   isActive: Boolean!
 }
 
@@ -274,6 +275,14 @@ type JobVacancyType {
   expiryDate: Date!
   isArchived: Boolean!
   publishedAt: Date!
+}
+
+"""KeyStat(id, order, title, stat, featured, highlight)"""
+type KeyStatType {
+  order: Int!
+  title: String!
+  stat: Int!
+  featured: Boolean!
 }
 
 """
