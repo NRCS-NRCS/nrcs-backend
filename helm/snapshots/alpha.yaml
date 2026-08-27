@@ -195,6 +195,9 @@ spec:
           env:
             - name: APP_TYPE
               value: "hook"
+            
+
+
 ---
 # Source: nrcs-backend-helm/charts/app/templates/hooks/job.yaml
 # Hook: db-migrate
@@ -246,6 +249,9 @@ spec:
           env:
             - name: APP_TYPE
               value: "hook"
+            
+
+
 ---
 # Source: nrcs-backend-helm/charts/app/templates/hooks/job.yaml
 # Hook: wait-for-resources
