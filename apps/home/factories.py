@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from apps.strategic.factories import UserFactory
 
-from .models import ActionLink, Highlight, KeyStat
+from .models import ActionLink, Highlight, HighlightFile, KeyStat
 
 
 class HighlightFactory(DjangoModelFactory):
@@ -26,3 +26,11 @@ class KeyStatFactory(DjangoModelFactory):
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
         model = KeyStat
+
+
+class HighlightFileFactory(DjangoModelFactory):
+    order = factory.Sequence(lambda n: n + 1)
+    file = factory.django.FileField(filename="highlight.pdf")
+
+    class Meta:  # type: ignore[reportIncompatibleVariableOverride]
+        model = HighlightFile

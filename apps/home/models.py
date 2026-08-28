@@ -2,7 +2,7 @@ from django.db import models
 from mdeditor.fields import MDTextField
 
 from apps.common.models import UserResource
-from utils.common import MAX_IMAGE_FILE_SIZE, validate_file_size
+from utils.common import MAX_HIGHLIGHT_FILE_SIZE, MAX_IMAGE_FILE_SIZE, validate_file_size
 from utils.embed import validate_embeds
 
 
@@ -30,6 +30,29 @@ class ActionLink(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class HighlightFile(models.Model):
+    MAX_FILES_PER_HIGHLIGHT = 50
+
+    file = models.FileField(upload_to="highlights/files/")
+    order = models.PositiveIntegerField()
+    label = models.CharField(max_length=255, blank=True)
+    highlight = models.ForeignKey(Highlight, on_delete=models.SET_NULL, null=True, blank=True, related_name="files")
+
+    class Meta:
+        ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(fields=["highlight", "order"], name="unique_highlight_file_order_per_highlight"),
+        ]
+
+    def __str__(self):
+        return self.label or f"File {self.order}"
+
+    def clean(self):
+        if self.file:
+            validate_file_size(self.file, MAX_HIGHLIGHT_FILE_SIZE)
+        return super().clean()
 
 
 class KeyStat(models.Model):
