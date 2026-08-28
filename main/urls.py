@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
 
+from apps.common.views import MDEditorImageUploadView
 from main.graphql.schema import CustomAsyncGraphQLView
 from main.graphql.schema import schema as graphql_schema
 
@@ -16,6 +17,9 @@ base_graphql_kwargs = dict(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health-check/", include("health_check.urls")),
+    # Override mdeditor's upload view so images are saved through Django's storage
+    # backend (S3/filesystem). Must come before the mdeditor include below.
+    path("mdeditor/uploads/", MDEditorImageUploadView.as_view(), name="mdeditor-uploads"),
     path(r"mdeditor/", include("mdeditor.urls")),
     path(
         "graphql/",

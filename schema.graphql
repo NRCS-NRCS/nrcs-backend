@@ -42,13 +42,13 @@ type BlogType {
   title: String!
   publishedDate: Date!
   author: String!
-  content: String!
   coverImage: DjangoFileType
   featured: Boolean!
   status: StatusEnum!
   slug: String!
   department: DjangoModelType
   directive: DjangoModelType
+  content: String!
 }
 
 input BoolBaseFilterLookup {
@@ -206,11 +206,11 @@ Highlight(id, created_at, modified_at, created_by, modified_by, heading, descrip
 type HighlightType {
   id: ID!
   heading: String!
-  description: String!
   image: DjangoFileType
   actionLinks: [ActionLinkType!]!
   keyStats: [KeyStatType!]!
   isActive: Boolean!
+  description: String!
 }
 
 input IntComparisonFilterLookup {
@@ -343,11 +343,11 @@ type NewsType {
   id: ID!
   title: String!
   file: DjangoFileType
-  content: String!
   publishedDate: Date!
   directive: DjangoModelType
   slug: String!
   coverImage: DjangoFileType
+  content: String!
 }
 
 enum Ordering {
@@ -585,12 +585,12 @@ type ResourceType {
   id: ID!
   title: String!
   file: DjangoFileType!
-  content: String!
   publishedDate: Date!
   directive: DjangoModelType
   slug: String!
   coverImage: DjangoFileType
   type: ResourceTypeEnum!
+  content: String!
 }
 
 enum ResourceTypeEnum {

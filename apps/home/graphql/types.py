@@ -1,19 +1,23 @@
 import strawberry
 import strawberry_django
+from strawberry.types import Info
 
 from apps.home.models import ActionLink, Highlight, KeyStat
-from utils.graphql.types import DjangoFileType
+from utils.graphql.types import DjangoFileType, markdown_with_absolute_media
 
 
 @strawberry_django.type(Highlight)
 class HighlightType:
     id: strawberry.ID
     heading: strawberry.auto
-    description: str
     image: DjangoFileType | None
     action_links: list["ActionLinkType"] = strawberry_django.field()
     key_stats: list["KeyStatType"] = strawberry_django.field()
     is_active: strawberry.auto
+
+    @strawberry_django.field(only=["description"])
+    def description(self, info: Info, root: strawberry.Parent[Highlight]) -> str:
+        return markdown_with_absolute_media(root.description, info)
 
 
 @strawberry_django.type(ActionLink)
