@@ -191,7 +191,7 @@ type HighlightFileType {
 }
 
 """
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
 """
 input HighlightFilter {
   heading: String = null
@@ -208,7 +208,7 @@ input HighlightOrder {
 }
 
 """
-Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
 """
 type HighlightType {
   id: ID!
@@ -218,6 +218,7 @@ type HighlightType {
   keyStats: [KeyStatType!]!
   files: [HighlightFileType!]!
   isActive: Boolean!
+  showInPopup: Boolean!
   description: String!
 }
 

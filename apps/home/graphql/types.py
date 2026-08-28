@@ -15,6 +15,7 @@ class HighlightType:
     key_stats: list["KeyStatType"] = strawberry_django.field()
     files: list["HighlightFileType"] = strawberry_django.field()
     is_active: strawberry.auto
+    show_in_popup: strawberry.auto
 
     @strawberry_django.field(only=["description"])
     def description(self, info: Info, root: strawberry.Parent[Highlight]) -> str:

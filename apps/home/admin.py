@@ -56,6 +56,6 @@ class KeyStatInline(admin.TabularInline):  # Tabular inline form
 
 @admin.register(Highlight)
 class HighlightAdmin(admin.ModelAdmin):
-    list_display = ("heading", "is_active")
+    list_display = ("heading", "is_active", "show_in_popup")
     search_fields = ("heading", "description")
     inlines = [ActionLinkInline, KeyStatInline, HighlightFileInline]

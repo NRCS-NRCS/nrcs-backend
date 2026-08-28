@@ -12,15 +12,23 @@ class Highlight(UserResource):
     description = MDTextField()
     image = models.FileField(upload_to="highlights/")
     is_active = models.BooleanField(default=False)
+    show_in_popup = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.heading
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Only one highlight may be shown in the popup at a time; enabling it here
+        # clears the flag on every other highlight.
+        if self.show_in_popup:
+            Highlight.objects.exclude(pk=self.pk).filter(show_in_popup=True).update(show_in_popup=False)
 
     def clean(self):
         if self.image:
             validate_file_size(self.image, MAX_IMAGE_FILE_SIZE)
         validate_embeds(self.description)
         return super().clean()
-
-    def __str__(self):
-        return self.heading
 
 
 class ActionLink(models.Model):
