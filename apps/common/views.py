@@ -1,5 +1,4 @@
 import datetime
-import os
 
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
@@ -47,7 +46,7 @@ class MDEditorImageUploadView(generic.View):
             return JsonResponse(
                 {
                     "success": 0,
-                    "message": "Unsupported image format. Allowed formats: %s" % ", ".join(allowed_formats),
+                    "message": f"Unsupported image format. Allowed formats: {', '.join(allowed_formats)}",
                     "url": "",
                 },
             )
@@ -57,18 +56,15 @@ class MDEditorImageUploadView(generic.View):
             return JsonResponse(
                 {
                     "success": 0,
-                    "message": "Image is too large. Max size must be less than %s MB." % MAX_MDEDITOR_IMAGE_FILE_SIZE,
+                    "message": f"Image is too large. Max size must be less than {MAX_MDEDITOR_IMAGE_FILE_SIZE} MB.",
                     "url": "",
                 },
             )
 
-        file_name = "%s_%s.%s" % (
-            stem,
-            datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"),
-            extension,
-        )
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+        file_name = f"{stem}_{timestamp}.{extension}"
         saved_path = default_storage.save(
-            os.path.join(MDEDITOR_CONFIGS["image_folder"], file_name),
+            f"{MDEDITOR_CONFIGS['image_folder']}/{file_name}",
             upload_image,
         )
         return JsonResponse({"success": 1, "message": "Upload success.", "url": default_storage.url(saved_path)})
