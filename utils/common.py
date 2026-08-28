@@ -40,6 +40,8 @@ MAX_FILE_SIZE = 30
 MAX_RADIO_PROGRAM_FILE_SIZE = 40
 # Images inserted through the markdown editor (mdeditor) upload endpoint.
 MAX_MDEDITOR_IMAGE_FILE_SIZE = 2
+# Files attached to a highlight.
+MAX_HIGHLIGHT_FILE_SIZE = 10
 
 
 def validate_file_size(file: File, max_size: int) -> None:

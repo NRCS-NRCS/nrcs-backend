@@ -2,7 +2,7 @@ import strawberry
 import strawberry_django
 from strawberry.types import Info
 
-from apps.home.models import ActionLink, Highlight, KeyStat
+from apps.home.models import ActionLink, Highlight, HighlightFile, KeyStat
 from utils.graphql.types import DjangoFileType, markdown_with_absolute_media
 
 
@@ -13,6 +13,7 @@ class HighlightType:
     image: DjangoFileType | None
     action_links: list["ActionLinkType"] = strawberry_django.field()
     key_stats: list["KeyStatType"] = strawberry_django.field()
+    files: list["HighlightFileType"] = strawberry_django.field()
     is_active: strawberry.auto
 
     @strawberry_django.field(only=["description"])
@@ -32,3 +33,10 @@ class KeyStatType:
     title: strawberry.auto
     stat: strawberry.auto
     featured: strawberry.auto
+
+
+@strawberry_django.type(HighlightFile)
+class HighlightFileType:
+    file: DjangoFileType
+    order: strawberry.auto
+    label: strawberry.auto

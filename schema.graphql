@@ -183,6 +183,13 @@ type FaqType {
   orderIndex: Int!
 }
 
+"""HighlightFile(id, file, order, label, highlight)"""
+type HighlightFileType {
+  file: DjangoFileType!
+  order: Int!
+  label: String!
+}
+
 """
 Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active)
 """
@@ -209,6 +216,7 @@ type HighlightType {
   image: DjangoFileType
   actionLinks: [ActionLinkType!]!
   keyStats: [KeyStatType!]!
+  files: [HighlightFileType!]!
   isActive: Boolean!
   description: String!
 }
