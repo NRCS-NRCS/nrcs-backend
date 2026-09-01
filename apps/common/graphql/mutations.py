@@ -1,7 +1,7 @@
 import httpx
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsSuperuser
+from strawberry_django.permissions import IsStaff
 
 from apps.common import github
 from main.graphql.context import Info
@@ -13,7 +13,7 @@ from .types import DeploymentTriggerType
 
 @strawberry.type
 class Mutation:
-    @strawberry_django.mutation(extensions=[IsSuperuser()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def trigger_deployment(self, info: Info) -> MutationResponseType[DeploymentTriggerType]:
         """Dispatch the public site's deployment workflow.
 

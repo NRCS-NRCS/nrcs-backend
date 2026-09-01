@@ -71,9 +71,9 @@ class NewsCreateInput:
     published_date: strawberry.auto
     slug: strawberry.auto
     status: strawberry.auto
-    directive: strawberry.ID
-    is_highlighted: strawberry.auto
-    show_in_popup: strawberry.auto
+    directive: strawberry.ID | None = strawberry.UNSET
+    is_highlighted: strawberry.auto = strawberry.UNSET
+    show_in_popup: strawberry.auto = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
     action_links: list[ActionLinkCreateInput] | None = strawberry.UNSET
     key_stats: list[KeyStatCreateInput] | None = strawberry.UNSET
@@ -87,9 +87,9 @@ class NewsUpdateInput:
     published_date: strawberry.auto
     status: strawberry.auto
     slug: strawberry.auto
-    directive: strawberry.ID
-    is_highlighted: strawberry.auto
-    show_in_popup: strawberry.auto
+    directive: strawberry.ID | None = strawberry.UNSET
+    is_highlighted: strawberry.auto = strawberry.UNSET
+    show_in_popup: strawberry.auto = strawberry.UNSET
     cover_image: Upload | None = strawberry.UNSET
     action_links: list[ActionLinkInput] | None = strawberry.UNSET
     key_stats: list[KeyStatInput] | None = strawberry.UNSET

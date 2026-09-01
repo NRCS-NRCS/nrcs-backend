@@ -62,12 +62,15 @@ class TestTriggerDeploymentMutation(TestCase):
         self._assert_permission_denied(content)
         dispatch.assert_not_awaited()
 
-    def test_staff_cannot_trigger(self):
-        # Staff can edit content but deploying stays admin-only.
+    def test_staff_triggers_deployment(self):
+        # Staff manage content, so they also publish it.
         self.force_login(self.staff)
         content, dispatch = self._trigger([RUN_COMPLETED])
-        self._assert_permission_denied(content)
-        dispatch.assert_not_awaited()
+
+        resp = content["data"]["triggerDeployment"]
+        assert resp["ok"] is True, content
+        assert resp["errors"] is None, content
+        dispatch.assert_awaited_once()
 
     def test_admin_triggers_deployment(self):
         self.force_login(self.admin)

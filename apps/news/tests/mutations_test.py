@@ -108,6 +108,35 @@ class TestNewsMutation(TestCase):
             ),
         ), content
 
+    def test_create_news_without_directive(self):
+        # directive is nullable on the model, so it can be left out entirely.
+        data = {
+            "title": "News Without A Directive",
+            "content": "This is the content of the news.",
+            "publishedDate": "2024-10-01",
+            "status": self.genum(StatusEnum.DRAFT),
+        }
+        self.force_login(self.user)
+        content = self.query_check(
+            self.Mutation.CREATE_NEWS,
+            variables={"data": data},
+        )
+
+        resp_data = content["data"]["createNews"]
+        assert resp_data["errors"] is None, content
+        assert resp_data == self.g_mutation_response(
+            ok=True,
+            result=dict(
+                id=resp_data["result"]["id"],
+                title=data["title"],
+                content=data["content"],
+                publishedDate=data["publishedDate"],
+                slug=resp_data["result"]["slug"],
+                status=data["status"],
+                directive=None,
+            ),
+        ), content
+
     def test_update_news(self):
         news_instance = NewsFactory.create(
             title="Old News Title",

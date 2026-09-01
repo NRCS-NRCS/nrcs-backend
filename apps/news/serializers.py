@@ -109,8 +109,7 @@ class NewsSerializer(UserResourceSerializer[News]):
                 raise serializers.ValidationError(
                     {
                         "attachments": (
-                            f"A news item can have at most "
-                            f"{NewsAttachment.MAX_ATTACHMENTS_PER_NEWS} attachments."
+                            f"A news item can have at most {NewsAttachment.MAX_ATTACHMENTS_PER_NEWS} attachments."
                         ),
                     },
                 )

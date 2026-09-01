@@ -45,8 +45,8 @@ class TestNewsKeyStatMutation(TestCase):
         cls.user = UserFactory.create(username="nrcs-keystat-mutation", is_staff=True)
 
     def _update_base(self, news):
-        """NewsUpdateInput still marks content and directive as required."""
-        return {"content": news.content, "directive": str(news.directive_id)}
+        """NewsUpdateInput still marks content as required; directive is optional."""
+        return {"content": news.content}
 
     def _base_data(self):
         return {
@@ -82,8 +82,7 @@ class TestNewsKeyStatMutation(TestCase):
         data = {
             **self._base_data(),
             "keyStats": [
-                {"order": index, "title": f"Stat {index}", "stat": index, "featured": True}
-                for index in range(1, 6)
+                {"order": index, "title": f"Stat {index}", "stat": index, "featured": True} for index in range(1, 6)
             ],
         }
         content = self.query_check(CREATE_NEWS, variables={"data": data})
@@ -247,9 +246,10 @@ class TestNewsAttachmentLimit(TestCase):
     def test_replacing_an_existing_row_stays_within_the_cap(self):
         news = self._news_at_attachment_cap()
         first = NewsAttachment.objects.filter(news=news).first()
+        assert first is not None
         serializer = NewsSerializer(
             instance=news,
-            data={"attachments": [{"id": first.id, "order": first.order, "label": "Renamed"}]},
+            data={"attachments": [{"id": first.pk, "order": first.order, "label": "Renamed"}]},
             partial=True,
         )
         assert serializer.is_valid(), serializer.errors

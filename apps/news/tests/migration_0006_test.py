@@ -1,7 +1,8 @@
 """Exercise the 0006 data migration against a real historical schema."""
+
 import pytest
-from django.db.migrations.executor import MigrationExecutor
 from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 
 BEFORE = [("news", "0005_news_show_in_popup_keystat_newsattachment")]
 AFTER = [("news", "0006_move_news_file_to_attachments")]
@@ -20,12 +21,20 @@ def test_news_file_becomes_an_attachment():
 
     author = User.objects.create(username="migration-user")
     with_file = News.objects.create(
-        title="Has file", published_date="2024-01-01", slug="has-file", file="news/report.pdf",
-        created_by=author, modified_by=author,
+        title="Has file",
+        published_date="2024-01-01",
+        slug="has-file",
+        file="news/report.pdf",
+        created_by=author,
+        modified_by=author,
     )
     without = News.objects.create(
-        title="No file", published_date="2024-01-01", slug="no-file", file="",
-        created_by=author, modified_by=author,
+        title="No file",
+        published_date="2024-01-01",
+        slug="no-file",
+        file="",
+        created_by=author,
+        modified_by=author,
     )
     # An existing attachment must keep order 1; the migrated file goes after it.
     NewsAttachment.objects.create(news=with_file, file="news/attachments/existing.pdf", order=1, label="Existing")

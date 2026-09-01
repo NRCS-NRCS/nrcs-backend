@@ -362,6 +362,46 @@ input DepartmentUpdateInput {
   strategicDirective: ID!
 }
 
+type DeploymentListType {
+  results: [DeploymentType!]!
+  hasActiveRun: Boolean!
+  workflowUrl: String!
+}
+
+enum DeploymentStatusEnum {
+  QUEUED
+  IN_PROGRESS
+  SUCCESS
+  FAILED
+  CANCELLED
+  UNKNOWN
+}
+
+type DeploymentTriggerType {
+  ref: String!
+  workflowUrl: String!
+}
+
+type DeploymentTriggerTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: DeploymentTriggerType
+}
+
+type DeploymentType {
+  id: ID!
+  runNumber: Int!
+  title: String!
+  branch: String!
+  event: String!
+  status: DeploymentStatusEnum!
+  url: String!
+  actor: String
+  createdAt: DateTime
+  startedAt: DateTime
+  updatedAt: DateTime
+}
+
 type DjangoFileType {
   name: String!
   size: Int!
@@ -595,12 +635,35 @@ input JobVacancyUpdateInput {
 }
 
 """KeyStat(id, order, title, stat, featured, news)"""
+input KeyStatCreateInput {
+  order: Int!
+  title: String!
+  stat: Int!
+  featured: Boolean
+}
+
+input KeyStatInput {
+  create: KeyStatCreateInput
+  update: KeyStatUpdateInput
+  delete: DeleteInput
+}
+
+"""KeyStat(id, order, title, stat, featured, news)"""
 type KeyStatType {
   id: ID!
   order: Int!
   title: String!
   stat: Int!
   featured: Boolean!
+}
+
+"""KeyStat(id, order, title, stat, featured, news)"""
+input KeyStatUpdateInput {
+  id: ID!
+  order: Int
+  title: String
+  stat: Int
+  featured: Boolean
 }
 
 """
@@ -681,6 +744,7 @@ type Mutation {
   deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isStaff
   createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isStaff
   updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isStaff
+  triggerDeployment: TriggerDeploymentPayload! @isStaff
   deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isStaff
   createFaq(data: FaqCreateInput!): CreateFaqPayload! @isStaff
   updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isStaff
@@ -714,8 +778,37 @@ type Mutation {
   updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isStaff
 }
 
+"""NewsAttachment(id, file, order, label, news)"""
+input NewsAttachmentCreateInput {
+  order: Int!
+  label: String
+  file: Upload!
+}
+
+input NewsAttachmentInput {
+  create: NewsAttachmentCreateInput
+  update: NewsAttachmentUpdateInput
+  delete: DeleteInput
+}
+
+"""NewsAttachment(id, file, order, label, news)"""
+type NewsAttachmentType {
+  id: ID!
+  file: DjangoFileType!
+  order: Int!
+  label: String!
+}
+
+"""NewsAttachment(id, file, order, label, news)"""
+input NewsAttachmentUpdateInput {
+  id: ID!
+  order: Int
+  label: String
+  file: Upload
+}
+
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
+News(id, created_at, modified_at, created_by, modified_by, title, content, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsCreateInput {
   title: String!
@@ -723,31 +816,24 @@ input NewsCreateInput {
   publishedDate: Date!
   slug: String
   status: StatusEnum
-  directive: ID!
+  directive: ID
   isHighlighted: Boolean
   showInPopup: Boolean
-  file: Upload
   coverImage: Upload
   actionLinks: [ActionLinkCreateInput!]
+  keyStats: [KeyStatCreateInput!]
+  attachments: [NewsAttachmentCreateInput!]
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
+News(id, created_at, modified_at, created_by, modified_by, title, content, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsDeleteInput {
   id: ID!
 }
 
-"""NewsFile(id, file, order, label, news)"""
-type NewsFileType {
-  id: ID!
-  file: DjangoFileType!
-  order: Int!
-  label: String!
-}
-
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
+News(id, created_at, modified_at, created_by, modified_by, title, content, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsFilter {
   slug: String
@@ -771,7 +857,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
+News(id, created_at, modified_at, created_by, modified_by, title, content, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 type NewsType implements UserResourceTypeMixin {
   createdAt: DateTime!
@@ -780,7 +866,6 @@ type NewsType implements UserResourceTypeMixin {
   modifiedBy: UserType!
   id: ID!
   title: String!
-  file: DjangoFileType
   status: StatusEnum!
   publishedDate: Date!
   directiveId: ID
@@ -791,7 +876,7 @@ type NewsType implements UserResourceTypeMixin {
   showInPopup: Boolean!
   actionLinks: [ActionLinkType!]
   keyStats: [KeyStatType!]
-  files: [NewsFileType!]
+  attachments: [NewsAttachmentType!]
   content: String!
 }
 
@@ -812,7 +897,7 @@ type NewsTypeOffsetPaginated {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
+News(id, created_at, modified_at, created_by, modified_by, title, content, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsUpdateInput {
   title: String
@@ -820,12 +905,13 @@ input NewsUpdateInput {
   publishedDate: Date
   status: StatusEnum
   slug: String
-  directive: ID!
+  directive: ID
   isHighlighted: Boolean
   showInPopup: Boolean
-  file: Upload
   coverImage: Upload
   actionLinks: [ActionLinkInput!]
+  keyStats: [KeyStatInput!]
+  attachments: [NewsAttachmentInput!]
 }
 
 type OffsetPaginationInfo {
@@ -1168,6 +1254,7 @@ type Query {
   users(pagination: OffsetPaginationInput, filters: UserFilter, order: UserOrder): UserTypeOffsetPaginated! @isAuthenticated
   user(id: ID!): UserType! @isAuthenticated
   me: UserMeType
+  deployments: DeploymentListType! @isAuthenticated
   strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
   strategicDirective(id: ID!): StrategicDirectivesType!
   majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
@@ -1505,6 +1592,8 @@ input StrategicDirectivesUpdateInput {
   coverImage: Upload
   majorResponsibilities: [MajorResponsibilitiesInput!]
 }
+
+union TriggerDeploymentPayload = DeploymentTriggerTypeMutationResponseType | OperationInfo
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 

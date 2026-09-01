@@ -62,9 +62,7 @@ class Mutation:
             if collection == strawberry.UNSET or collection is None:
                 continue
             delete_ids = [
-                item.delete.id
-                for item in collection
-                if item.delete is not None and item.delete != strawberry.UNSET
+                item.delete.id for item in collection if item.delete is not None and item.delete != strawberry.UNSET
             ]
             if delete_ids:
                 await model.objects.filter(news=news, id__in=delete_ids).adelete()
