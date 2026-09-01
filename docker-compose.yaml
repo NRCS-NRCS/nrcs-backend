@@ -26,6 +26,7 @@ x-server: &base_server_setup
     GITHUB_OWNER: ${GITHUB_OWNER:-nrcs-nrcs}
     GITHUB_REPO: ${GITHUB_REPO:-nrcs-client}
     GITHUB_WORKFLOW_FILE: ${GITHUB_WORKFLOW_FILE:-cd.yml}
+    GITHUB_DEFAULT_REF: ${GITHUB_DEFAULT_REF:-main}
   env_file:
     - path: .env
       required: false
