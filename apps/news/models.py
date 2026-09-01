@@ -7,9 +7,8 @@ from mdeditor.fields import MDTextField
 from apps.common.models import StatusEnum, UserResource
 from apps.strategic.models import StrategicDirectives
 from utils.common import (
-    MAX_FILE_SIZE,
     MAX_IMAGE_FILE_SIZE,
-    MAX_NEWS_FILE_SIZE,
+    MAX_NEWS_ATTACHMENT_SIZE,
     unique_slugify,
     validate_file_size,
 )
@@ -20,7 +19,6 @@ from utils.embed import validate_embeds
 class News(UserResource):
     title = models.CharField(max_length=255)
     content = MDTextField(blank=True, null=True)
-    file = models.FileField(upload_to="news/", null=True, blank=True)
     published_date = models.DateField()
     directive = models.ForeignKey(
         StrategicDirectives,
@@ -38,8 +36,6 @@ class News(UserResource):
     def clean(self):
         if self.cover_image:
             validate_file_size(self.cover_image, MAX_IMAGE_FILE_SIZE)
-        if self.file:
-            validate_file_size(self.file, MAX_FILE_SIZE)
         validate_embeds(self.content)
         return super().clean()
 
@@ -69,26 +65,32 @@ class ActionLink(models.Model):
         return self.label
 
 
-class NewsFile(models.Model):
-    MAX_FILES_PER_NEWS = 50
+class NewsAttachment(models.Model):
+    MAX_ATTACHMENTS_PER_NEWS = 50
 
-    file = models.FileField(upload_to="news/files/")
+    file = models.FileField(upload_to="news/attachments/")
     order = models.PositiveIntegerField()
     label = models.CharField(max_length=255, blank=True)
-    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True, blank=True, related_name="files")
+    news = models.ForeignKey(News, on_delete=models.SET_NULL, null=True, blank=True, related_name="attachments")
 
     class Meta:
         ordering = ["order"]
         constraints = [
-            models.UniqueConstraint(fields=["news", "order"], name="unique_news_file_order_per_news"),
+            # Deferred so a reorder can swap two rows inside one transaction without
+            # tripping the constraint on the intermediate state.
+            models.UniqueConstraint(
+                fields=["news", "order"],
+                name="unique_attachment_order_per_news",
+                deferrable=models.Deferrable.DEFERRED,
+            ),
         ]
 
     def __str__(self):
-        return self.label or f"File {self.order}"
+        return self.label or f"Attachment {self.order}"
 
     def clean(self):
         if self.file:
-            validate_file_size(self.file, MAX_NEWS_FILE_SIZE)
+            validate_file_size(self.file, MAX_NEWS_ATTACHMENT_SIZE)
         return super().clean()
 
 
@@ -104,7 +106,11 @@ class KeyStat(models.Model):
     class Meta:
         ordering = ["order"]
         constraints = [
-            models.UniqueConstraint(fields=["news", "order"], name="unique_key_stat_order_per_news"),
+            models.UniqueConstraint(
+                fields=["news", "order"],
+                name="unique_key_stat_order_per_news",
+                deferrable=models.Deferrable.DEFERRED,
+            ),
         ]
 
     def __str__(self):

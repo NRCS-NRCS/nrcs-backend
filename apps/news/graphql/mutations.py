@@ -4,7 +4,7 @@ from strawberry_django.permissions import IsStaff
 
 from apps.news.graphql.inputs import NewsCreateInput, NewsDeleteInput, NewsUpdateInput
 from apps.news.graphql.types import NewsType
-from apps.news.models import ActionLink, News
+from apps.news.models import ActionLink, KeyStat, News, NewsAttachment
 from apps.news.serializers import NewsSerializer
 from main.graphql.context import Info
 from utils.graphql.common import DataclassInstance
@@ -52,10 +52,22 @@ class Mutation:
 
             return (False, obj)
 
-        for action_link in data.action_links or []:
-            if action_link.delete is not None and action_link.delete != strawberry.UNSET:
-                await ActionLink.objects.filter(id=action_link.delete.id).adelete()
+        # Deletions are applied up front so the serializer only ever sees
+        # creates and updates, and so limit checks run against the final state.
+        for collection, model in (
+            (data.action_links, ActionLink),
+            (data.key_stats, KeyStat),
+            (data.attachments, NewsAttachment),
+        ):
+            if collection == strawberry.UNSET or collection is None:
                 continue
+            delete_ids = [
+                item.delete.id
+                for item in collection
+                if item.delete is not None and item.delete != strawberry.UNSET
+            ]
+            if delete_ids:
+                await model.objects.filter(news=news, id__in=delete_ids).adelete()
 
         return await ModelMutation(NewsSerializer).handle_update_mutation(
             data,

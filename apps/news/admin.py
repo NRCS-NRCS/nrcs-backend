@@ -4,7 +4,7 @@ from django.forms.models import BaseInlineFormSet
 
 from apps.common.admin import UserResourceAdmin
 
-from .models import ActionLink, KeyStat, News, NewsFile
+from .models import ActionLink, KeyStat, News, NewsAttachment
 
 
 class ActionLinkInline(admin.TabularInline):  # Tabular inline form
@@ -12,7 +12,7 @@ class ActionLinkInline(admin.TabularInline):  # Tabular inline form
     extra = 1  # show 1 empty row by default
 
 
-class NewsFileInlineFormSet(BaseInlineFormSet):
+class NewsAttachmentInlineFormSet(BaseInlineFormSet):
     def clean(self):
         super().clean()
         file_count = 0
@@ -22,15 +22,15 @@ class NewsFileInlineFormSet(BaseInlineFormSet):
                 continue
             if form.cleaned_data.get("file"):
                 file_count += 1
-        if file_count > NewsFile.MAX_FILES_PER_NEWS:
+        if file_count > NewsAttachment.MAX_ATTACHMENTS_PER_NEWS:
             raise ValidationError(
-                f"A news item can have at most {NewsFile.MAX_FILES_PER_NEWS} files.",
+                f"A news item can have at most {NewsAttachment.MAX_ATTACHMENTS_PER_NEWS} attachments.",
             )
 
 
-class NewsFileInline(admin.TabularInline):  # Tabular inline form
-    model = NewsFile
-    formset = NewsFileInlineFormSet
+class NewsAttachmentInline(admin.TabularInline):  # Tabular inline form
+    model = NewsAttachment
+    formset = NewsAttachmentInlineFormSet
     extra = 1  # show 1 empty row by default
 
 
@@ -60,4 +60,4 @@ class KeyStatInline(admin.TabularInline):  # Tabular inline form
 class NewsAdmin(UserResourceAdmin):
     list_display = ["title", "status", "is_highlighted", "show_in_popup"]
     search_fields = ("title", "content")
-    inlines = [ActionLinkInline, KeyStatInline, NewsFileInline]
+    inlines = [ActionLinkInline, KeyStatInline, NewsAttachmentInline]

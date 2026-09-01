@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from apps.strategic.factories import UserFactory
 
-from .models import ActionLink, KeyStat, News, NewsFile
+from .models import ActionLink, KeyStat, News, NewsAttachment
 
 
 class NewsFactory(DjangoModelFactory):
@@ -28,9 +28,9 @@ class KeyStatFactory(DjangoModelFactory):
         model = KeyStat
 
 
-class NewsFileFactory(DjangoModelFactory):
+class NewsAttachmentFactory(DjangoModelFactory):
     order = factory.Sequence(lambda n: n + 1)
     file = factory.django.FileField(filename="news.pdf")
 
     class Meta:  # type: ignore[reportIncompatibleVariableOverride]
-        model = NewsFile
+        model = NewsAttachment

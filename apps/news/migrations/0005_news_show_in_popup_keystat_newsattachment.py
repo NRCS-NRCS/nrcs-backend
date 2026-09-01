@@ -36,15 +36,19 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["order"],
                 "constraints": [
-                    models.UniqueConstraint(fields=("news", "order"), name="unique_key_stat_order_per_news"),
+                    models.UniqueConstraint(
+                        fields=("news", "order"),
+                        name="unique_key_stat_order_per_news",
+                        deferrable=models.Deferrable.DEFERRED,
+                    ),
                 ],
             },
         ),
         migrations.CreateModel(
-            name="NewsFile",
+            name="NewsAttachment",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("file", models.FileField(upload_to="news/files/")),
+                ("file", models.FileField(upload_to="news/attachments/")),
                 ("order", models.PositiveIntegerField()),
                 ("label", models.CharField(blank=True, max_length=255)),
                 (
@@ -53,7 +57,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name="files",
+                        related_name="attachments",
                         to="news.news",
                     ),
                 ),
@@ -61,7 +65,11 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["order"],
                 "constraints": [
-                    models.UniqueConstraint(fields=("news", "order"), name="unique_news_file_order_per_news"),
+                    models.UniqueConstraint(
+                        fields=("news", "order"),
+                        name="unique_attachment_order_per_news",
+                        deferrable=models.Deferrable.DEFERRED,
+                    ),
                 ],
             },
         ),
