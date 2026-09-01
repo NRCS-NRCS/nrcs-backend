@@ -125,7 +125,6 @@ type BlogType implements UserResourceTypeMixin {
   title: String!
   publishedDate: Date!
   author: String!
-  content: String!
   coverImage: DjangoFileType
   featured: Boolean!
   status: StatusEnum!
@@ -134,6 +133,7 @@ type BlogType implements UserResourceTypeMixin {
   directiveId: ID
   department: DepartmentType
   directive: StrategicDirectivesType
+  content: String!
 }
 
 type BlogTypeMutationResponseType {
@@ -594,6 +594,15 @@ input JobVacancyUpdateInput {
   file: Upload
 }
 
+"""KeyStat(id, order, title, stat, featured, news)"""
+type KeyStatType {
+  id: ID!
+  order: Int!
+  title: String!
+  stat: Int!
+  featured: Boolean!
+}
+
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
@@ -706,7 +715,7 @@ type Mutation {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsCreateInput {
   title: String!
@@ -716,20 +725,29 @@ input NewsCreateInput {
   status: StatusEnum
   directive: ID!
   isHighlighted: Boolean
+  showInPopup: Boolean
   file: Upload
   coverImage: Upload
   actionLinks: [ActionLinkCreateInput!]
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsDeleteInput {
   id: ID!
 }
 
+"""NewsFile(id, file, order, label, news)"""
+type NewsFileType {
+  id: ID!
+  file: DjangoFileType!
+  order: Int!
+  label: String!
+}
+
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsFilter {
   slug: String
@@ -737,6 +755,7 @@ input NewsFilter {
   directive: ID = null
   status: StatusEnum
   isHighlighted: Boolean
+  showInPopup: Boolean
   AND: NewsFilter
   OR: NewsFilter
   NOT: NewsFilter
@@ -752,7 +771,7 @@ input NewsOrder {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 type NewsType implements UserResourceTypeMixin {
   createdAt: DateTime!
@@ -762,7 +781,6 @@ type NewsType implements UserResourceTypeMixin {
   id: ID!
   title: String!
   file: DjangoFileType
-  content: String!
   status: StatusEnum!
   publishedDate: Date!
   directiveId: ID
@@ -770,7 +788,11 @@ type NewsType implements UserResourceTypeMixin {
   slug: String!
   coverImage: DjangoFileType
   isHighlighted: Boolean!
+  showInPopup: Boolean!
   actionLinks: [ActionLinkType!]
+  keyStats: [KeyStatType!]
+  files: [NewsFileType!]
+  content: String!
 }
 
 type NewsTypeMutationResponseType {
@@ -790,7 +812,7 @@ type NewsTypeOffsetPaginated {
 }
 
 """
-News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted)
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status, is_highlighted, show_in_popup)
 """
 input NewsUpdateInput {
   title: String
@@ -800,6 +822,7 @@ input NewsUpdateInput {
   slug: String
   directive: ID!
   isHighlighted: Boolean
+  showInPopup: Boolean
   file: Upload
   coverImage: Upload
   actionLinks: [ActionLinkInput!]
@@ -1310,13 +1333,13 @@ type ResourceType implements UserResourceTypeMixin {
   id: ID!
   title: String!
   file: DjangoFileType!
-  content: String!
   publishedDate: Date!
   directiveId: ID!
   directive: StrategicDirectivesType!
   slug: String!
   coverImage: DjangoFileType
   type: ResourceTypeEnum!
+  content: String!
 }
 
 enum ResourceTypeEnum {
