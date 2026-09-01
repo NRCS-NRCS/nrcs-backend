@@ -3,6 +3,7 @@ import tempfile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 
+from apps.strategic.factories import UserFactory
 from main.tests.base_test import TestCase
 
 _MEDIA_ROOT = tempfile.mkdtemp(prefix="mdeditor-upload-test-")
@@ -18,6 +19,32 @@ UPLOAD_URL = "/mdeditor/uploads/"
 
 @override_settings(MEDIA_ROOT=_MEDIA_ROOT)
 class TestMDEditorImageUpload(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.staff = UserFactory.create(username="mdeditor-staff", is_staff=True)
+        cls.non_staff = UserFactory.create(username="mdeditor-non-staff", is_staff=False)
+
+    def setUp(self):
+        super().setUp()
+        self.force_login(self.staff)
+
+    def test_anonymous_upload_rejected(self):
+        self.client.logout()
+        image = SimpleUploadedFile("photo.png", PNG_BYTES, content_type="image/png")
+        response = self.client.post(UPLOAD_URL, {"editormd-image-file": image})
+        assert response.status_code == 403, response.status_code
+        content = response.json()
+        assert content["success"] == 0, content
+        assert content["url"] == ""
+
+    def test_non_staff_upload_rejected(self):
+        self.force_login(self.non_staff)
+        image = SimpleUploadedFile("photo.png", PNG_BYTES, content_type="image/png")
+        response = self.client.post(UPLOAD_URL, {"editormd-image-file": image})
+        assert response.status_code == 403, response.status_code
+        assert response.json()["success"] == 0
+
     def test_valid_image_uploaded_via_default_storage(self):
         image = SimpleUploadedFile("photo.png", PNG_BYTES, content_type="image/png")
         response = self.client.post(UPLOAD_URL, {"editormd-image-file": image})
