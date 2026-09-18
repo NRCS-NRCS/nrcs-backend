@@ -4,11 +4,12 @@ from strawberry_django.permissions import IsStaff
 
 from apps.news.graphql.inputs import NewsCreateInput, NewsDeleteInput, NewsUpdateInput
 from apps.news.graphql.types import NewsType
-from apps.news.models import News
+from apps.news.models import ActionLink, News
 from apps.news.serializers import NewsSerializer
 from main.graphql.context import Info
+from utils.graphql.common import DataclassInstance
 from utils.graphql.mutations import ModelMutation
-from utils.graphql.types import MutationResponseType
+from utils.graphql.types import CudInput, MutationResponseType
 
 
 @strawberry.type
@@ -35,4 +36,31 @@ class Mutation:
         pk: strawberry.ID,
     ) -> MutationResponseType[NewsType]:
         news = await News.objects.aget(pk=pk)
-        return await ModelMutation(NewsSerializer).handle_update_mutation(data, info, news)
+
+        def transformer(obj: DataclassInstance):
+            if not isinstance(obj, CudInput):
+                return (False, obj)
+
+            if obj.delete is not None and obj.delete != strawberry.UNSET:
+                return (True, None)
+
+            if obj.create is not None and obj.create != strawberry.UNSET:
+                return (True, obj.create)
+
+            if obj.update is not None and obj.update != strawberry.UNSET:
+                return (True, obj.update)
+
+            return (False, obj)
+
+        for action_link in data.action_links or []:
+            if action_link.delete is not None and action_link.delete != strawberry.UNSET:
+                await ActionLink.objects.filter(id=action_link.delete.id).adelete()
+                continue
+
+        return await ModelMutation(NewsSerializer).handle_update_mutation(
+            data,
+            info,
+            news,
+            None,
+            transformer,
+        )

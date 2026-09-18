@@ -13,6 +13,7 @@ class NewsFilter:
     directive: strawberry.ID | None = None
     status: StatusEnum | None = strawberry.UNSET
     is_highlighted: bool | None = strawberry.UNSET
+    show_in_popup: bool | None = strawberry.UNSET
 
     @strawberry_django.filter_field
     def search(self, value: str, prefix: str) -> Q:
