@@ -1,7 +1,39 @@
+"""
+Can only be resolved by authenticated users.
+
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
+"""
+directive @isAuthenticated repeatable on FIELD_DEFINITION
+
+"""ActionLink(id, url, label, highlight)"""
+input ActionLinkCreateInput {
+  url: String!
+  label: String!
+}
+
+input ActionLinkInput {
+  create: ActionLinkCreateInput
+  update: ActionLinkUpdateInput
+  delete: DeleteInput
+}
+
 """ActionLink(id, url, label, highlight)"""
 type ActionLinkType {
+  id: ID!
   label: String!
   url: String!
+}
+
+"""ActionLink(id, url, label, highlight)"""
+input ActionLinkUpdateInput {
+  id: ID!
+  url: String
+  label: String
 }
 
 type AppEnumCollection {
@@ -11,6 +43,28 @@ type AppEnumCollection {
 type AppEnumCollectionDummyEnum {
   key: DummyEnum!
   label: String!
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogCreateInput {
+  title: String!
+  publishedDate: Date!
+  author: String!
+  content: String!
+  featured: Boolean
+  status: StatusEnum
+  coverImage: Upload
+  department: ID
+  directive: ID
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogDeleteInput {
+  id: ID!
 }
 
 """
@@ -37,7 +91,11 @@ input BlogOrder {
 """
 Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
 """
-type BlogType {
+type BlogType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   publishedDate: Date!
@@ -46,9 +104,32 @@ type BlogType {
   featured: Boolean!
   status: StatusEnum!
   slug: String!
-  department: DjangoModelType
-  directive: DjangoModelType
+  departmentId: ID
+  directiveId: ID
+  department: DepartmentType
+  directive: StrategicDirectivesType
   content: String!
+}
+
+type BlogTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: BlogType
+}
+
+"""
+Blog(id, created_at, modified_at, created_by, modified_by, title, published_date, author, content, cover_image, featured, status, slug, department, directive)
+"""
+input BlogUpdateInput {
+  title: String
+  publishedDate: Date
+  author: String
+  content: String!
+  featured: Boolean
+  status: StatusEnum
+  coverImage: Upload
+  department: ID
+  directive: ID
 }
 
 input BoolBaseFilterLookup {
@@ -63,6 +144,33 @@ input BoolBaseFilterLookup {
   """
   inList: [Boolean!]
 }
+
+union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
+
+union CreateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union CreateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
+
+union CreateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+union CreateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+union CreatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
+union CreateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
+
+union CreateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+union CreateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
+union CreateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
+union CreateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
+"""A generic type to return error messages"""
+scalar CustomErrorType
 
 """Date (isoformat)"""
 scalar Date
@@ -108,6 +216,55 @@ input DateRangeLookup {
   end: Date = null
 }
 
+"""Date with time (isoformat)"""
+scalar DateTime
+
+union DeleteBlogPayload = BlogType | OperationInfo
+
+union DeleteDepartmentPayload = DepartmentType | OperationInfo
+
+union DeleteFaqPayload = FaqType | OperationInfo
+
+union DeleteHighlightPayload = HighlightType | OperationInfo
+
+input DeleteInput {
+  id: ID!
+}
+
+union DeleteJobVacancyPayload = JobVacancyType | OperationInfo
+
+union DeleteNewsPayload = NewsType | OperationInfo
+
+union DeletePartnerPayload = PartnerType | OperationInfo
+
+union DeleteProcurementPayload = ProcurementType | OperationInfo
+
+union DeleteProjectPayload = ProjectType | OperationInfo
+
+union DeleteRadioProgramPayload = RadioProgramType | OperationInfo
+
+union DeleteResourcePayload = ResourceType | OperationInfo
+
+union DeleteStrategicDirectivesPayload = StrategicDirectivesType | OperationInfo
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentCreateInput {
+  title: String!
+  description: String!
+  contactPersonName: String
+  contactPersonEmail: String
+  strategicDirective: ID!
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentDeleteInput {
+  id: ID!
+}
+
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
@@ -127,14 +284,36 @@ input DepartmentOrder {
 """
 Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
 """
-type DepartmentType {
+type DepartmentType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   contactPersonName: String
   contactPersonEmail: String
   slug: String!
-  strategicDirective: StrategicDirectivesType!
+  strategicDirectiveId: ID
+  strategicDirective: StrategicDirectivesType
+}
+
+type DepartmentTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: DepartmentType
+}
+
+"""
+Department(id, created_at, modified_at, created_by, modified_by, title, description, strategic_directive, contact_person_name, contact_person_email, slug)
+"""
+input DepartmentUpdateInput {
+  title: String
+  description: String
+  contactPersonName: String
+  contactPersonEmail: String
+  strategicDirective: ID!
 }
 
 type DjangoFileType {
@@ -159,6 +338,22 @@ enum DummyEnum {
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
+input FaqCreateInput {
+  question: String!
+  answer: String!
+  orderIndex: Int
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqDeleteInput {
+  id: ID!
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
 input FaqFilter {
   id: ID!
   orderIndex: IntComparisonFilterLookup
@@ -176,11 +371,48 @@ input FaqOrder {
 """
 Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
 """
-type FaqType {
+type FaqType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   question: String!
   answer: String!
   orderIndex: Int!
+}
+
+type FaqTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: FaqType
+}
+
+"""
+Faq(id, created_at, modified_at, created_by, modified_by, question, answer, order_index)
+"""
+input FaqUpdateInput {
+  question: String
+  answer: String
+  orderIndex: Int
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
+"""
+input HighlightCreateInput {
+  heading: String!
+  description: String!
+  isActive: Boolean
+  image: Upload!
+  actionLinks: [ActionLinkCreateInput!]
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
+"""
+input HighlightDeleteInput {
+  id: ID!
 }
 
 """HighlightFile(id, file, order, label, highlight)"""
@@ -210,16 +442,37 @@ input HighlightOrder {
 """
 Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
 """
-type HighlightType {
+type HighlightType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   heading: String!
   image: DjangoFileType
-  actionLinks: [ActionLinkType!]!
   keyStats: [KeyStatType!]!
   files: [HighlightFileType!]!
   isActive: Boolean!
   showInPopup: Boolean!
+  actionLinks: [ActionLinkType!]
   description: String!
+}
+
+type HighlightTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: HighlightType
+}
+
+"""
+Highlight(id, created_at, modified_at, created_by, modified_by, heading, description, image, is_active, show_in_popup)
+"""
+input HighlightUpdateInput {
+  heading: String
+  description: String!
+  isActive: Boolean
+  image: Upload
+  actionLinks: [ActionLinkInput!]
 }
 
 input IntComparisonFilterLookup {
@@ -258,6 +511,28 @@ input IntRangeLookup {
 """
 JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
+input JobVacancyCreateInput {
+  title: String!
+  description: String!
+  position: String!
+  numberOfVacancies: Int!
+  expiryDate: Date!
+  isArchived: Boolean
+  publishedAt: Date!
+  department: ID
+  file: Upload!
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
+input JobVacancyDeleteInput {
+  id: ID!
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
 input JobVacancyFilter {
   expiryDate: DateDateFilterLookup
   isArchived: Boolean
@@ -274,7 +549,11 @@ input JobVacancyOrder {
 """
 JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
 """
-type JobVacancyType {
+type JobVacancyType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType!
@@ -284,6 +563,29 @@ type JobVacancyType {
   expiryDate: Date!
   isArchived: Boolean!
   publishedAt: Date!
+  departmentId: ID
+  department: DepartmentType
+}
+
+type JobVacancyTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: JobVacancyType
+}
+
+"""
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+"""
+input JobVacancyUpdateInput {
+  title: String
+  description: String
+  position: String
+  numberOfVacancies: Int
+  expiryDate: Date
+  isArchived: Boolean
+  publishedAt: Date
+  department: ID
+  file: Upload
 }
 
 """KeyStat(id, order, title, stat, featured, highlight)"""
@@ -292,6 +594,14 @@ type KeyStatType {
   title: String!
   stat: Int!
   featured: Boolean!
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesCreateInput {
+  title: String!
+  description: String!
 }
 
 """
@@ -307,6 +617,12 @@ input MajorResponsibilitiesFilter {
   DISTINCT: Boolean
 }
 
+input MajorResponsibilitiesInput {
+  create: MajorResponsibilitiesCreateInput
+  update: MajorResponsibilitiesUpdateInput
+  delete: DeleteInput
+}
+
 input MajorResponsibilitiesOrder {
   id: Ordering
   directive: Ordering
@@ -315,12 +631,87 @@ input MajorResponsibilitiesOrder {
 """
 MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
 """
-type MajorResponsibilitiesType {
+type MajorResponsibilitiesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   directive: DjangoModelType!
   slug: String!
+}
+
+"""
+MajorResponsibilities(id, created_at, modified_at, created_by, modified_by, title, description, directive, slug)
+"""
+input MajorResponsibilitiesUpdateInput {
+  id: ID!
+  title: String
+  description: String
+}
+
+type Mutation {
+  deleteDepartment(data: DepartmentDeleteInput!): DeleteDepartmentPayload! @isAuthenticated
+  createDepartment(data: DepartmentCreateInput!): CreateDepartmentPayload! @isAuthenticated
+  updateDepartment(data: DepartmentUpdateInput!, pk: ID!): UpdateDepartmentPayload! @isAuthenticated
+  login(username: String!, password: String!): UserMeType!
+  logout: Boolean!
+  deleteFaq(data: FaqDeleteInput!): DeleteFaqPayload! @isAuthenticated
+  createFaq(data: FaqCreateInput!): CreateFaqPayload! @isAuthenticated
+  updateFaq(data: FaqUpdateInput!, pk: ID!): UpdateFaqPayload! @isAuthenticated
+  deleteProject(data: ProjectDeleteInput!): DeleteProjectPayload! @isAuthenticated
+  createProject(data: ProjectCreateInput!): CreateProjectPayload! @isAuthenticated
+  updateProject(data: ProjectUpdateInput!, pk: ID!): UpdateProjectPayload! @isAuthenticated
+  deleteBlog(data: BlogDeleteInput!): DeleteBlogPayload! @isAuthenticated
+  createBlog(data: BlogCreateInput!): CreateBlogPayload! @isAuthenticated
+  updateBlog(data: BlogUpdateInput!, pk: ID!): UpdateBlogPayload! @isAuthenticated
+  deleteHighlight(data: HighlightDeleteInput!): DeleteHighlightPayload! @isAuthenticated
+  createHighlight(data: HighlightCreateInput!): CreateHighlightPayload! @isAuthenticated
+  updateHighlight(data: HighlightUpdateInput!, pk: ID!): UpdateHighlightPayload! @isAuthenticated
+  deleteNews(data: NewsDeleteInput!): DeleteNewsPayload! @isAuthenticated
+  createNews(data: NewsCreateInput!): CreateNewsPayload! @isAuthenticated
+  updateNews(data: NewsUpdateInput!, pk: ID!): UpdateNewsPayload! @isAuthenticated
+  deletePartner(data: PartnerDeleteInput!): DeletePartnerPayload! @isAuthenticated
+  createPartner(data: PartnerCreateInput!): CreatePartnerPayload! @isAuthenticated
+  updatePartner(data: PartnerUpdateInput!, pk: ID!): UpdatePartnerPayload! @isAuthenticated
+  deleteProcurement(data: ProcurementDeleteInput!): DeleteProcurementPayload! @isAuthenticated
+  createProcurement(data: ProcurementCreateInput!): CreateProcurementPayload! @isAuthenticated
+  updateProcurement(data: ProcurementUpdateInput!, pk: ID!): UpdateProcurementPayload! @isAuthenticated
+  deleteRadioProgram(data: RadioProgramDeleteInput!): DeleteRadioProgramPayload! @isAuthenticated
+  createRadioProgram(data: RadioProgramCreateInput!): CreateRadioProgramPayload! @isAuthenticated
+  updateRadioProgram(data: RadioProgramUpdateInput!, pk: ID!): UpdateRadioProgramPayload! @isAuthenticated
+  deleteResource(data: ResourceDeleteInput!): DeleteResourcePayload! @isAuthenticated
+  createResource(data: ResourceCreateInput!): CreateResourcePayload! @isAuthenticated
+  updateResource(data: ResourceUpdateInput!, pk: ID!): UpdateResourcePayload! @isAuthenticated
+  deleteStrategicDirectives(data: StrategicDirectivesDeleteInput!): DeleteStrategicDirectivesPayload! @isAuthenticated
+  createStrategicDirectives(data: StrategicDirectivesCreateInput!): CreateStrategicDirectivesPayload! @isAuthenticated
+  updateStrategicDirectives(data: StrategicDirectivesUpdateInput!, pk: ID!): UpdateStrategicDirectivesPayload! @isAuthenticated
+  deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isAuthenticated
+  createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isAuthenticated
+  updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isAuthenticated
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  slug: String
+  status: StatusEnum
+  directive: ID!
+  file: Upload
+  coverImage: Upload
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsDeleteInput {
+  id: ID!
 }
 
 """
@@ -348,15 +739,70 @@ input NewsOrder {
 """
 News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
 """
-type NewsType {
+type NewsType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType
+  status: StatusEnum!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID
+  directive: StrategicDirectivesType
   slug: String!
   coverImage: DjangoFileType
   content: String!
+}
+
+type NewsTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: NewsType
+}
+
+"""
+News(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, status)
+"""
+input NewsUpdateInput {
+  title: String
+  content: String!
+  publishedDate: Date
+  status: StatusEnum
+  slug: String
+  directive: ID!
+  file: Upload
+  coverImage: Upload
+}
+
+type OperationInfo {
+  """List of messages returned by the operation."""
+  messages: [OperationMessage!]!
+}
+
+type OperationMessage {
+  """The kind of this message."""
+  kind: OperationMessageKind!
+
+  """The error message."""
+  message: String!
+
+  """
+  The field that caused the error, or `null` if it isn't associated with any particular field.
+  """
+  field: String
+
+  """The error code, or `null` if no error code was set."""
+  code: String
+}
+
+enum OperationMessageKind {
+  INFO
+  WARNING
+  ERROR
+  PERMISSION
+  VALIDATION
 }
 
 enum Ordering {
@@ -366,6 +812,22 @@ enum Ordering {
   DESC
   DESC_NULLS_FIRST
   DESC_NULLS_LAST
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerCreateInput {
+  title: String!
+  scope: PartnerScopeEnum!
+  image: Upload
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerDeleteInput {
+  id: ID!
 }
 
 """
@@ -440,11 +902,48 @@ input PartnerScopeEnumFilterLookup {
 """
 Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
 """
-type PartnerType {
+type PartnerType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   scope: PartnerScopeEnum!
   image: DjangoFileType
+}
+
+type PartnerTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: PartnerType
+}
+
+"""
+Partner(id, created_at, modified_at, created_by, modified_by, title, image, scope)
+"""
+input PartnerUpdateInput {
+  title: String
+  scope: PartnerScopeEnum
+  image: Upload
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementCreateInput {
+  title: String!
+  description: String!
+  publishedDate: Date!
+  expiryDate: Date!
+  file: Upload
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementDeleteInput {
+  id: ID!
 }
 
 """
@@ -467,13 +966,51 @@ input ProcurementOrder {
 """
 Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
 """
-type ProcurementType {
+type ProcurementType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   file: DjangoFileType
   publishedDate: Date!
   expiryDate: Date!
+}
+
+type ProcurementTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProcurementType
+}
+
+"""
+Procurement(id, created_at, modified_at, created_by, modified_by, title, description, file, published_date, expiry_date)
+"""
+input ProcurementUpdateInput {
+  title: String
+  description: String
+  publishedDate: Date
+  expiryDate: Date
+  file: Upload
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectCreateInput {
+  title: String!
+  description: String!
+  coverImage: Upload
+  department: ID
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectDeleteInput {
+  id: ID!
 }
 
 """
@@ -495,12 +1032,32 @@ input ProjectOrder {
 """
 Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
 """
-type ProjectType {
+type ProjectType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   coverImage: DjangoFileType!
   department: DepartmentType
+}
+
+type ProjectTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ProjectType
+}
+
+"""
+Project(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, department)
+"""
+input ProjectUpdateInput {
+  title: String
+  description: String
+  coverImage: Upload
+  department: ID
 }
 
 type Query {
@@ -535,6 +1092,23 @@ type Query {
 """
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
+input RadioProgramCreateInput {
+  title: String!
+  publishedDate: Date!
+  type: RadioProgramTypeEnum
+  audioFile: Upload!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramDeleteInput {
+  id: ID!
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
 input RadioProgramFilter {
   publishedDate: DateDateFilterLookup
   id: ID
@@ -555,7 +1129,11 @@ input RadioProgramOrder {
 """
 RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
 """
-type RadioProgramType {
+type RadioProgramType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   audioFile: DjangoFileType!
@@ -566,6 +1144,42 @@ type RadioProgramType {
 enum RadioProgramTypeEnum {
   RADIO_RED_CROSS
   TOGETHER_FOR_HUMANITY
+}
+
+type RadioProgramTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: RadioProgramType
+}
+
+"""
+RadioProgram(id, created_at, modified_at, created_by, modified_by, title, audio_file, published_date, type)
+"""
+input RadioProgramUpdateInput {
+  title: String
+  publishedDate: Date
+  type: RadioProgramTypeEnum
+  audioFile: Upload
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceCreateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload!
+  coverImage: Upload
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceDeleteInput {
+  id: ID!
 }
 
 """
@@ -590,12 +1204,17 @@ input ResourceOrder {
 """
 Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
 """
-type ResourceType {
+type ResourceType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   file: DjangoFileType!
   publishedDate: Date!
-  directive: DjangoModelType
+  directiveId: ID!
+  directive: StrategicDirectivesType!
   slug: String!
   coverImage: DjangoFileType
   type: ResourceTypeEnum!
@@ -605,6 +1224,25 @@ type ResourceType {
 enum ResourceTypeEnum {
   REPORT
   POLICY_AND_GUIDELINES
+}
+
+type ResourceTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: ResourceType
+}
+
+"""
+Resource(id, created_at, modified_at, created_by, modified_by, title, content, file, published_date, directive, slug, cover_image, type)
+"""
+input ResourceUpdateInput {
+  title: String!
+  content: String!
+  publishedDate: Date!
+  directive: ID!
+  type: ResourceTypeEnum
+  file: Upload
+  coverImage: Upload
 }
 
 enum StatusEnum {
@@ -664,6 +1302,23 @@ input StrFilterLookup {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
+input StrategicDirectivesCreateInput {
+  title: String!
+  description: String!
+  coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesCreateInput!]
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
+input StrategicDirectivesDeleteInput {
+  id: ID!
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
 input StrategicDirectivesFilter {
   id: ID!
   slug: StrFilterLookup
@@ -680,11 +1335,89 @@ input StrategicDirectivesOrder {
 """
 StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
 """
-type StrategicDirectivesType {
+type StrategicDirectivesType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
   id: ID!
   title: String!
   description: String!
   coverImage: DjangoFileType
   slug: String!
   majorResponsibilities: [MajorResponsibilitiesType!]!
+}
+
+type StrategicDirectivesTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: StrategicDirectivesType
+}
+
+"""
+StrategicDirectives(id, created_at, modified_at, created_by, modified_by, title, description, cover_image, slug)
+"""
+input StrategicDirectivesUpdateInput {
+  title: String
+  description: String
+  coverImage: Upload
+  majorResponsibilities: [MajorResponsibilitiesInput!]
+}
+
+union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
+
+union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
+
+union UpdateHighlightPayload = HighlightTypeMutationResponseType | OperationInfo
+
+union UpdateJobVacancyPayload = JobVacancyTypeMutationResponseType | OperationInfo
+
+union UpdateNewsPayload = NewsTypeMutationResponseType | OperationInfo
+
+union UpdatePartnerPayload = PartnerTypeMutationResponseType | OperationInfo
+
+union UpdateProcurementPayload = ProcurementTypeMutationResponseType | OperationInfo
+
+union UpdateProjectPayload = ProjectTypeMutationResponseType | OperationInfo
+
+union UpdateRadioProgramPayload = RadioProgramTypeMutationResponseType | OperationInfo
+
+union UpdateResourcePayload = ResourceTypeMutationResponseType | OperationInfo
+
+union UpdateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponseType | OperationInfo
+
+scalar Upload
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+type UserMeType {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: String!
+}
+
+interface UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
+}
+
+"""
+Users within the Django authentication system are represented by this
+model.
+
+Username and password are required. Other fields are optional.
+"""
+type UserType {
+  id: ID!
+  firstName: String!
+  lastName: String!
 }

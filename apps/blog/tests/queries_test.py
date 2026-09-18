@@ -18,10 +18,10 @@ class TestBlogQuery(TestCase):
               url
             }
             department {
-              pk
+              id
             }
             directive {
-              pk
+              id
             }
             featured
             id
@@ -86,7 +86,7 @@ class TestBlogQuery(TestCase):
                     title=blog.title,
                     slug=blog.slug,
                     department={
-                        "pk": self.gID(blog.department.id),
+                        "id": self.gID(blog.department.id),
                     },
                     publishedDate=blog.published_date,
                     status=self.genum(blog.status),

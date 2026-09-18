@@ -11,7 +11,6 @@ class TestHighlightQuery(TestCase):
                 id
                 heading
                 description
-
                 actionLinks {
                     url
                     label

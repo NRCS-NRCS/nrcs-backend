@@ -16,7 +16,7 @@ class TestNewsQuery(TestCase):
                 publishedDate
                 title
                 directive {
-                    pk
+                    id
                 }
             }
 
@@ -66,7 +66,7 @@ class TestNewsQuery(TestCase):
                         url=self.get_media_url(news.file.name),
                     ),
                     publishedDate=news.published_date,
-                    directive=(dict(pk=self.gID(news.directive.id)) if news.directive else None),
+                    directive=(dict(id=self.gID(news.directive.id)) if news.directive else None),
                 )
                 for news in news_items
             ],
