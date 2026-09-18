@@ -10,9 +10,6 @@ class TestNewsQuery(TestCase):
             news(order: $order) {
                 results {
                     content
-                    file{
-                        url
-                    }
                     id
                     publishedDate
                     title
@@ -43,7 +40,6 @@ class TestNewsQuery(TestCase):
                 content="Something",
                 published_date="2023-12-31",
                 title="News One",
-                file="resource1.pdf",
                 directive=StrategicDirectivesFactory.create(
                     title="Directive One",
                 ),
@@ -52,7 +48,6 @@ class TestNewsQuery(TestCase):
                 content="Something2",
                 published_date="2023-12-31",
                 title="News Two",
-                file="resource2.pdf",
             ),
         ]
 
@@ -62,9 +57,6 @@ class TestNewsQuery(TestCase):
                 id=self.gID(news.id),
                 title=news.title,
                 content=news.content,
-                file=dict(
-                    url=self.get_media_url(news.file.name),
-                ),
                 publishedDate=news.published_date,
                 directive=(dict(id=self.gID(news.directive.id)) if news.directive else None),
             )

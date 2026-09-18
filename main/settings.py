@@ -67,6 +67,7 @@ env = environ.Env(
     GITHUB_OWNER=str,
     GITHUB_REPO=str,
     GITHUB_WORKFLOW_FILE=str,
+    GITHUB_DEFAULT_REF=str,
 )
 
 
@@ -84,6 +85,8 @@ GITHUB_TOKEN = env("GITHUB_TOKEN")
 GITHUB_OWNER = env("GITHUB_OWNER", default="NRCS-NRCS")
 GITHUB_REPO = env("GITHUB_REPO", default="nrcs-client")
 GITHUB_WORKFLOW_FILE = env("GITHUB_WORKFLOW_FILE", default="cd.yml")
+# NOTE: The ref deployments are triggered on. Deliberately not client-controllable.
+GITHUB_DEFAULT_REF = env("GITHUB_DEFAULT_REF", default="main")
 
 DEBUG = env("DEBUG")
 
@@ -397,7 +400,7 @@ CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_URLS_REGEX = r"(^/media/.*$)|(^/graphql/$)|(^/health-check/$)"
+CORS_URLS_REGEX = r"(^/media/.*$)|(^/graphql/$)|(^/health-check/$)|(^/mdeditor/uploads/$)"
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",
