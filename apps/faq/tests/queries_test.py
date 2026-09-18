@@ -7,22 +7,21 @@ class TestFaqQuery(TestCase):
     class Query:
         FAQ = """
           query faq($order: FaqOrder) {
-            faqs(order: $order)
-               {
-                id
-                question
-                answer
-                orderIndex
-              }
-
-
+            faqs(order: $order){
+                results {
+                    id
+                    question
+                    answer
+                    orderIndex
+                }
+            }
           }
         """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_faq_query(self):
         def _query():
@@ -47,14 +46,12 @@ class TestFaqQuery(TestCase):
         ]
 
         content = _query()
-        assert content["data"] == {
-            "faqs": [
-                dict(
-                    id=self.gID(faq.id),
-                    question=faq.question,
-                    answer=faq.answer,
-                    orderIndex=faq.order_index,
-                )
-                for faq in faq_items
-            ],
-        }, content
+        assert content["data"]["faqs"]["results"] == [
+            dict(
+                id=self.gID(faq.id),
+                question=faq.question,
+                answer=faq.answer,
+                orderIndex=faq.order_index,
+            )
+            for faq in faq_items
+        ], content

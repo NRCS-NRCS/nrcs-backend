@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry_django.pagination import OffsetPaginated
 
 from .filters import JobVacancyFilter
 from .orders import JobVacancyOrder
@@ -8,7 +9,8 @@ from .types import JobVacancyType
 
 @strawberry.type
 class Query:
-    job_vacancies: list[JobVacancyType] = strawberry_django.field(
+    # --- Paginated
+    job_vacancies: OffsetPaginated[JobVacancyType] = strawberry_django.offset_paginated(
         order=JobVacancyOrder,
         filters=JobVacancyFilter,
     )

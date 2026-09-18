@@ -1,12 +1,14 @@
 import strawberry
 import strawberry_django
 
+from apps.common.graphql.types import UserResourceTypeMixin
+from apps.department.graphql.types import DepartmentType
 from apps.vacancy.models import JobVacancy
 from utils.graphql.types import DjangoFileType
 
 
 @strawberry_django.type(JobVacancy)
-class JobVacancyType:
+class JobVacancyType(UserResourceTypeMixin):
     id: strawberry.ID
     title: strawberry.auto
     file: DjangoFileType
@@ -16,3 +18,5 @@ class JobVacancyType:
     expiry_date: strawberry.auto
     is_archived: strawberry.auto
     published_at: strawberry.auto
+    department_id: strawberry.auto
+    department: DepartmentType | None
