@@ -183,6 +183,9 @@ def serializer_error_to_error_types(errors: dict, initial_data: dict | None = No
     return error_types
 
 
+MutationCustomErrorType = _CustomErrorType
+
+
 def mutation_is_not_valid(serializer) -> CustomErrorType | None:
     """
     Checks if serializer is valid, if not returns list of errorTypes

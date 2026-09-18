@@ -91,7 +91,7 @@ class TestResourceMutation(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_create_resource(self):
         new_strategic_directive = StrategicDirectivesFactory.create(

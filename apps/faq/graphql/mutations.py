@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.faq.graphql.inputs import FaqCreateInput, FaqDeleteInput, FaqUpdateInput
 from apps.faq.graphql.types import FaqType
@@ -16,14 +16,14 @@ class Mutation:
     delete_faq: FaqType = strawberry_django.mutations.delete(
         FaqDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_faq(self, info: Info, data: FaqCreateInput) -> MutationResponseType[FaqType]:
         return await ModelMutation(FAQSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_faq(
         self,
         info: Info,

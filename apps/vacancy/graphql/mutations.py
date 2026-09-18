@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.vacancy.graphql.inputs import JobVacancyCreateInput, JobVacancyDeleteInput, JobVacancyUpdateInput
 from apps.vacancy.graphql.types import JobVacancyType
@@ -16,14 +16,14 @@ class Mutation:
     delete_job_vacancy: JobVacancyType = strawberry_django.mutations.delete(
         JobVacancyDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_job_vacancy(self, info: Info, data: JobVacancyCreateInput) -> MutationResponseType[JobVacancyType]:
         return await ModelMutation(JobVacancySerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_job_vacancy(
         self,
         info: Info,

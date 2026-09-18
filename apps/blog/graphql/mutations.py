@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.blog.graphql.inputs import BlogCreateInput, BlogDeleteInput, BlogUpdateInput
 from apps.blog.graphql.types import BlogType
@@ -16,10 +16,10 @@ class Mutation:
     delete_blog: BlogType = strawberry_django.mutations.delete(
         BlogDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_blog(
         self,
         info: Info,
@@ -27,7 +27,7 @@ class Mutation:
     ) -> MutationResponseType[BlogType]:
         return await ModelMutation(BlogSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_blog(
         self,
         info: Info,

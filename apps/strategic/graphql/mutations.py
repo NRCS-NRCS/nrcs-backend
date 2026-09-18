@@ -1,6 +1,6 @@
 import strawberry
 import strawberry_django
-from strawberry_django.permissions import IsAuthenticated
+from strawberry_django.permissions import IsStaff
 
 from apps.strategic.graphql.inputs import (
     StrategicDirectivesCreateInput,
@@ -21,10 +21,10 @@ class Mutation:
     delete_strategic_directives: StrategicDirectivesType = strawberry_django.mutations.delete(
         StrategicDirectivesDeleteInput,
         key_attr="pk",
-        extensions=[IsAuthenticated()],
+        extensions=[IsStaff()],
     )
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def create_strategic_directives(
         self,
         info: Info,
@@ -32,7 +32,7 @@ class Mutation:
     ) -> MutationResponseType[StrategicDirectivesType]:
         return await ModelMutation(StrategicDirectivesSerializer).handle_create_mutation(data, info, None)
 
-    @strawberry_django.mutation(extensions=[IsAuthenticated()])
+    @strawberry_django.mutation(extensions=[IsStaff()])
     async def update_strategic_directives(
         self,
         info: Info,

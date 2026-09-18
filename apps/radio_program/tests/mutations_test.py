@@ -79,7 +79,7 @@ class TestRadioProgramMutation(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = UserFactory.create(username="nrcs-test")
+        cls.user = UserFactory.create(username="nrcs-test", is_staff=True)
 
     def test_create_partner(self):
         data = {
