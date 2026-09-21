@@ -1,5 +1,4 @@
 import copy
-from typing import TypeVar
 
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -24,10 +23,7 @@ def clean_up_none_keys(data):
     return _clone_data
 
 
-T = TypeVar("T", bound=Model)
-
-
-def unique_slugify(instance: T, slug: str) -> str:
+def unique_slugify(instance: Model, slug: str) -> str:
     model = instance.__class__
     unique_slug = slug
     while model.objects.filter(slug=unique_slug).exists():
@@ -41,7 +37,7 @@ MAX_RADIO_PROGRAM_FILE_SIZE = 40
 # Images inserted through the markdown editor (mdeditor) upload endpoint.
 MAX_MDEDITOR_IMAGE_FILE_SIZE = 2
 # Files attached to a highlight.
-MAX_HIGHLIGHT_FILE_SIZE = 10
+MAX_NEWS_ATTACHMENT_SIZE = 30
 
 
 def validate_file_size(file: File, max_size: int) -> None:

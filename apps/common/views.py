@@ -32,9 +32,22 @@ class MDEditorImageUploadView(generic.View):
     This view saves the image through ``default_storage`` (S3 or filesystem) and
     returns ``default_storage.url(...)`` so it works in every environment. The
     JSON response contract matches mdeditor's so the editor.md frontend is happy.
+
+    Uploads are restricted to staff. CSRF stays exempt because editor.md posts
+    the form through a hidden iframe without a token; authentication is what
+    keeps the endpoint from being an open file drop.
     """
 
     def post(self, request, *args, **kwargs):
+        # Content editors only. Without this the endpoint accepts uploads from
+        # anyone who can reach the server, filling the media bucket with
+        # arbitrary files. Staff is the same bar the content mutations use.
+        if not request.user.is_authenticated or not request.user.is_staff:
+            return JsonResponse(
+                {"success": 0, "message": "You do not have permission to upload images.", "url": ""},
+                status=403,
+            )
+
         upload_image = request.FILES.get("editormd-image-file")
         if not upload_image:
             return JsonResponse({"success": 0, "message": "No image was received.", "url": ""})

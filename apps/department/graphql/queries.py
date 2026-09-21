@@ -1,5 +1,6 @@
 import strawberry
 import strawberry_django
+from strawberry_django.pagination import OffsetPaginated
 
 from apps.department.graphql.orders import DepartmentOrder
 
@@ -9,8 +10,8 @@ from .types import DepartmentType
 
 @strawberry.type
 class Query:
-    # all departments (no pagination)
-    departments: list[DepartmentType] = strawberry_django.field(
+    # --- Paginated
+    departments: OffsetPaginated[DepartmentType] = strawberry_django.offset_paginated(
         order=DepartmentOrder,
         filters=DepartmentFilter,
     )
