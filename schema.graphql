@@ -180,7 +180,176 @@ input BoolBaseFilterLookup {
   inList: [Boolean!]
 }
 
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberCreateInput {
+  name: String!
+  memberType: CecMemberTypeEnum
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String
+  email: String
+  secondaryEmail: String
+  address: String
+  contactNumber: String
+  photo: Upload
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberDeleteInput {
+  id: ID!
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberFilter {
+  memberType: CecMemberTypeEnumFilterLookup
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: BoolBaseFilterLookup
+  AND: CecMemberFilter
+  OR: CecMemberFilter
+  NOT: CecMemberFilter
+  DISTINCT: Boolean
+  search: String
+}
+
+input CecMemberOrder {
+  id: Ordering
+  orderIndex: Ordering
+}
+
+input CecMemberReorderInput {
+  movedId: ID!
+  targetId: ID!
+  position: CecMemberReorderPosition!
+}
+
+enum CecMemberReorderPosition {
+  BEFORE
+  AFTER
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+type CecMemberType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
+  id: ID!
+  name: String!
+  memberType: CecMemberTypeEnum!
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String!
+  email: String!
+  secondaryEmail: String!
+  address: String!
+  contactNumber: String!
+  photo: DjangoFileType
+  orderIndex: Int!
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean!
+}
+
+enum CecMemberTypeEnum {
+  OFFICE_BEARER
+  MEMBER
+  STAFF
+}
+
+input CecMemberTypeEnumFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: CecMemberTypeEnum
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [CecMemberTypeEnum!]
+
+  """Case-insensitive exact match. Filter will be skipped on `null` value"""
+  iExact: CecMemberTypeEnum
+
+  """
+  Case-sensitive containment test. Filter will be skipped on `null` value
+  """
+  contains: CecMemberTypeEnum
+
+  """
+  Case-insensitive containment test. Filter will be skipped on `null` value
+  """
+  iContains: CecMemberTypeEnum
+
+  """Case-sensitive starts-with. Filter will be skipped on `null` value"""
+  startsWith: CecMemberTypeEnum
+
+  """Case-insensitive starts-with. Filter will be skipped on `null` value"""
+  iStartsWith: CecMemberTypeEnum
+
+  """Case-sensitive ends-with. Filter will be skipped on `null` value"""
+  endsWith: CecMemberTypeEnum
+
+  """Case-insensitive ends-with. Filter will be skipped on `null` value"""
+  iEndsWith: CecMemberTypeEnum
+
+  """
+  Case-sensitive regular expression match. Filter will be skipped on `null` value
+  """
+  regex: CecMemberTypeEnum
+
+  """
+  Case-insensitive regular expression match. Filter will be skipped on `null` value
+  """
+  iRegex: CecMemberTypeEnum
+}
+
+type CecMemberTypeListMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: [CecMemberType!]
+}
+
+type CecMemberTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: CecMemberType
+}
+
+type CecMemberTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [CecMemberType!]!
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberUpdateInput {
+  name: String
+  memberType: CecMemberTypeEnum
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String
+  email: String
+  secondaryEmail: String
+  address: String
+  contactNumber: String
+  photo: Upload
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean
+}
+
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union CreateCecMemberPayload = CecMemberTypeMutationResponseType | OperationInfo
 
 union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
@@ -255,6 +424,8 @@ input DateRangeLookup {
 scalar DateTime
 
 union DeleteBlogPayload = BlogType | OperationInfo
+
+union DeleteCecMemberPayload = CecMemberType | OperationInfo
 
 union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
@@ -776,6 +947,10 @@ type Mutation {
   deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isStaff
   createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isStaff
   updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isStaff
+  deleteCecMember(data: CecMemberDeleteInput!): DeleteCecMemberPayload! @isStaff
+  createCecMember(data: CecMemberCreateInput!): CreateCecMemberPayload! @isStaff
+  updateCecMember(data: CecMemberUpdateInput!, pk: ID!): UpdateCecMemberPayload! @isStaff
+  reorderCecMember(data: CecMemberReorderInput!): ReorderCecMemberPayload! @isStaff
 }
 
 """NewsAttachment(id, file, order, label, news)"""
@@ -1278,6 +1453,8 @@ type Query {
   news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated!
   newsItem(id: ID!): NewsType!
   radioProgram(pagination: OffsetPaginationInput, filters: RadioProgramFilter, order: RadioProgramOrder): RadioProgramTypeOffsetPaginated!
+  cecMembers(pagination: OffsetPaginationInput, filters: CecMemberFilter, order: CecMemberOrder): CecMemberTypeOffsetPaginated!
+  cecMember(id: ID!): CecMemberType!
   enums: AppEnumCollection!
 }
 
@@ -1364,6 +1541,8 @@ input RadioProgramUpdateInput {
   type: RadioProgramTypeEnum
   audioFile: Upload
 }
+
+union ReorderCecMemberPayload = CecMemberTypeListMutationResponseType | OperationInfo
 
 union ReorderFaqPayload = FaqTypeListMutationResponseType | OperationInfo
 
@@ -1596,6 +1775,8 @@ input StrategicDirectivesUpdateInput {
 union TriggerDeploymentPayload = DeploymentTriggerTypeMutationResponseType | OperationInfo
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union UpdateCecMemberPayload = CecMemberTypeMutationResponseType | OperationInfo
 
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
