@@ -6,6 +6,8 @@ from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.blog.graphql import mutations as blog_mutations
 from apps.blog.graphql import queries as blog_queries
+from apps.cec_member.graphql import mutations as cec_member_mutations
+from apps.cec_member.graphql import queries as cec_member_queries
 from apps.common.graphql import mutations as common_mutation
 from apps.common.graphql import queries as common_queries
 from apps.department.graphql import mutations as department_mutations
@@ -60,6 +62,7 @@ class Query(
     blog_queries.Query,
     news_queries.Query,
     radio_program_queries.Query,
+    cec_member_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
@@ -82,6 +85,7 @@ class Mutation(
     resources_mutations.Mutation,
     strategic_mutations.Mutation,
     vacancy_mutations.Mutation,
+    cec_member_mutations.Mutation,
 ): ...
 
 
