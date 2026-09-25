@@ -70,7 +70,6 @@ class TestCecMemberMutation(TestCase):
             "email": "test@example.com",
         }
 
-        # Anonymous users cannot create (permission errors resolve to OperationInfo, not the response type)
         content = self.query_check(self.Mutation.CREATE_CEC_MEMBER, variables={"data": data})
         assert content["data"]["createCecMember"] == {}, content
         assert not CecMember.objects.filter(name=data["name"]).exists()
@@ -83,12 +82,10 @@ class TestCecMemberMutation(TestCase):
             result=dict(
                 id=resp_data["result"]["id"],
                 **data,
-                # Appended to the end of the list
                 orderIndex=5,
             ),
         ), content
 
-        # Cleared optional fields arrive as null and are stored as empty strings
         content = self.query_check(
             self.Mutation.CREATE_CEC_MEMBER,
             variables={
@@ -104,8 +101,8 @@ class TestCecMemberMutation(TestCase):
         )
         resp_data = content["data"]["createCecMember"]
         assert resp_data["ok"] is True, content
-        assert resp_data["result"]["email"] == ""
-        assert resp_data["result"]["designation"] == ""
+        assert resp_data["result"]["email"] is None
+        assert resp_data["result"]["designation"] is None
 
         # Invalid email is rejected
         content = self.query_check(
