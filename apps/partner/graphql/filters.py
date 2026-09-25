@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.partner.models import Partner
 
 
-@strawberry_django.filters.filter(Partner, lookups=True)
+@strawberry_django.filter_type(Partner, lookups=True)
 class PartnerFilter:
     scope: strawberry.auto
 

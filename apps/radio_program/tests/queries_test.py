@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestRadioProgramQuery(TestCase):
     class Query:
         RADIO_PROGRAMS = """
-          query radioProgram($order: RadioProgramOrder) {
-            radioProgram(order: $order) {
+          query radioProgram($ordering: [RadioProgramOrder!]) {
+            radioProgram(ordering: $ordering) {
                 results {
                     id
                     title
@@ -30,7 +30,7 @@ class TestRadioProgramQuery(TestCase):
             return self.query_check(
                 self.Query.RADIO_PROGRAMS,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

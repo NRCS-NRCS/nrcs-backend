@@ -11,7 +11,7 @@ from .types import CecMemberType
 class Query:
     # --- Paginated
     cec_members: OffsetPaginated[CecMemberType] = strawberry_django.offset_paginated(
-        order=CecMemberOrder,
+        ordering=CecMemberOrder,
         filters=CecMemberFilter,
     )
     cec_member: CecMemberType = strawberry_django.field()

@@ -4,7 +4,7 @@ import strawberry_django
 from apps.partner.models import Partner
 
 
-@strawberry_django.ordering.order(Partner)
+@strawberry_django.order_type(Partner)
 class PartnerOrder:
     id: strawberry.auto
     scope: strawberry.auto

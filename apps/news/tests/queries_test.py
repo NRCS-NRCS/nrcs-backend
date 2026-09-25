@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestNewsQuery(TestCase):
     class Query:
         NEWS = """
-          query news($order: NewsOrder) {
-            news(order: $order) {
+          query news($ordering: [NewsOrder!]) {
+            news(ordering: $ordering) {
                 results {
                     content
                     id
@@ -31,7 +31,7 @@ class TestNewsQuery(TestCase):
             return self.query_check(
                 self.Query.NEWS,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

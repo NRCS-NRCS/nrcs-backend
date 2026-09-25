@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.cec_member.models import CecMember
 
 
-@strawberry_django.filters.filter(CecMember, lookups=True)
+@strawberry_django.filter_type(CecMember, lookups=True)
 class CecMemberFilter:
     member_type: strawberry.auto
     is_active: strawberry.auto

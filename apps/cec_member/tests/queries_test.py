@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestCecMemberQuery(TestCase):
     class Query:
         CEC_MEMBERS = """
-          query cecMembers($filters: CecMemberFilter, $order: CecMemberOrder) {
-            cecMembers(filters: $filters, order: $order) {
+          query cecMembers($filters: CecMemberFilter, $ordering: [CecMemberOrder!]) {
+            cecMembers(filters: $filters, ordering: $ordering) {
                 totalCount
                 results {
                   id
@@ -35,7 +35,7 @@ class TestCecMemberQuery(TestCase):
             self.Query.CEC_MEMBERS,
             variables={
                 "filters": {"isActive": {"exact": True}},
-                "order": {"orderIndex": "ASC"},
+                "ordering": [{"orderIndex": "ASC"}],
             },
         )
         assert content["data"]["cecMembers"] == dict(

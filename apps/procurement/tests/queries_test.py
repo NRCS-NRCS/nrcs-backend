@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestProcurementQuery(TestCase):
     class Query:
         PROCUREMENT = """
-          query procurement($order: ProcurementOrder) {
-            procurements(order: $order) {
+          query procurement($ordering: [ProcurementOrder!]) {
+            procurements(ordering: $ordering) {
                 results {
                     id
                     title
@@ -32,7 +32,7 @@ class TestProcurementQuery(TestCase):
             return self.query_check(
                 self.Query.PROCUREMENT,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

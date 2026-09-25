@@ -4,12 +4,12 @@ import strawberry_django
 from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 
 
-@strawberry_django.ordering.order(StrategicDirectives)
+@strawberry_django.order_type(StrategicDirectives)
 class StrategicDirectivesOrder:
     id: strawberry.auto
 
 
-@strawberry_django.ordering.order(MajorResponsibilities)
+@strawberry_django.order_type(MajorResponsibilities)
 class MajorResponsibilitiesOrder:
     id: strawberry.auto
     directive: strawberry.auto

@@ -11,7 +11,7 @@ from .types import PartnerType
 class Query:
     # --- Paginated
     partners: OffsetPaginated[PartnerType] = strawberry_django.offset_paginated(
-        order=PartnerOrder,
+        ordering=PartnerOrder,
         filters=PartnerFilter,
     )
     partner: PartnerType = strawberry_django.field()

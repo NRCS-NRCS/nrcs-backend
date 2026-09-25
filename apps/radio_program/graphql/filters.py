@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.radio_program.models import RadioProgram, RadioProgramTypeEnum
 
 
-@strawberry_django.filters.filter(RadioProgram, lookups=True)
+@strawberry_django.filter_type(RadioProgram, lookups=True)
 class RadioProgramFilter:
     published_date: strawberry.auto
     id: strawberry.ID | None = strawberry.UNSET

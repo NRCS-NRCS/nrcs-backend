@@ -11,7 +11,7 @@ from .types import ProcurementType
 class Query:
     # --- Paginated
     procurements: OffsetPaginated[ProcurementType] = strawberry_django.offset_paginated(
-        order=ProcurementOrder,
+        ordering=ProcurementOrder,
         filters=ProcurementFilter,
     )
     procurement: ProcurementType = strawberry_django.field()

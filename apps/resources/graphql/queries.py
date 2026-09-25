@@ -11,7 +11,7 @@ from .types import ResourceType
 class Query:
     # --- Paginated
     resources: OffsetPaginated[ResourceType] = strawberry_django.offset_paginated(
-        order=ResourceOrder,
+        ordering=ResourceOrder,
         filters=ResourceFilter,
     )
     resource: ResourceType = strawberry_django.field()

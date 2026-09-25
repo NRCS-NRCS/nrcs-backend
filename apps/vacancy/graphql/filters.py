@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.vacancy.models import JobVacancy
 
 
-@strawberry_django.filters.filter(JobVacancy, lookups=True)
+@strawberry_django.filter_type(JobVacancy, lookups=True)
 class JobVacancyFilter:
     expiry_date: strawberry.auto
     is_archived: bool | None = strawberry.UNSET

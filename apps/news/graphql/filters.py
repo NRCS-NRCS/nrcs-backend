@@ -6,7 +6,7 @@ from apps.common.models import StatusEnum
 from apps.news.models import News
 
 
-@strawberry_django.filters.filter(News, lookups=True)
+@strawberry_django.filter_type(News, lookups=True)
 class NewsFilter:
     slug: str | None = strawberry.UNSET
     id: strawberry.ID | None = strawberry.UNSET

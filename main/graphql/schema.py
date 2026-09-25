@@ -2,6 +2,7 @@ import strawberry
 from django.core.files.uploadedfile import UploadedFile
 from strawberry.django.views import AsyncGraphQLView
 from strawberry.file_uploads import Upload
+from strawberry.schema.config import StrawberryConfig
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.blog.graphql import mutations as blog_mutations
@@ -32,6 +33,7 @@ from apps.users.graphql import mutations as users_mutations
 from apps.users.graphql import queries as users_queries
 from apps.vacancy.graphql import mutations as vacancy_mutations
 from apps.vacancy.graphql import queries as vacancy_queries
+from utils.graphql.types import CUSTOM_ERROR_SCALAR, CustomErrorType
 
 from .context import GraphQLContext
 from .dataloaders import GlobalDataLoader
@@ -98,4 +100,9 @@ schema = strawberry.Schema(
     scalar_overrides={
         UploadedFile: Upload,
     },
+    config=StrawberryConfig(
+        scalar_map={
+            CustomErrorType: CUSTOM_ERROR_SCALAR,
+        },
+    ),
 )
