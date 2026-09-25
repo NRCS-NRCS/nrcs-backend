@@ -34,6 +34,8 @@ When the condition fails, the following can be returned (following this priority
 """
 directive @isSuperuser repeatable on FIELD_DEFINITION
 
+directive @oneOf on INPUT_OBJECT
+
 """ActionLink(id, url, label, news)"""
 input ActionLinkCreateInput {
   url: String!
@@ -108,7 +110,7 @@ input BlogFilter {
   search: String
 }
 
-input BlogOrder {
+input BlogOrder @oneOf {
   id: Ordering
   featured: Ordering
 }
@@ -180,7 +182,176 @@ input BoolBaseFilterLookup {
   inList: [Boolean!]
 }
 
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberCreateInput {
+  name: String!
+  memberType: CecMemberTypeEnum
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String
+  email: String
+  secondaryEmail: String
+  address: String
+  contactNumber: String
+  photo: Upload
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberDeleteInput {
+  id: ID!
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberFilter {
+  memberType: CecMemberTypeEnumFilterLookup
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: BoolBaseFilterLookup
+  AND: CecMemberFilter
+  OR: CecMemberFilter
+  NOT: CecMemberFilter
+  DISTINCT: Boolean
+  search: String
+}
+
+input CecMemberOrder @oneOf {
+  id: Ordering
+  orderIndex: Ordering
+}
+
+input CecMemberReorderInput {
+  movedId: ID!
+  targetId: ID!
+  position: CecMemberReorderPosition!
+}
+
+enum CecMemberReorderPosition {
+  BEFORE
+  AFTER
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+type CecMemberType implements UserResourceTypeMixin {
+  createdAt: DateTime!
+  modifiedAt: DateTime!
+  createdBy: UserType!
+  modifiedBy: UserType!
+  id: ID!
+  name: String!
+  memberType: CecMemberTypeEnum!
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String
+  email: String
+  secondaryEmail: String
+  address: String
+  contactNumber: String
+  photo: DjangoFileType
+  orderIndex: Int!
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean!
+}
+
+enum CecMemberTypeEnum {
+  OFFICE_BEARER
+  MEMBER
+  STAFF
+}
+
+input CecMemberTypeEnumFilterLookup {
+  """Exact match. Filter will be skipped on `null` value"""
+  exact: CecMemberTypeEnum
+
+  """Assignment test. Filter will be skipped on `null` value"""
+  isNull: Boolean
+
+  """
+  Exact match of items in a given list. Filter will be skipped on `null` value
+  """
+  inList: [CecMemberTypeEnum!]
+
+  """Case-insensitive exact match. Filter will be skipped on `null` value"""
+  iExact: CecMemberTypeEnum
+
+  """
+  Case-sensitive containment test. Filter will be skipped on `null` value
+  """
+  contains: CecMemberTypeEnum
+
+  """
+  Case-insensitive containment test. Filter will be skipped on `null` value
+  """
+  iContains: CecMemberTypeEnum
+
+  """Case-sensitive starts-with. Filter will be skipped on `null` value"""
+  startsWith: CecMemberTypeEnum
+
+  """Case-insensitive starts-with. Filter will be skipped on `null` value"""
+  iStartsWith: CecMemberTypeEnum
+
+  """Case-sensitive ends-with. Filter will be skipped on `null` value"""
+  endsWith: CecMemberTypeEnum
+
+  """Case-insensitive ends-with. Filter will be skipped on `null` value"""
+  iEndsWith: CecMemberTypeEnum
+
+  """
+  Case-sensitive regular expression match. Filter will be skipped on `null` value
+  """
+  regex: CecMemberTypeEnum
+
+  """
+  Case-insensitive regular expression match. Filter will be skipped on `null` value
+  """
+  iRegex: CecMemberTypeEnum
+}
+
+type CecMemberTypeListMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: [CecMemberType!]
+}
+
+type CecMemberTypeMutationResponseType {
+  ok: Boolean!
+  errors: CustomErrorType
+  result: CecMemberType
+}
+
+type CecMemberTypeOffsetPaginated {
+  pageInfo: OffsetPaginationInfo!
+
+  """Total count of existing results."""
+  totalCount: Int!
+
+  """List of paginated results."""
+  results: [CecMemberType!]!
+}
+
+"""A member of the Central Executive Committee (or its supporting staff)."""
+input CecMemberUpdateInput {
+  name: String
+  memberType: CecMemberTypeEnum
+
+  """Shown as the heading for office bearers and staff, e.g. Chairperson."""
+  designation: String
+  email: String
+  secondaryEmail: String
+  address: String
+  contactNumber: String
+  photo: Upload
+
+  """Inactive members are kept in the CMS but hidden from the website."""
+  isActive: Boolean
+}
+
 union CreateBlogPayload = BlogTypeMutationResponseType | OperationInfo
+
+union CreateCecMemberPayload = CecMemberTypeMutationResponseType | OperationInfo
 
 union CreateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
@@ -256,6 +427,8 @@ scalar DateTime
 
 union DeleteBlogPayload = BlogType | OperationInfo
 
+union DeleteCecMemberPayload = CecMemberType | OperationInfo
+
 union DeleteDepartmentPayload = DepartmentType | OperationInfo
 
 union DeleteFaqPayload = FaqType | OperationInfo
@@ -313,7 +486,7 @@ input DepartmentFilter {
   search: String
 }
 
-input DepartmentOrder {
+input DepartmentOrder @oneOf {
   id: Ordering
 }
 
@@ -449,7 +622,7 @@ input FaqFilter {
   search: String
 }
 
-input FaqOrder {
+input FaqOrder @oneOf {
   id: Ordering
   orderIndex: Ordering
 }
@@ -578,7 +751,7 @@ input JobVacancyFilter {
   search: String
 }
 
-input JobVacancyOrder {
+input JobVacancyOrder @oneOf {
   id: Ordering
 }
 
@@ -694,7 +867,7 @@ input MajorResponsibilitiesInput {
   delete: DeleteInput
 }
 
-input MajorResponsibilitiesOrder {
+input MajorResponsibilitiesOrder @oneOf {
   id: Ordering
   directive: Ordering
 }
@@ -776,6 +949,10 @@ type Mutation {
   deleteJobVacancy(data: JobVacancyDeleteInput!): DeleteJobVacancyPayload! @isStaff
   createJobVacancy(data: JobVacancyCreateInput!): CreateJobVacancyPayload! @isStaff
   updateJobVacancy(data: JobVacancyUpdateInput!, pk: ID!): UpdateJobVacancyPayload! @isStaff
+  deleteCecMember(data: CecMemberDeleteInput!): DeleteCecMemberPayload! @isStaff
+  createCecMember(data: CecMemberCreateInput!): CreateCecMemberPayload! @isStaff
+  updateCecMember(data: CecMemberUpdateInput!, pk: ID!): UpdateCecMemberPayload! @isStaff
+  reorderCecMember(data: CecMemberReorderInput!): ReorderCecMemberPayload! @isStaff
 }
 
 """NewsAttachment(id, file, order, label, news)"""
@@ -849,7 +1026,7 @@ input NewsFilter {
   search: String
 }
 
-input NewsOrder {
+input NewsOrder @oneOf {
   id: Ordering
   title: Ordering
   status: Ordering
@@ -990,7 +1167,7 @@ input PartnerFilter {
   search: String
 }
 
-input PartnerOrder {
+input PartnerOrder @oneOf {
   id: Ordering
   scope: Ordering
 }
@@ -1128,7 +1305,7 @@ input ProcurementFilter {
   search: String
 }
 
-input ProcurementOrder {
+input ProcurementOrder @oneOf {
   id: Ordering
 }
 
@@ -1205,7 +1382,7 @@ input ProjectFilter {
   search: String
 }
 
-input ProjectOrder {
+input ProjectOrder @oneOf {
   id: Ordering
 }
 
@@ -1251,33 +1428,35 @@ input ProjectUpdateInput {
 }
 
 type Query {
-  users(pagination: OffsetPaginationInput, filters: UserFilter, order: UserOrder): UserTypeOffsetPaginated! @isAuthenticated
+  users(pagination: OffsetPaginationInput, filters: UserFilter, ordering: [UserOrder!]! = []): UserTypeOffsetPaginated! @isAuthenticated
   user(id: ID!): UserType! @isAuthenticated
   me: UserMeType
   deployments: DeploymentListType! @isAuthenticated
-  strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, order: StrategicDirectivesOrder): StrategicDirectivesTypeOffsetPaginated!
+  strategicDirectives(pagination: OffsetPaginationInput, filters: StrategicDirectivesFilter, ordering: [StrategicDirectivesOrder!]! = []): StrategicDirectivesTypeOffsetPaginated!
   strategicDirective(id: ID!): StrategicDirectivesType!
-  majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, order: MajorResponsibilitiesOrder): MajorResponsibilitiesTypeOffsetPaginated!
+  majorResponsibilities(pagination: OffsetPaginationInput, filters: MajorResponsibilitiesFilter, ordering: [MajorResponsibilitiesOrder!]! = []): MajorResponsibilitiesTypeOffsetPaginated!
   majorResponsibility(id: ID!): MajorResponsibilitiesType!
-  departments(pagination: OffsetPaginationInput, filters: DepartmentFilter, order: DepartmentOrder): DepartmentTypeOffsetPaginated!
+  departments(pagination: OffsetPaginationInput, filters: DepartmentFilter, ordering: [DepartmentOrder!]! = []): DepartmentTypeOffsetPaginated!
   department(id: ID!): DepartmentType!
-  procurements(pagination: OffsetPaginationInput, filters: ProcurementFilter, order: ProcurementOrder): ProcurementTypeOffsetPaginated!
+  procurements(pagination: OffsetPaginationInput, filters: ProcurementFilter, ordering: [ProcurementOrder!]! = []): ProcurementTypeOffsetPaginated!
   procurement(id: ID!): ProcurementType!
-  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, order: JobVacancyOrder): JobVacancyTypeOffsetPaginated!
+  jobVacancies(pagination: OffsetPaginationInput, filters: JobVacancyFilter, ordering: [JobVacancyOrder!]! = []): JobVacancyTypeOffsetPaginated!
   jobVacancy(id: ID!): JobVacancyType!
   project(id: ID!): ProjectType!
-  projects(pagination: OffsetPaginationInput, filters: ProjectFilter, order: ProjectOrder): ProjectTypeOffsetPaginated!
-  faqs(pagination: OffsetPaginationInput, filters: FaqFilter, order: FaqOrder): FaqTypeOffsetPaginated!
+  projects(pagination: OffsetPaginationInput, filters: ProjectFilter, ordering: [ProjectOrder!]! = []): ProjectTypeOffsetPaginated!
+  faqs(pagination: OffsetPaginationInput, filters: FaqFilter, ordering: [FaqOrder!]! = []): FaqTypeOffsetPaginated!
   faq(id: ID!): FaqType!
-  resources(pagination: OffsetPaginationInput, filters: ResourceFilter, order: ResourceOrder): ResourceTypeOffsetPaginated!
+  resources(pagination: OffsetPaginationInput, filters: ResourceFilter, ordering: [ResourceOrder!]! = []): ResourceTypeOffsetPaginated!
   resource(id: ID!): ResourceType!
-  partners(pagination: OffsetPaginationInput, filters: PartnerFilter, order: PartnerOrder): PartnerTypeOffsetPaginated!
+  partners(pagination: OffsetPaginationInput, filters: PartnerFilter, ordering: [PartnerOrder!]! = []): PartnerTypeOffsetPaginated!
   partner(id: ID!): PartnerType!
-  blogs(pagination: OffsetPaginationInput, filters: BlogFilter, order: BlogOrder): BlogTypeOffsetPaginated!
+  blogs(pagination: OffsetPaginationInput, filters: BlogFilter, ordering: [BlogOrder!]! = []): BlogTypeOffsetPaginated!
   blog(id: ID!): BlogType!
-  news(pagination: OffsetPaginationInput, filters: NewsFilter, order: NewsOrder): NewsTypeOffsetPaginated!
+  news(pagination: OffsetPaginationInput, filters: NewsFilter, ordering: [NewsOrder!]! = []): NewsTypeOffsetPaginated!
   newsItem(id: ID!): NewsType!
-  radioProgram(pagination: OffsetPaginationInput, filters: RadioProgramFilter, order: RadioProgramOrder): RadioProgramTypeOffsetPaginated!
+  radioProgram(pagination: OffsetPaginationInput, filters: RadioProgramFilter, ordering: [RadioProgramOrder!]! = []): RadioProgramTypeOffsetPaginated!
+  cecMembers(pagination: OffsetPaginationInput, filters: CecMemberFilter, ordering: [CecMemberOrder!]! = []): CecMemberTypeOffsetPaginated!
+  cecMember(id: ID!): CecMemberType!
   enums: AppEnumCollection!
 }
 
@@ -1313,7 +1492,7 @@ input RadioProgramFilter {
   search: String
 }
 
-input RadioProgramOrder {
+input RadioProgramOrder @oneOf {
   id: Ordering
   title: Ordering
   publishedDate: Ordering
@@ -1365,6 +1544,8 @@ input RadioProgramUpdateInput {
   audioFile: Upload
 }
 
+union ReorderCecMemberPayload = CecMemberTypeListMutationResponseType | OperationInfo
+
 union ReorderFaqPayload = FaqTypeListMutationResponseType | OperationInfo
 
 union ResetUserPasswordPayload = UserTypeMutationResponseType | OperationInfo
@@ -1405,7 +1586,7 @@ input ResourceFilter {
   search: String
 }
 
-input ResourceOrder {
+input ResourceOrder @oneOf {
   id: Ordering
 }
 
@@ -1547,7 +1728,7 @@ input StrategicDirectivesFilter {
   search: String
 }
 
-input StrategicDirectivesOrder {
+input StrategicDirectivesOrder @oneOf {
   id: Ordering
 }
 
@@ -1597,6 +1778,8 @@ union TriggerDeploymentPayload = DeploymentTriggerTypeMutationResponseType | Ope
 
 union UpdateBlogPayload = BlogTypeMutationResponseType | OperationInfo
 
+union UpdateCecMemberPayload = CecMemberTypeMutationResponseType | OperationInfo
+
 union UpdateDepartmentPayload = DepartmentTypeMutationResponseType | OperationInfo
 
 union UpdateFaqPayload = FaqTypeMutationResponseType | OperationInfo
@@ -1621,6 +1804,7 @@ union UpdateStrategicDirectivesPayload = StrategicDirectivesTypeMutationResponse
 
 union UpdateUserPayload = UserTypeMutationResponseType | OperationInfo
 
+"""Represents a file upload."""
 scalar Upload
 
 """
@@ -1696,7 +1880,7 @@ type UserMeType {
   userType: UserTypeEnum!
 }
 
-input UserOrder {
+input UserOrder @oneOf {
   id: Ordering
   email: Ordering
   firstName: Ordering

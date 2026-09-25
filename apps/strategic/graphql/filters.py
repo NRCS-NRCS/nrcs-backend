@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.strategic.models import MajorResponsibilities, StrategicDirectives
 
 
-@strawberry_django.filters.filter(StrategicDirectives, lookups=True)
+@strawberry_django.filter_type(StrategicDirectives, lookups=True)
 class StrategicDirectivesFilter:
     slug: strawberry.auto
     id: strawberry.ID | None = strawberry.UNSET
@@ -15,7 +15,7 @@ class StrategicDirectivesFilter:
         return Q(title__icontains=value)
 
 
-@strawberry_django.filters.filter(MajorResponsibilities, lookups=True)
+@strawberry_django.filter_type(MajorResponsibilities, lookups=True)
 class MajorResponsibilitiesFilter:
     slug: strawberry.auto
     directive: strawberry.auto

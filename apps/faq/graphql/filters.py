@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.faq.models import Faq
 
 
-@strawberry_django.filters.filter(Faq, lookups=True)
+@strawberry_django.filter_type(Faq, lookups=True)
 class FaqFilter:
     order_index: strawberry.auto
     id: strawberry.ID | None = strawberry.UNSET

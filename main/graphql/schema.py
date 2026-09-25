@@ -2,10 +2,13 @@ import strawberry
 from django.core.files.uploadedfile import UploadedFile
 from strawberry.django.views import AsyncGraphQLView
 from strawberry.file_uploads import Upload
+from strawberry.schema.config import StrawberryConfig
 from strawberry_django.optimizer import DjangoOptimizerExtension
 
 from apps.blog.graphql import mutations as blog_mutations
 from apps.blog.graphql import queries as blog_queries
+from apps.cec_member.graphql import mutations as cec_member_mutations
+from apps.cec_member.graphql import queries as cec_member_queries
 from apps.common.graphql import mutations as common_mutation
 from apps.common.graphql import queries as common_queries
 from apps.department.graphql import mutations as department_mutations
@@ -30,6 +33,7 @@ from apps.users.graphql import mutations as users_mutations
 from apps.users.graphql import queries as users_queries
 from apps.vacancy.graphql import mutations as vacancy_mutations
 from apps.vacancy.graphql import queries as vacancy_queries
+from utils.graphql.types import CUSTOM_ERROR_SCALAR, CustomErrorType
 
 from .context import GraphQLContext
 from .dataloaders import GlobalDataLoader
@@ -60,6 +64,7 @@ class Query(
     blog_queries.Query,
     news_queries.Query,
     radio_program_queries.Query,
+    cec_member_queries.Query,
 ):
     enums: AppEnumCollection = strawberry.field(  # type: ignore[reportGeneralTypeIssues]
         resolver=lambda: AppEnumCollectionData(),
@@ -82,6 +87,7 @@ class Mutation(
     resources_mutations.Mutation,
     strategic_mutations.Mutation,
     vacancy_mutations.Mutation,
+    cec_member_mutations.Mutation,
 ): ...
 
 
@@ -94,4 +100,9 @@ schema = strawberry.Schema(
     scalar_overrides={
         UploadedFile: Upload,
     },
+    config=StrawberryConfig(
+        scalar_map={
+            CustomErrorType: CUSTOM_ERROR_SCALAR,
+        },
+    ),
 )

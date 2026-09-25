@@ -22,7 +22,8 @@ dependencies = [
     "gunicorn~=20.1.0",
     "psycopg2-binary",
     "sentry-sdk",
-    "strawberry-graphql-django~=0.57.0",
+    "strawberry-graphql-django~=0.82.1",
+    "strawberry-graphql>=0.310.1,<0.326", # 0.326+ rejects the duplicate @isAuthenticated directives strawberry-graphql-django 0.82 emits
     "django-choices-field", # Required by strawberry-graphql-django
     "django-health-check",
     "pillow", # Required by django ImageField

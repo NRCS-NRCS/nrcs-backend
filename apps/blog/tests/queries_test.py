@@ -8,8 +8,8 @@ from main.tests.base_test import TestCase
 class TestBlogQuery(TestCase):
     class Query:
         BLOG = """
-          query blogs($order: BlogOrder) {
-            blogs(order: $order) {
+          query blogs($ordering: [BlogOrder!]) {
+            blogs(ordering: $ordering) {
             results {
                 author
                 content
@@ -45,7 +45,7 @@ class TestBlogQuery(TestCase):
             return self.query_check(
                 self.Query.BLOG,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

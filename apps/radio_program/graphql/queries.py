@@ -11,6 +11,6 @@ from .types import RadioProgramType
 class Query:
     # --- Paginated
     radio_program: OffsetPaginated[RadioProgramType] = strawberry_django.offset_paginated(
-        order=RadioProgramOrder,
+        ordering=RadioProgramOrder,
         filters=RadioProgramFilter,
     )

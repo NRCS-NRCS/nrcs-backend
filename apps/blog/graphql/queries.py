@@ -11,7 +11,7 @@ from .types import BlogType
 class Query:
     # --- Paginated
     blogs: OffsetPaginated[BlogType] = strawberry_django.offset_paginated(
-        order=BlogOrder,
+        ordering=BlogOrder,
         filters=BlogFilter,
     )
 

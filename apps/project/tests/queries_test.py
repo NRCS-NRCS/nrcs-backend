@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestprojectQuery(TestCase):
     class Query:
         project = """
-          query projects($order: ProjectOrder) {
-            projects(order: $order) {
+          query projects($ordering: [ProjectOrder!]) {
+            projects(ordering: $ordering) {
                 results {
                   id
                   title
@@ -32,7 +32,7 @@ class TestprojectQuery(TestCase):
             return self.query_check(
                 self.Query.project,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

@@ -5,8 +5,8 @@ from main.tests.base_test import TestCase
 class TestStrategicDirectivesQuery(TestCase):
     class Query:
         STRATEGIC_DIRECTIVES = """
-          query strategicDirectives($order: StrategicDirectivesOrder) {
-            strategicDirectives(order: $order) {
+          query strategicDirectives($ordering: [StrategicDirectivesOrder!]) {
+            strategicDirectives(ordering: $ordering) {
                 results {
                     id
                     title
@@ -35,7 +35,7 @@ class TestStrategicDirectivesQuery(TestCase):
             return self.query_check(
                 self.Query.STRATEGIC_DIRECTIVES,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

@@ -6,7 +6,7 @@ from apps.blog.models import Blog
 from apps.common.models import StatusEnum
 
 
-@strawberry_django.filters.filter(Blog, lookups=True)
+@strawberry_django.filter_type(Blog, lookups=True)
 class BlogFilter:
     id: strawberry.ID | None
     slug: strawberry.auto
