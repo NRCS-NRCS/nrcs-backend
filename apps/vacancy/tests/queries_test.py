@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestJobVacancyQuery(TestCase):
     class Query:
         JOB_VACANCIES = """
-          query jobVacancies($order: JobVacancyOrder) {
-            jobVacancies(order: $order) {
+          query jobVacancies($ordering: [JobVacancyOrder!]) {
+            jobVacancies(ordering: $ordering) {
                 results {
                     id
                     title
@@ -35,7 +35,7 @@ class TestJobVacancyQuery(TestCase):
             return self.query_check(
                 self.Query.JOB_VACANCIES,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

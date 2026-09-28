@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestFaqQuery(TestCase):
     class Query:
         FAQ = """
-          query faq($order: FaqOrder) {
-            faqs(order: $order){
+          query faq($ordering: [FaqOrder!]) {
+            faqs(ordering: $ordering){
                 results {
                     id
                     question
@@ -28,7 +28,7 @@ class TestFaqQuery(TestCase):
             return self.query_check(
                 self.Query.FAQ,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

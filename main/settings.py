@@ -153,6 +153,7 @@ INSTALLED_APPS = [
     "apps.news",
     "apps.home",
     "apps.radio_program",
+    "apps.cec_member",
 ]
 
 MIDDLEWARE = [

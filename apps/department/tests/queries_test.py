@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestDepartmentQuery(TestCase):
     class Query:
         DEPARTMENT = """
-          query departments($order: DepartmentOrder) {
-            departments(order: $order) {
+          query departments($ordering: [DepartmentOrder!]) {
+            departments(ordering: $ordering) {
                 results {
                   id
                   title
@@ -36,7 +36,7 @@ class TestDepartmentQuery(TestCase):
             return self.query_check(
                 self.Query.DEPARTMENT,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

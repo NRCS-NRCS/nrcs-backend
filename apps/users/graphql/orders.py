@@ -3,7 +3,7 @@ import strawberry_django
 from django.contrib.auth.models import User
 
 
-@strawberry_django.ordering.order(User)
+@strawberry_django.order_type(User)
 class UserOrder:
     id: strawberry.auto
     email: strawberry.auto

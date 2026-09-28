@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 
-@strawberry_django.filters.filter(User, lookups=True)
+@strawberry_django.filter_type(User, lookups=True)
 class UserFilter:
     id: strawberry.ID | None
     is_active: bool | None = strawberry.UNSET

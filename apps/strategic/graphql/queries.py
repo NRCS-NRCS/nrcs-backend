@@ -11,14 +11,14 @@ from .types import MajorResponsibilitiesType, StrategicDirectivesType
 class Query:
     # --- Paginated
     strategic_directives: OffsetPaginated[StrategicDirectivesType] = strawberry_django.offset_paginated(
-        order=StrategicDirectivesOrder,
+        ordering=StrategicDirectivesOrder,
         filters=StrategicDirectivesFilter,
     )
     strategic_directive: StrategicDirectivesType = strawberry_django.field()
 
     # --- Paginated
     major_responsibilities: OffsetPaginated[MajorResponsibilitiesType] = strawberry_django.offset_paginated(
-        order=MajorResponsibilitiesOrder,
+        ordering=MajorResponsibilitiesOrder,
         filters=MajorResponsibilitiesFilter,
     )
     major_responsibility: MajorResponsibilitiesType = strawberry_django.field()

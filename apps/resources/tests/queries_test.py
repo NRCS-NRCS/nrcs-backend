@@ -6,8 +6,8 @@ from main.tests.base_test import TestCase
 class TestResourcesQuery(TestCase):
     class Query:
         RESOURCES = """
-          query resources($order: ResourceOrder) {
-            resources(order: $order) {
+          query resources($ordering: [ResourceOrder!]) {
+            resources(ordering: $ordering) {
                 results {
                     content
                     file {
@@ -34,7 +34,7 @@ class TestResourcesQuery(TestCase):
             return self.query_check(
                 self.Query.RESOURCES,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

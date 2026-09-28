@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.resources.models import Resource, ResourceTypeEnum
 
 
-@strawberry_django.filters.filter(Resource, lookups=True)
+@strawberry_django.filter_type(Resource, lookups=True)
 class ResourceFilter:
     name: str | None = strawberry.UNSET
     slug: str | None = strawberry.UNSET

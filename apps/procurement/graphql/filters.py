@@ -5,7 +5,7 @@ from django.db.models import Q
 from apps.procurement.models import Procurement
 
 
-@strawberry_django.filters.filter(Procurement, lookups=True)
+@strawberry_django.filter_type(Procurement, lookups=True)
 class ProcurementFilter:
     expiry_date: strawberry.auto
     published_date: strawberry.auto

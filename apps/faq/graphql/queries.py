@@ -11,7 +11,7 @@ from .types import FaqType
 class Query:
     # --- Paginated
     faqs: OffsetPaginated[FaqType] = strawberry_django.offset_paginated(
-        order=FaqOrder,
+        ordering=FaqOrder,
         filters=FaqFilter,
     )
     faq: FaqType = strawberry_django.field()

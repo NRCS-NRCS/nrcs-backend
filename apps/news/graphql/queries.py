@@ -11,7 +11,7 @@ from .types import NewsType
 class Query:
     # --- Paginated
     news: OffsetPaginated[NewsType] = strawberry_django.offset_paginated(
-        order=NewsOrder,
+        ordering=NewsOrder,
         filters=NewsFilter,
     )
     news_item: NewsType = strawberry_django.field()

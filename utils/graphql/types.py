@@ -37,8 +37,11 @@ def markdown_with_absolute_media(content: str | None, info: Info) -> str:
 
 
 # generalize all the CustomErrorType
-CustomErrorType = strawberry.scalar(
-    typing.NewType("CustomErrorType", object),
+CustomErrorType = typing.NewType("CustomErrorType", object)
+
+# Registered on the schema through StrawberryConfig.scalar_map (see main/graphql/schema.py)
+CUSTOM_ERROR_SCALAR = strawberry.scalar(
+    name="CustomErrorType",
     description="A generic type to return error messages",
     serialize=lambda v: v,
     parse_value=lambda v: v,

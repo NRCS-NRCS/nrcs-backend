@@ -9,8 +9,8 @@ from main.tests.base_test import TestCase
 class TestPartnerQuery(TestCase):
     class Query:
         PARTNERS = """
-          query partners($order: PartnerOrder) {
-            partners(order: $order) {
+          query partners($ordering: [PartnerOrder!]) {
+            partners(ordering: $ordering) {
                 results {
                   id
                   title
@@ -33,7 +33,7 @@ class TestPartnerQuery(TestCase):
             return self.query_check(
                 self.Query.PARTNERS,
                 variables={
-                    "order": {"id": "ASC"},
+                    "ordering": [{"id": "ASC"}],
                 },
             )
 

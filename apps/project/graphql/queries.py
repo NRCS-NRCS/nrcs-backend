@@ -13,6 +13,6 @@ class Query:
 
     # --- Paginated
     projects: OffsetPaginated[ProjectType] = strawberry_django.offset_paginated(
-        order=ProjectOrder,
+        ordering=ProjectOrder,
         filters=ProjectFilter,
     )

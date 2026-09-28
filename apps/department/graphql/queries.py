@@ -12,7 +12,7 @@ from .types import DepartmentType
 class Query:
     # --- Paginated
     departments: OffsetPaginated[DepartmentType] = strawberry_django.offset_paginated(
-        order=DepartmentOrder,
+        ordering=DepartmentOrder,
         filters=DepartmentFilter,
     )
 
