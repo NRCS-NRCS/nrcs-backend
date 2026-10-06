@@ -250,3 +250,31 @@ class TestJobVacancyMutation(TestCase):
         # Check THE file should not be empty
         vacancy.refresh_from_db()
         assert vacancy.file, "File should be updated and not empty"
+
+    def test_create_job_vacancy_expiry_before_published_date(self):
+        department = DepartmentFactory.create(
+            title="Department One",
+            description="Something",
+            contact_person_name="John Doe",
+            contact_person_email="johndoe@example.com",
+        )
+        data = {
+            "title": "New JobVacancy",
+            "description": "JobVacancy Description",
+            "publishedAt": "2024-07-01",
+            "department": str(department.pk),
+            "position": "Software Engineer",
+            "isArchived": False,
+            "expiryDate": "2024-06-30",
+            "numberOfVacancies": 5,
+        }
+
+        self.force_login(self.user)
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_JOB_VACANCY,
+            resource_data=data,
+        )
+        resp_data = content["data"]["createJobVacancy"]
+        assert resp_data["ok"] is False, content
+        assert resp_data["errors"][0]["field"] == "expiryDate", content

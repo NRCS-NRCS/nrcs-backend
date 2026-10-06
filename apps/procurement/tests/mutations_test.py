@@ -154,3 +154,39 @@ class TestProcurementMutation(TestCase):
                 expiryDate=data["expiryDate"],
             ),
         ), content
+
+    def test_create_procurement_expiry_before_published_date(self):
+        data = {
+            "title": "New Procurement",
+            "description": "This is a new procurement description.",
+            "publishedDate": "2024-07-01",
+            "expiryDate": "2024-06-30",
+        }
+
+        self.force_login(self.user)
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_PARTNER,
+            data=data,
+        )
+        resp_data = content["data"]["createProcurement"]
+        assert resp_data["ok"] is False, content
+        assert resp_data["errors"][0]["field"] == "expiryDate", content
+
+    def test_update_procurement_expiry_before_saved_published_date(self):
+        procurement = ProcurementFactory.create(
+            published_date="2024-01-01",
+            expiry_date="2024-06-30",
+        )
+
+        self.force_login(self.user)
+        content = self.query_check(
+            self.Mutation.UPDATE_PARTNER,
+            variables={
+                "pk": self.gID(procurement.id),
+                "data": {"expiryDate": "2023-12-31"},
+            },
+        )
+        resp_data = content["data"]["updateProcurement"]
+        assert resp_data["ok"] is False, content
+        assert resp_data["errors"][0]["field"] == "expiryDate", content

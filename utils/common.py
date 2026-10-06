@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db.models import Model
 from django.utils.crypto import get_random_string
+from rest_framework import serializers
 
 
 def clean_up_none_keys(data):
@@ -58,3 +59,14 @@ def validate_file_size(file: File, max_size: int) -> None:
         raise ValidationError(
             f"File is too large. Max file size must be less than {max_size} MB.",
         )
+
+
+def validate_expiry_date(attrs: dict, instance: Model | None, published_date_field: str) -> None:
+    """
+    Raise when expiry_date is before the published date
+    NOTE: falls back to the saved values for partial updates
+    """
+    published_date = attrs.get(published_date_field, getattr(instance, published_date_field, None))
+    expiry_date = attrs.get("expiry_date", getattr(instance, "expiry_date", None))
+    if published_date and expiry_date and expiry_date < published_date:
+        raise serializers.ValidationError({"expiry_date": "Expiry date must be on or after the published date."})
