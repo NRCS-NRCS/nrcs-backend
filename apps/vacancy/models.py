@@ -21,6 +21,11 @@ class JobVacancy(UserResource):
     )
     is_archived = models.BooleanField(default=False)
     published_at = models.DateField()
+    form_url = models.URLField(
+        blank=True,
+        verbose_name=_("Application Form URL"),
+        help_text=_("e.g. Google Form link"),
+    )
 
     def clean(self):
         if self.file:

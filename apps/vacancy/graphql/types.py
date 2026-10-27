@@ -18,5 +18,6 @@ class JobVacancyType(UserResourceTypeMixin):
     expiry_date: strawberry.auto
     is_archived: strawberry.auto
     published_at: strawberry.auto
+    form_url: strawberry.auto
     department_id: strawberry.auto
     department: DepartmentType | None

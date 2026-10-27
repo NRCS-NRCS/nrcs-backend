@@ -18,6 +18,7 @@ class JobVacancySerializer(UserResourceSerializer[JobVacancy]):
             "department",
             "is_archived",
             "published_at",
+            "form_url",
         ]
         read_only_fields = [
             "created_by",

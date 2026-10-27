@@ -59,6 +59,7 @@ class TestJobVacancyMutation(TestCase):
                           isArchived
                           publishedAt
                           numberOfVacancies
+                          formUrl
                           department {
                               id
                           }
@@ -119,6 +120,7 @@ class TestJobVacancyMutation(TestCase):
             "isArchived": False,
             "expiryDate": "2024-12-31",
             "numberOfVacancies": 5,
+            "formUrl": "https://forms.gle/example",
         }
 
         self.force_login(self.user)
@@ -143,6 +145,7 @@ class TestJobVacancyMutation(TestCase):
                 position=data["position"],
                 isArchived=data["isArchived"],
                 numberOfVacancies=data["numberOfVacancies"],
+                formUrl=data["formUrl"],
                 createdBy=dict(
                     id=self.gID(self.user.id),
                 ),
@@ -278,3 +281,32 @@ class TestJobVacancyMutation(TestCase):
         resp_data = content["data"]["createJobVacancy"]
         assert resp_data["ok"] is False, content
         assert resp_data["errors"][0]["field"] == "expiryDate", content
+
+    def test_create_job_vacancy_form_url(self):
+        base_data = {
+            "title": "New JobVacancy",
+            "description": "JobVacancy Description",
+            "publishedAt": "2024-01-01",
+            "position": "Software Engineer",
+            "expiryDate": "2024-12-31",
+            "numberOfVacancies": 1,
+        }
+
+        self.force_login(self.user)
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_JOB_VACANCY,
+            resource_data=base_data,
+        )
+        resp_data = content["data"]["createJobVacancy"]
+        assert resp_data["ok"] is True, content
+        assert resp_data["result"]["formUrl"] == "", content
+
+        content = graphql_file_mutation(
+            query_check_func=self.query_check,
+            query=self.Mutation.CREATE_JOB_VACANCY,
+            resource_data={**base_data, "formUrl": "not-a-url"},
+        )
+        resp_data = content["data"]["createJobVacancy"]
+        assert resp_data["ok"] is False, content
+        assert resp_data["errors"][0]["field"] == "formUrl", content
