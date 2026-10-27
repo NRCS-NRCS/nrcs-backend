@@ -717,7 +717,7 @@ input IntRangeLookup {
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at, form_url)
 """
 input JobVacancyCreateInput {
   title: String!
@@ -727,19 +727,22 @@ input JobVacancyCreateInput {
   expiryDate: Date!
   isArchived: Boolean
   publishedAt: Date!
+
+  """e.g. Google Form link"""
+  formUrl: String
   department: ID
   file: Upload!
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at, form_url)
 """
 input JobVacancyDeleteInput {
   id: ID!
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at, form_url)
 """
 input JobVacancyFilter {
   expiryDate: DateDateFilterLookup
@@ -756,7 +759,7 @@ input JobVacancyOrder @oneOf {
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at, form_url)
 """
 type JobVacancyType implements UserResourceTypeMixin {
   createdAt: DateTime!
@@ -772,6 +775,9 @@ type JobVacancyType implements UserResourceTypeMixin {
   expiryDate: Date!
   isArchived: Boolean!
   publishedAt: Date!
+
+  """e.g. Google Form link"""
+  formUrl: String!
   departmentId: ID
   department: DepartmentType
 }
@@ -793,7 +799,7 @@ type JobVacancyTypeOffsetPaginated {
 }
 
 """
-JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at)
+JobVacancy(id, created_at, modified_at, created_by, modified_by, title, file, position, description, number_of_vacancies, expiry_date, department, is_archived, published_at, form_url)
 """
 input JobVacancyUpdateInput {
   title: String
@@ -803,6 +809,9 @@ input JobVacancyUpdateInput {
   expiryDate: Date
   isArchived: Boolean
   publishedAt: Date
+
+  """e.g. Google Form link"""
+  formUrl: String
   department: ID
   file: Upload
 }

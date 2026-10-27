@@ -14,6 +14,7 @@ class JobVacancyCreateInput:
     expiry_date: strawberry.auto
     is_archived: strawberry.auto
     published_at: strawberry.auto
+    form_url: strawberry.auto
     department: strawberry.ID | None
     file: Upload
 
@@ -27,6 +28,7 @@ class JobVacancyUpdateInput:
     expiry_date: strawberry.auto
     is_archived: strawberry.auto
     published_at: strawberry.auto
+    form_url: strawberry.auto
     department: strawberry.ID | None
     file: Upload | None
 
